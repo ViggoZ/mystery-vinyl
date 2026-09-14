@@ -6,7 +6,7 @@
     modes: $("#modes"), wave: $("#wave"), cur: $("#cur"), dur: $("#dur"),
     title: $("#title"), artist: $("#artist"), credit: $("#credit"),
     play: $("#play"), prev: $("#prev"), next: $("#next"), power: $("#power"),
-    theme: $("#theme"), zen: $("#zen"), crackle: $("#crackle"),
+    theme: $("#theme"), zen: $("#zen"), crackle: $("#crackle"), toast: $("#toast"),
     arm: $("#arm"), armWobble: $("#armWobble"), record: $("#record"), label: $("#label"), platter: $("#platter"),
     hint: $("#hint"),
   };
@@ -183,7 +183,10 @@
     crackle.on = !crackle.on;
     store.set("mv.crackle", crackle.on ? "on" : "off");
     els.crackle.setAttribute("aria-pressed", String(crackle.on));
+  els.crackle.dataset.tip = crackle.on ? "Vinyl crackle on · N" : "Vinyl crackle off · N";
+    els.crackle.dataset.tip = crackle.on ? "Vinyl crackle on · N" : "Vinyl crackle off · N";
     setCrackle(!els.arm.classList.contains("lifted"));
+    toast(crackle.on ? "Vinyl crackle on" : "Vinyl crackle off");
   }
 
   const wctx = els.wave.getContext("2d");
@@ -393,6 +396,14 @@
     else if (e.key === "Escape" && document.body.classList.contains("zen") && !document.fullscreenElement) setZen(false);
   });
 
+  // ---------- toast ----------
+  let toastTimer;
+  function toast(msg) {
+    clearTimeout(toastTimer);
+    els.toast.textContent = msg; els.toast.classList.remove("leaving"); els.toast.hidden = false;
+    toastTimer = setTimeout(() => { els.toast.classList.add("leaving"); setTimeout(() => { els.toast.hidden = true; }, 300); }, 1400);
+  }
+
   // ---------- theme ----------
   function toggleTheme() {
     const light = document.documentElement.dataset.theme !== "light";
@@ -400,16 +411,20 @@
     store.set("mv.theme", light ? "light" : "dark");
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", light ? "#FBF7F1" : "#202020");
     refreshWaveColors();
+    toast(light ? "Light theme" : "Dark theme");
   }
   els.theme.addEventListener("click", toggleTheme);
   els.crackle.addEventListener("click", toggleCrackle);
   els.crackle.setAttribute("aria-pressed", String(crackle.on));
+  els.crackle.dataset.tip = crackle.on ? "Vinyl crackle on · N" : "Vinyl crackle off · N";
   if (document.documentElement.dataset.theme === "light") document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#FBF7F1");
 
   // ---------- zen / full screen ----------
   let idleTimer;
   function setZen(on) {
+    const was = document.body.classList.contains("zen");
     document.body.classList.toggle("zen", on);
+    if (on && !was) toast("Full screen · move the mouse to show controls, Esc to exit");
     document.body.classList.remove("idle");
     clearTimeout(idleTimer);
     if (on) idleTimer = setTimeout(() => document.body.classList.add("idle"), 3000);
