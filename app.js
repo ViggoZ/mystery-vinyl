@@ -344,6 +344,9 @@
     t.title = v.title || t.title; t.artist = v.author || "YouTube"; t.videoNow = v.video_id;
     t.cover = `https://i.ytimg.com/vi/${v.video_id}/hqdefault.jpg`;
     renderTrack(t);
+    // remember the real title in the crate list (single videos only; playlists keep their generic label)
+    const src = state.sources.find((s) => s.url === t.srcKey);
+    if (src && src.videoId && v.title && src.label !== v.title) { src.label = v.title; saveSources(); if (!els.crate.hidden) renderCrate(); }
   }
   function ytHasMore(dir) {
     const list = yt.player.getPlaylist ? yt.player.getPlaylist() : null;

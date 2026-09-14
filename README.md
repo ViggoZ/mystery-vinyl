@@ -25,7 +25,7 @@ The `+` chip at the end of the mood row opens your crate. Paste a link and it be
 - an `archive.org/details/…` album (full support: waveform, crackle, attribution)
 - a direct mp3 / m4a / stream URL (Icecast radio streams work too)
 
-Sources are kept in localStorage only.
+Sources are kept in localStorage only. Note for local development: YouTube refuses to play inside embeds served from `127.0.0.1` / `localhost` (error 150), so test the YouTube path on a real domain.
 
 ## Where the music comes from
 
