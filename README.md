@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://vinyl.uiboy.com/"><img src="assets/dark-3.png" alt="Mystery Vinyl — a turntable drawn in CSS and SVG, playing a random record" width="100%"></a>
+  <a href="https://vinyl.uiboy.com/"><img src="assets/dark-4.png" alt="Mystery Vinyl — a turntable drawn in CSS and SVG, playing a random record" width="100%"></a>
 </p>
 
 <h1 align="center">Mystery Vinyl</h1>
@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/record-swap-3.gif" alt="Skipping a record: the arm lifts, the platter brakes, the record is swapped, the arm swings back in and drops" width="100%">
+  <img src="assets/record-swap-4.gif" alt="Skipping a record: the arm lifts, the platter brakes, the record is swapped, the arm swings back in and drops" width="100%">
 </p>
 
 Pick a mood and the deck pulls a random record from that crate. The turntable on the right is not an image: the plinth, platter, record, grooves and sheen are CSS, the tonearm is SVG, and everything moves the way the real thing does.
@@ -40,7 +40,7 @@ Sunset is the odd one out: that sound has no free-licensed equivalent, so the cr
 ## Your own music
 
 <p align="center">
-  <img src="assets/crate-3.png" alt="The Yours crate: paste a link, get a list of your own sources" width="100%">
+  <img src="assets/crate-4.png" alt="The Yours crate: paste a link, get a list of your own sources" width="100%">
 </p>
 
 The *Yours* chip opens your crate. Paste a link, press Add:
@@ -55,8 +55,8 @@ Click a source in the list to play it. Sources live in `localStorage` only.
 
 <table>
   <tr>
-    <td width="50%"><img src="assets/light-3.png" alt="Light theme: cream page, charcoal deck"></td>
-    <td width="50%"><img src="assets/zen-3.png" alt="Full-screen mode: only the deck, waveform and title"></td>
+    <td width="50%"><img src="assets/light-4.png" alt="Light theme: cream page, charcoal deck"></td>
+    <td width="50%"><img src="assets/zen-4.png" alt="Full-screen mode: only the deck, waveform and title"></td>
   </tr>
   <tr>
     <td align="center">Light theme (<code>T</code>)</td>
