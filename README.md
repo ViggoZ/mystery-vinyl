@@ -1,53 +1,112 @@
-# Mystery Vinyl
+<p align="center">
+  <a href="https://vinyl.uiboy.com/"><img src="assets/dark.png" alt="Mystery Vinyl — a turntable drawn in CSS and SVG, playing a random record" width="100%"></a>
+</p>
 
-Open the page, a record drops, music plays. Pick a mood (Coding, Lo-fi, Focus, Sunset) and the deck pulls a random record from that crate. The turntable on the right is drawn entirely with CSS + SVG: the platter spins up and coasts down with real inertia, the tonearm swings in, drops, and tracks inward as the song plays, and the record is swapped when you skip.
+<h1 align="center">Mystery Vinyl</h1>
 
-## Run it
+<p align="center">
+  Open the page, a record drops, music plays.<br>
+  <a href="https://vinyl.uiboy.com/"><strong>vinyl.uiboy.com</strong></a>
+</p>
 
-Static files only, but the catalog is fetched with `fetch()`, so serve it over HTTP:
+<p align="center">
+  <img src="assets/record-swap.gif" alt="Skipping a record: the arm lifts, the platter brakes, the record is swapped, the arm swings back in and drops" width="100%">
+</p>
+
+Pick a mood and the deck pulls a random record from that crate. The turntable on the right is not an image: the plinth, platter, record, grooves and sheen are CSS, the tonearm is SVG, and everything moves the way the real thing does.
+
+## What it does
+
+- **Drops the needle for you.** The tonearm swings over the lead-in groove, drops, and tracks inward as the song plays. Skipping brakes the platter, swaps the record and starts again.
+- **Real turntable physics.** The platter spins at 33⅓ with motor pull-up and coast-down. The record sits on the mat with its own inertia, so it lags on start and overruns when the platter stops. A slightly warped pressing nudges the arm once per revolution.
+- **Sounds like vinyl.** Surface hiss and random crackle are synthesized with Web Audio (no samples), fade in when the needle lands and out when it lifts. Dropping the needle thumps. Toggle it with `N`.
+- **Live waveform.** The bars are the actual spectrum from an `AnalyserNode`, coloured up to the playhead. Click to seek.
+- **Your own music.** Paste a YouTube video, playlist or live link, an archive.org album, or an mp3 / radio stream into the *Yours* crate.
+- **Light and dark**, a **full-screen** mode that hides everything but the deck, keyboard shortcuts, Media Session support for hardware keys.
+
+## The crates
+
+| Mood | What's in it | Source |
+| --- | --- | --- |
+| **Coding** | Steady instrumental beats, a little swing | Dusted Wax Kingdom releases (CC BY-NC-ND) |
+| **Lo-fi** | Dusty, sampled, warm | Dusted Wax Kingdom releases (CC BY-NC-ND) |
+| **Focus** | Long ambient pieces and late-night jazz | Calm Pills (CC0), Candlegravity, Jenova 7, Clinical Jazz |
+| **Sunset** | Positive chill / deep house, Good-Life-Radio style | Curated YouTube 24/7 radios and long mixes |
+| **Yours** | Whatever you paste in | You |
+
+Sunset is the odd one out: that sound has no free-licensed equivalent, so the crate is a list of YouTube radios played through a hidden player. Everything else streams Creative Commons MP3s straight from the Internet Archive, with the album, license and a link back shown under the player.
+
+## Your own music
+
+<p align="center">
+  <img src="assets/crate.png" alt="The Yours crate: paste a link, get a list of your own sources" width="100%">
+</p>
+
+The *Yours* chip opens your crate. Paste a link, press Add:
+
+- **YouTube** video, playlist, mix or live stream. Played through a hidden IFrame player, so there is no waveform, and a few videos that forbid embedding are skipped automatically.
+- **archive.org** album (`archive.org/details/…`). Read client-side, full support: waveform, crackle, attribution.
+- **mp3 / m4a / stream URL.** Icecast radio streams work and show as LIVE.
+
+Click a source in the list to play it. Sources live in `localStorage` only.
+
+## Two looks, and a quiet mode
+
+<table>
+  <tr>
+    <td width="50%"><img src="assets/light.png" alt="Light theme with a cream plinth"></td>
+    <td width="50%"><img src="assets/zen.png" alt="Full-screen mode: only the deck, waveform and title"></td>
+  </tr>
+  <tr>
+    <td align="center">Light theme (<code>T</code>)</td>
+    <td align="center">Full screen (<code>F</code>) — controls fade after a few seconds</td>
+  </tr>
+</table>
+
+## Keyboard
+
+| Key | Action |
+| --- | --- |
+| `Space` | Play / pause (pause lifts the arm back onto its rest) |
+| `→` / `←` | Next record / restart or previous |
+| `F` | Full screen |
+| `T` | Light / dark |
+| `N` | Vinyl crackle on / off |
+| `Esc` | Close the crate, leave full screen |
+
+## How the turntable is built
+
+- **Record.** `repeating-radial-gradient` for the grooves, a second radial gradient for the wide bands between tracks, the album cover as the label. A `conic-gradient` sheen sits in a separate layer that does *not* rotate, so the reflection stays put while the grooves turn under it.
+- **Tonearm.** One SVG group rotated about the bearing. The angle that puts the stylus on a given groove radius comes from the law of cosines over the pivot-to-spindle distance and the arm length, so lead-in and run-out land where they should. An inner group carries the per-frame wobble without fighting the CSS transition on the outer one.
+- **Motion.** A `requestAnimationFrame` loop integrates two angular velocities (platter, record) with different time constants for pull-up, brake and coast. Everything else is CSS transitions.
+- **Sound.** One `<audio>` element through an `AnalyserNode`. The crackle is a looped pink-noise buffer through a band-pass plus scheduled noise bursts, mixed to the destination on the audio clock so it keeps ticking in a background tab.
+
+## Run it locally
+
+Static files, no build step. The catalog is fetched, so serve over HTTP:
 
 ```sh
 python3 -m http.server 8765
 # open http://127.0.0.1:8765/
 ```
 
-Keyboard: `space` play / pause, `→` next record, `←` restart / previous, `F` full screen, `T` light / dark theme, `N` vinyl crackle on / off.
-
-The surface noise is synthesized with Web Audio (a filtered pink-noise loop plus randomly spaced pops), so there are no sample files. It fades in when the needle drops and out when it lifts, and the needle drop itself has a small thump.
-
-Pausing lifts the tonearm back onto its rest; resuming swings it back to the groove you left. Full screen hides everything except the deck, the waveform and the title, and the controls fade out after a few seconds without mouse movement.
-
-## Your own music
-
-The `+` chip at the end of the mood row opens your crate. Paste a link and it becomes a "Yours" mood:
-
-- a YouTube video, playlist or live link (played through a hidden IFrame player, so no waveform, and a few videos that forbid embedding will be skipped)
-- an `archive.org/details/…` album (full support: waveform, crackle, attribution)
-- a direct mp3 / m4a / stream URL (Icecast radio streams work too)
-
-Sources are kept in localStorage only. Note for local development: YouTube refuses to play inside embeds served from `127.0.0.1` / `localhost` (error 150), so test the YouTube path on a real domain.
-
-## Where the music comes from
-
-Sunset is the exception: that "positive chill / deep house" sound has no free-licensed equivalent, so the crate is a curated list of YouTube 24/7 radios and long mixes, played through the same hidden player as your own links. Edit the `youtube` list in `scripts/build-catalog.py` to swap them.
-
-All other tracks are Creative Commons albums hosted on the Internet Archive (mostly the Dusted Wax Kingdom netlabel, plus a few ambient/jazz releases). The archive serves MP3s with CORS headers, so the browser can stream them directly and run them through the Web Audio analyser for the waveform. Each track shows its album, license and a link back to the source, which is what CC BY / BY-NC licenses ask for.
-
-`data/catalog.json` is generated, not hand-written:
+`data/catalog.json` is generated from archive.org metadata and the YouTube list in `scripts/build-catalog.py`:
 
 ```sh
 python3 scripts/build-catalog.py
 ```
 
-Edit the `CATEGORIES` map in that script to add or swap archive.org items per mood. Anything with an `mp3` derivative and a `licenseurl` works.
+Edit the `CATEGORIES` map there to add or swap albums per mood. Note that YouTube refuses to play inside embeds served from `127.0.0.1` / `localhost` (error 150), so the Sunset crate and YouTube links only work on a real domain.
 
 ## Files
 
-- `index.html` — markup, logo and the tonearm SVG
-- `styles.css` — layout, the plinth / platter / record / sheen, responsive rules
-- `app.js` — queue + transport, platter physics, tonearm geometry, waveform, autoplay gate
-- `scripts/build-catalog.py` — pulls metadata from archive.org into `data/catalog.json`
+- `index.html` — markup, logo, the tonearm SVG, the crate popover
+- `styles.css` — theme tokens, layout, the plinth / platter / record / sheen, zen mode
+- `app.js` — queue and transport, platter physics, tonearm geometry, waveform, crackle, YouTube backend, crate
+- `scripts/build-catalog.py` — builds `data/catalog.json`
 
 ## License
 
-Code is MIT. The music is not part of this repository: every track streams from the Internet Archive under its own Creative Commons license (mostly CC BY-NC-ND), shown next to the player. If you fork this for anything commercial, swap the catalog for music you have the rights to.
+Code is MIT. The music is not part of this repository: every Internet Archive track streams under its own Creative Commons license (mostly CC BY-NC-ND), shown next to the player; YouTube content belongs to its owners. If you fork this for anything commercial, swap the catalog for music you have the rights to.
+
+Made by [Viggo](https://uiboy.com/) · more at [uiboy.com](https://uiboy.com/)

@@ -407,7 +407,8 @@
     // "Yours" always sits at the end: it selects the crate (when it has records) and opens it.
     const yours = document.createElement("button");
     yours.className = "mode mode-yours"; yours.role = "tab"; yours.title = "Your own music";
-    yours.innerHTML = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1v10M1 6h10"/></svg>Yours';
+    // a little record crate
+    yours.innerHTML = '<svg viewBox="0 0 14 12" aria-hidden="true"><path d="M1.5 3.5h11l-1 7.5h-9z"/><path d="M1 3.5h12M5 6.5h4"/></svg>Yours';
     yours.setAttribute("aria-selected", String(state.category === "yours"));
     yours.addEventListener("click", (e) => {
       e.stopPropagation();

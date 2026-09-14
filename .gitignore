@@ -2,4 +2,5 @@
 .playwright-mcp/
 *.png
 !assets/*.png
+!assets/*.gif
 node_modules/
