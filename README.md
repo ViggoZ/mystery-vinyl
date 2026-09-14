@@ -54,7 +54,7 @@ Click a source in the list to play it. Sources live in `localStorage` only.
 
 <table>
   <tr>
-    <td width="50%"><img src="assets/light-2.png" alt="Light theme with a cream plinth"></td>
+    <td width="50%"><img src="assets/light-2.png" alt="Light theme: cream page, charcoal deck"></td>
     <td width="50%"><img src="assets/zen-2.png" alt="Full-screen mode: only the deck, waveform and title"></td>
   </tr>
   <tr>
