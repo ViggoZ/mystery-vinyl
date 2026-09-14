@@ -422,6 +422,7 @@
   let labelReq = 0;
   function setLabel(urls) {
     const req = ++labelReq;
+    els.label.style.backgroundImage = "";          // never carry the previous album onto the incoming record
     const tryAt = (i) => {
       if (i >= urls.length) { if (req === labelReq) els.label.style.backgroundImage = ""; return; }
       const img = new Image();
@@ -463,7 +464,7 @@
       state.brake = true; state.targetOmega = 0;
       setArm(ANGLE_REST, { lifted: true, ms: wasPlaying ? 900 : 300 });
       // 2. swap the record while the arm travels
-      if (swapRecord) { els.record.classList.add("out"); await wait(520); }
+      if (swapRecord) { els.record.classList.add("out"); await wait(560); }
       // stop whichever backend was sounding
       if (isYT(state.cur) && !isYT(t)) ytStop();
       if (!isYT(t)) { if (isYT(state.cur)) { /* nothing */ } }
@@ -484,7 +485,7 @@
         els.record.classList.add("enter"); els.record.classList.remove("out");
         void els.record.offsetWidth;
         els.record.classList.remove("enter");
-        await wait(520);
+        await wait(560);
       }
       else await wait(wasPlaying ? 500 : 0);
       // Before the first play, check whether the browser will let us start
