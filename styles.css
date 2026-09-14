@@ -91,23 +91,12 @@ a { color: inherit; }
 .liner a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(0,0,0,.35); }
 .liner a:hover { border-color: #1c1a17; }
 .liner-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-weight: 700; letter-spacing: .08em; font-size: 11px; }
-.liner-side { font: inherit; color: inherit; letter-spacing: .08em; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(0,0,0,.35); cursor: pointer; }
-.liner-side:hover { background: rgba(0,0,0,.08); }
+.liner-side { font-weight: 400; letter-spacing: .08em; opacity: .7; }
 .liner-keys { display: grid; grid-template-columns: max-content 1fr; gap: 3px 12px; margin: 12px 0; padding: 10px 0; border-top: 1px dashed rgba(0,0,0,.3); border-bottom: 1px dashed rgba(0,0,0,.3); }
 .liner-keys dt { font-weight: 700; }
 .liner-keys dd { margin: 0; opacity: .8; }
 .liner-foot { margin: 0; opacity: .85; }
 
-/* turning the record over: lift it off the platter, it vanishes at the top of the lift,
-   comes back down with the other side up (label turned around) */
-.record-slot.lifting .record { animation: lift .9s cubic-bezier(.4, 0, .2, 1); }
-@keyframes lift {
-  0%   { scale: 1; opacity: 1; box-shadow: 0 4px 12px rgba(0,0,0,.32), inset 0 0 0 1px #050505; }
-  45%  { scale: 1.06; opacity: 0; box-shadow: 0 30px 40px rgba(0,0,0,.45), inset 0 0 0 1px #050505; }
-  55%  { scale: 1.06; opacity: 0; box-shadow: 0 30px 40px rgba(0,0,0,.45), inset 0 0 0 1px #050505; }
-  100% { scale: 1; opacity: 1; box-shadow: 0 4px 12px rgba(0,0,0,.32), inset 0 0 0 1px #050505; }
-}
-.record-slot.side-b .label { rotate: 180deg; }
 
 .topnav {
   position: absolute; top: calc(var(--band) / 2 - 18px); right: 80px;
