@@ -446,6 +446,7 @@
       els.credit.innerHTML = `From <a href="${esc(t.source)}" target="_blank" rel="noopener">${esc(t.album)}</a> on the Internet Archive${lic ? ` · ${lic}` : ""}`;
     }
     document.title = `${t.title}${t.artist ? ` — ${t.artist}` : ""} · Mystery Vinyl`;
+    if (!els.crate.hidden) renderCrate();
     if ("mediaSession" in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({ title: t.title, artist: t.artist || "", album: t.album || "", artwork: t.cover ? [{ src: t.cover, sizes: "512x512", type: "image/jpeg" }] : [] });
     }
@@ -670,12 +671,24 @@
     if (open) { renderCrate(); setTimeout(() => els.crateInput.focus(), 50); }
   }
   function renderCrate() {
+    const now = state.cur && state.cur.srcKey;
     els.crateList.innerHTML = state.sources.map((s, i) => `
-      <li class="crate-item">
+      <li class="crate-item${s.url === now ? " is-playing" : ""}">
         <span class="crate-kind">${s.kind === "yt" ? "YouTube" : s.kind === "ia" ? "Archive" : "Stream"}</span>
-        <a class="crate-name" href="${esc(s.url)}" target="_blank" rel="noopener" title="${esc(s.url)}">${esc(s.label || s.url)}</a>
+        <button class="crate-name" data-i="${i}" title="Play">${esc(s.label || s.url)}</button>
+        <a class="crate-open" href="${esc(s.url)}" target="_blank" rel="noopener" title="Open the link" aria-label="Open the link">
+          <svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a>
         <button class="crate-remove" data-i="${i}" aria-label="Remove">×</button>
       </li>`).join("") || `<li class="crate-empty">Nothing here yet. Paste a link above.</li>`;
+  }
+  function playSource(i) {
+    const src = state.sources[i]; if (!src || state.busy) return;
+    const first = state.yoursTracks.find((t) => t.srcKey === src.url);
+    if (!first) { toast("Nothing playable in that one"); return; }
+    if (state.cur === first && state.playing) return;
+    selectCategory("yours", first);
+    renderCrate();
   }
   async function addSource(text) {
     const src = parseSource(text);
@@ -706,7 +719,10 @@
     }
   }
   els.crateForm.addEventListener("submit", (e) => { e.preventDefault(); addSource(els.crateInput.value); });
-  els.crateList.addEventListener("click", (e) => { const b = e.target.closest(".crate-remove"); if (b) removeSource(+b.dataset.i); });
+  els.crateList.addEventListener("click", (e) => {
+    const rm = e.target.closest(".crate-remove"); if (rm) return removeSource(+rm.dataset.i);
+    const pl = e.target.closest(".crate-name"); if (pl) playSource(+pl.dataset.i);
+  });
   document.addEventListener("pointerdown", (e) => { if (!els.crate.hidden && !e.target.closest("#crate, .mode-yours")) toggleCrate(false); });
 
   // ---------- events ----------

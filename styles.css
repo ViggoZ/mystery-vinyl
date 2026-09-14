@@ -139,8 +139,13 @@ body.zen .ic-collapse { display: block; }
 .crate-list { list-style: none; margin: 10px 0 0; padding: 0; max-height: 220px; overflow: auto; }
 .crate-item { display: flex; align-items: center; gap: 10px; padding: 7px 4px; border-top: 1px solid var(--line); font-size: 13px; }
 .crate-kind { flex: none; width: 60px; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--faint); }
-.crate-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); text-decoration: none; }
+.crate-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; color: var(--ink); }
 .crate-name:hover { color: var(--accent); }
+.crate-item.is-playing .crate-name { color: var(--accent); }
+.crate-item.is-playing .crate-kind { color: var(--accent); }
+.crate-open { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: var(--faint); }
+.crate-open svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.crate-open:hover { background: var(--btn-hover); color: var(--ink); }
 .crate-remove { flex: none; width: 24px; height: 24px; border-radius: 50%; color: var(--muted); font-size: 16px; line-height: 1; }
 .crate-remove:hover { background: var(--btn-hover); color: var(--ink); }
 .crate-empty { padding: 10px 4px; font-size: 13px; color: var(--muted); }
