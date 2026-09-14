@@ -464,7 +464,7 @@
       state.brake = true; state.targetOmega = 0;
       setArm(ANGLE_REST, { lifted: true, ms: wasPlaying ? 900 : 300 });
       // 2. swap the record while the arm travels
-      if (swapRecord) { els.carrier.classList.add("out"); await wait(560); }
+      if (swapRecord) { els.carrier.classList.add("out"); await wait(620); }
       // stop whichever backend was sounding
       if (isYT(state.cur) && !isYT(t)) ytStop();
       if (!isYT(t)) { if (isYT(state.cur)) { /* nothing */ } }
@@ -485,7 +485,7 @@
         els.carrier.classList.add("enter"); els.carrier.classList.remove("out");
         void els.carrier.offsetWidth;
         els.carrier.classList.remove("enter");
-        await wait(560);
+        await wait(620);
       }
       else await wait(wasPlaying ? 500 : 0);
       // Before the first play, check whether the browser will let us start

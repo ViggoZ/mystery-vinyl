@@ -287,8 +287,9 @@ body.playing .btn-main .ic-pause { display: block; }
           mask: radial-gradient(circle, transparent 0 96%, #000 96.5% 100%);
 }
 
-/* record: r=290. The clip box is the plinth outline, so a record sliding off leaves at the deck's edge. */
-.deck-clip { inset: 0; overflow: hidden; border-radius: calc(3.2 * var(--u)); pointer-events: none; }
+/* record: r=290. The record leaves the deck entirely when swapped (no clipping): it slides over the
+   deck's edge and off the screen, and the next one slides back in the same way. */
+.deck-clip { inset: 0; pointer-events: none; }
 .record-slot {
   position: absolute;
   left: calc(50 / 840 * 100%); top: calc(60 / 680 * 100%);
@@ -297,7 +298,7 @@ body.playing .btn-main .ic-pause { display: block; }
 }
 .record-carrier {
   position: absolute; inset: 0; border-radius: 50%;
-  transition: translate .55s cubic-bezier(.2, .7, .2, 1);
+  transition: translate .6s cubic-bezier(.2, .7, .2, 1);
 }
 .record {
   position: absolute; inset: 0; border-radius: 50%;
@@ -308,8 +309,8 @@ body.playing .btn-main .ic-pause { display: block; }
 }
 /* swapping records: desktop slides the record out through the bottom of the deck and the next one in the same way;
    phones (deck on top, page scrolls) slide through the left edge instead. The record stays solid; only its position changes. */
-.record-carrier.out { translate: 0 112%; transition-timing-function: cubic-bezier(.6, 0, .9, .5); }
-.record-carrier.enter { transition: none; translate: 0 112%; }
+.record-carrier.out { translate: 0 100vh; transition-timing-function: cubic-bezier(.6, 0, .9, .5); }
+.record-carrier.enter { transition: none; translate: 0 100vh; }
 .record-carrier.out .record, .record-carrier.enter .record { box-shadow: 0 12px 28px rgba(0,0,0,.4), inset 0 0 0 1px #050505; }
 .grooves {
   position: absolute; inset: 0; border-radius: 50%;
@@ -464,7 +465,7 @@ body.zen.idle { cursor: none; }
   .deck { order: -1; }
   .turntable { max-width: 520px; }
   body.zen .turntable { max-width: 520px; }
-  .record-carrier.out, .record-carrier.enter { translate: -112% 0; }
+  .record-carrier.out, .record-carrier.enter { translate: -100vw 0; }
   .panel { max-width: none; }
   .wave { width: 100%; }
   .title { white-space: normal; }
