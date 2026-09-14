@@ -140,7 +140,8 @@
             <rect x="695" y="90" width="10" height="470" rx="5" fill="url(#tube)"/>
             <rect x="693" y="440" width="14" height="40" rx="3" fill="#2e2e2e" stroke="#111" stroke-width="1"/>
             <!-- headshell -->
-            <g transform="translate(700,560) rotate(-14)">
+            <g class="headshell" transform="translate(700,560) rotate(-14)">
+              <rect x="-26" y="-14" width="52" height="96" fill="transparent"/>
               <path d="M-9 0 L9 0 L13 52 L-13 52 Z" fill="#3a3a3a" stroke="#161616" stroke-width="1.2"/>
               <rect x="-11" y="36" width="22" height="20" rx="2" fill="#2a2a2a" stroke="#111" stroke-width="1"/>
               <rect x="-4" y="54" width="8" height="10" rx="1.5" fill="#d9b896"/>
@@ -162,6 +163,7 @@
 
   <p class="hint" id="hint" hidden>Click anywhere to drop the needle</p>
   <p class="toast" id="toast" hidden></p>
+  <p class="arm-tip" id="arm-tip" hidden></p>
 
   <div id="yt-shell" aria-hidden="true"></div>
   <audio id="audio" crossorigin="anonymous" preload="auto"></audio>

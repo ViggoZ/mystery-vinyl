@@ -218,7 +218,7 @@ body.playing .btn-main .ic-pause { display: block; }
 
 .plinth {
   inset: 0;
-  border-radius: calc(1.6 * var(--u));
+  border-radius: calc(3.2 * var(--u));
   background:
     linear-gradient(160deg, rgba(255,255,255,.035), rgba(255,255,255,0) 40%),
     linear-gradient(var(--plinth-1), var(--plinth-2));
@@ -353,6 +353,14 @@ body.playing .power::after { background: var(--accent); box-shadow: 0 0 10px rgb
   will-change: transform;
 }
 /* Shadows are plain CSS drop-shadows so the lift can tween instead of snapping. */
+.headshell { pointer-events: all; cursor: grab; touch-action: none; }
+.arm.dragging .headshell { cursor: grabbing; }
+.arm-tip {
+  position: fixed; z-index: 6; margin: 0; padding: 5px 9px; border-radius: 8px;
+  background: var(--hint-bg); color: var(--hint-ink); font-size: 12px; font-variant-numeric: tabular-nums;
+  translate: -50% -140%; pointer-events: none; white-space: nowrap;
+}
+.arm-tip[hidden] { display: none; }
 .arm-fixed { filter: drop-shadow(0 4px 4px rgba(0,0,0,.45)); }
 .arm-lift { filter: drop-shadow(0 5px 5px rgba(0,0,0,.5)); transition: filter .45s ease; }
 .arm.lifted .arm-lift { filter: drop-shadow(0 13px 9px rgba(0,0,0,.42)); }

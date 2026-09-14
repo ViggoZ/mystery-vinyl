@@ -8,7 +8,7 @@
     play: $("#play"), prev: $("#prev"), next: $("#next"), power: $("#power"),
     theme: $("#theme"), zen: $("#zen"), crackle: $("#crackle"), toast: $("#toast"),
     arm: $("#arm"), armWobble: $("#armWobble"), record: $("#record"), label: $("#label"), platter: $("#platter"),
-    hint: $("#hint"),
+    hint: $("#hint"), turntable: $("#turntable"), armTip: $("#arm-tip"),
     crate: $("#crate"), crateForm: $("#crate-form"), crateInput: $("#crate-input"), crateList: $("#crate-list"), ytShell: $("#yt-shell"),
   };
 
@@ -725,6 +725,67 @@
     const pl = e.target.closest(".crate-name"); if (pl) playSource(+pl.dataset.i);
   });
   document.addEventListener("pointerdown", (e) => { if (!els.crate.hidden && !e.target.closest("#crate, .mode-yours")) toggleCrate(false); });
+
+  // ---------- drag the tonearm to seek ----------
+  // Grab the headshell: the needle lifts and the sound stops. Drag along the record and
+  // let go to drop it there. Drag it all the way out to the rest to pause.
+  const drag = { active: false, angle: 0, offset: 0 };
+  const head = document.querySelector(".headshell");
+  const PARK_ANGLE = ANGLE_IN * 0.55;           // released closer to the rest than this: park it
+  const armAngleNow = () => parseFloat((els.arm.style.transform.match(/-?[\d.]+/) || [0])[0]);
+  function pointerAngle(e) {
+    const r = els.turntable.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width * 840, y = (e.clientY - r.top) / r.height * 680;
+    return Math.atan2(y - PIVOT.y, x - PIVOT.x) * 180 / Math.PI - 90;   // rest (arm hanging down) = 0
+  }
+  function updateTip(e, a) {
+    const { d } = pos();
+    const p = Math.max(0, Math.min(1, (a - ANGLE_IN) / (ANGLE_OUT - ANGLE_IN)));
+    els.armTip.textContent = a < PARK_ANGLE ? "Pause" : fmt(p * d);
+    els.armTip.style.left = `${e.clientX}px`; els.armTip.style.top = `${e.clientY}px`;
+  }
+  head.addEventListener("pointerdown", (e) => {
+    if (state.busy || state.armed || !state.cur || e.button > 0) return;
+    const { d, live } = pos();
+    if (live) { toast("Live stream · nothing to seek"); return; }
+    if (!d) return;
+    e.preventDefault(); head.setPointerCapture(e.pointerId);
+    drag.active = true; drag.angle = armAngleNow(); drag.offset = pointerAngle(e) - drag.angle;
+    els.arm.classList.add("dragging");
+    state.playing = false; document.body.classList.remove("playing");
+    if (isYT(state.cur)) yt.player.pauseVideo(); else audio.pause();
+    setArm(drag.angle, { lifted: true, ms: 200 });
+    els.armTip.hidden = false; updateTip(e, drag.angle);
+  });
+  head.addEventListener("pointermove", (e) => {
+    if (!drag.active) return;
+    drag.angle = Math.max(ANGLE_REST, Math.min(ANGLE_OUT, pointerAngle(e) - drag.offset));
+    setArm(drag.angle, { lifted: true, ms: 0 });
+    updateTip(e, drag.angle);
+  });
+  async function endDrag(e) {
+    if (!drag.active) return; drag.active = false;
+    els.arm.classList.remove("dragging"); els.armTip.hidden = true;
+    try { head.releasePointerCapture(e.pointerId); } catch {}
+    const a = drag.angle;
+    if (a < PARK_ANGLE) {                       // put it back on the rest: pause
+      state.brake = false; state.targetOmega = 0;
+      setArm(ANGLE_REST, { lifted: true, ms: 500 });
+      return;
+    }
+    const { d } = pos();
+    const p = Math.max(0, Math.min(1, (a - ANGLE_IN) / (ANGLE_OUT - ANGLE_IN)));
+    seek(p * d); updateClock();
+    state.busy = true;
+    try {
+      state.brake = false; state.targetOmega = OMEGA_PLAY;
+      setArm(a, { lifted: false, ms: 250 });
+      await wait(260);
+    } finally { state.busy = false; }
+    await play();
+  }
+  head.addEventListener("pointerup", endDrag);
+  head.addEventListener("pointercancel", endDrag);
 
   // ---------- events ----------
   audio.addEventListener("timeupdate", () => { if (isYT(state.cur)) return; updateClock(); if (Math.floor(audio.currentTime) % 3 === 0) trackArm(); });

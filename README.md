@@ -21,6 +21,7 @@ Pick a mood and the deck pulls a random record from that crate. The turntable on
 - **Real turntable physics.** The platter spins at 33⅓ with motor pull-up and coast-down. The record sits on the mat with its own inertia, so it lags on start and overruns when the platter stops. A slightly warped pressing nudges the arm once per revolution.
 - **Sounds like vinyl.** Surface hiss and random crackle are synthesized with Web Audio (no samples), fade in when the needle lands and out when it lifts. Dropping the needle thumps. Toggle it with `N`.
 - **Live waveform.** The bars are the actual spectrum from an `AnalyserNode`, coloured up to the playhead. Click to seek.
+- **Grab the tonearm.** Drag the headshell along the record and let go to drop the needle there; drag it all the way out to the rest to pause.
 - **Your own music.** Paste a YouTube video, playlist or live link, an archive.org album, or an mp3 / radio stream into the *Yours* crate.
 - **Light and dark**, a **full-screen** mode that hides everything but the deck, keyboard shortcuts, Media Session support for hardware keys.
 
