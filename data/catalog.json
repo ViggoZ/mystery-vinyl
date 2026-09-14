@@ -6,11 +6,6 @@
       "tag": "steady beats, no vocals"
     },
     {
-      "id": "lofi",
-      "label": "Lo-fi",
-      "tag": "dusty, warm, hiss"
-    },
-    {
       "id": "focus",
       "label": "Focus",
       "tag": "ambient, slow, wide"
@@ -24,6 +19,11 @@
       "id": "designing",
       "label": "Designing",
       "tag": "swing, sampled, playful"
+    },
+    {
+      "id": "sunset",
+      "label": "Sunset",
+      "tag": "chill house, warm, four on the floor"
     }
   ],
   "tracks": [
@@ -221,7 +221,7 @@
     },
     {
       "id": "DWK044/Lo-Fi_Scientists_-_01_-_Jazz_Baby_vbr.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "Jazz Baby",
       "artist": "Lo-Fi Scientists",
       "album": "Lo-Fi Scientists",
@@ -233,7 +233,7 @@
     },
     {
       "id": "DWK044/Lo-Fi_Scientists_-_02_-_The_Trunk_With_Cheese_34_Pro_T-Pick_And_LR-60_vbr.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "The Trunk \\(with Cheese, 34 Pro, T-Pick \\& LR-60\\)",
       "artist": "Lo-Fi Scientists",
       "album": "Lo-Fi Scientists",
@@ -245,7 +245,7 @@
     },
     {
       "id": "DWK044/Lo-Fi_Scientists_-_03_-_Ego_Trippin_vbr.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "Ego Trippin\\'",
       "artist": "Lo-Fi Scientists",
       "album": "Lo-Fi Scientists",
@@ -257,7 +257,7 @@
     },
     {
       "id": "DWK044/Lo-Fi_Scientists_-_04_-_Spectral_Temp_vbr.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "Spectral Temp",
       "artist": "Lo-Fi Scientists",
       "album": "Lo-Fi Scientists",
@@ -269,7 +269,7 @@
     },
     {
       "id": "DWK163/deeB_-_01_-_Eleven11.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "Eleven11",
       "artist": "deeB",
       "album": "Daydream (EP)",
@@ -281,7 +281,7 @@
     },
     {
       "id": "DWK163/deeB_-_02_-_Leiden_Lowlife.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "Leiden Lowlife",
       "artist": "deeB",
       "album": "Daydream (EP)",
@@ -293,7 +293,7 @@
     },
     {
       "id": "DWK163/deeB_-_03_-_Blik.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "Blik",
       "artist": "deeB",
       "album": "Daydream (EP)",
@@ -305,7 +305,7 @@
     },
     {
       "id": "DWK163/deeB_-_04_-_Inside_The_Outside.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "Inside the Outside",
       "artist": "deeB",
       "album": "Daydream (EP)",
@@ -317,7 +317,7 @@
     },
     {
       "id": "DWK163/deeB_-_05_-_Chillwings.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "Chillwings",
       "artist": "deeB",
       "album": "Daydream (EP)",
@@ -329,7 +329,7 @@
     },
     {
       "id": "DWK163/deeB_-_06_-_E-Type.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "E-Type",
       "artist": "deeB",
       "album": "Daydream (EP)",
@@ -341,7 +341,7 @@
     },
     {
       "id": "DWK163/deeB_-_07_-_Daydream.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "Daydream",
       "artist": "deeB",
       "album": "Daydream (EP)",
@@ -353,7 +353,7 @@
     },
     {
       "id": "DWK163/deeB_-_08_-_Dan_Natural.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "Dan Natural",
       "artist": "deeB",
       "album": "Daydream (EP)",
@@ -365,7 +365,7 @@
     },
     {
       "id": "DWK163/deeB_-_09_-_The_Grand_Illusion.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "The Grand Illusion",
       "artist": "deeB",
       "album": "Daydream (EP)",
@@ -377,7 +377,7 @@
     },
     {
       "id": "DWK163/deeB_-_10_-_Coffee_and_Trees.mp3",
-      "category": "lofi",
+      "category": "coding",
       "title": "Coffee & Trees",
       "artist": "deeB",
       "album": "Daydream (EP)",
@@ -1646,6 +1646,354 @@
       "cover": "https://archive.org/download/DWK149/Boogie_Belgique_-_Blueberry_Hill.jpg",
       "source": "https://archive.org/details/DWK149",
       "license": "http://creativecommons.org/licenses/by-nc-nd/3.0/"
+    },
+    {
+      "id": "rest037-kay_grove_-_samba_440-night_walk/rest037-01-kay_grove_-_samba440.mp3",
+      "category": "sunset",
+      "title": "Samba 440",
+      "artist": "Kay Grove",
+      "album": "Kay Grove - Samba 440 /Night Walk",
+      "duration": 388,
+      "url": "https://archive.org/download/rest037-kay_grove_-_samba_440-night_walk/rest037-01-kay_grove_-_samba440.mp3",
+      "cover": "https://archive.org/download/rest037-kay_grove_-_samba_440-night_walk/rest037.jpg",
+      "source": "https://archive.org/details/rest037-kay_grove_-_samba_440-night_walk",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/3.0/"
+    },
+    {
+      "id": "rest037-kay_grove_-_samba_440-night_walk/rest037-02-kay_grove_-_samba440_deymares_african_samba_remix.mp3",
+      "category": "sunset",
+      "title": "Samba 440 (Deymare's African Samba Remix)",
+      "artist": "Kay Grove",
+      "album": "Kay Grove - Samba 440 /Night Walk",
+      "duration": 448,
+      "url": "https://archive.org/download/rest037-kay_grove_-_samba_440-night_walk/rest037-02-kay_grove_-_samba440_deymares_african_samba_remix.mp3",
+      "cover": "https://archive.org/download/rest037-kay_grove_-_samba_440-night_walk/rest037.jpg",
+      "source": "https://archive.org/details/rest037-kay_grove_-_samba_440-night_walk",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/3.0/"
+    },
+    {
+      "id": "rest037-kay_grove_-_samba_440-night_walk/rest037-03-kay_grove_-_night_walk.mp3",
+      "category": "sunset",
+      "title": "Night Walk",
+      "artist": "Kay Grove",
+      "album": "Kay Grove - Samba 440 /Night Walk",
+      "duration": 521,
+      "url": "https://archive.org/download/rest037-kay_grove_-_samba_440-night_walk/rest037-03-kay_grove_-_night_walk.mp3",
+      "cover": "https://archive.org/download/rest037-kay_grove_-_samba_440-night_walk/rest037.jpg",
+      "source": "https://archive.org/details/rest037-kay_grove_-_samba_440-night_walk",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/3.0/"
+    },
+    {
+      "id": "rest037-kay_grove_-_samba_440-night_walk/rest037-04-kay_grove_-_coffetalk.mp3",
+      "category": "sunset",
+      "title": "Coffeetalk",
+      "artist": "Kay Grove",
+      "album": "Kay Grove - Samba 440 /Night Walk",
+      "duration": 392,
+      "url": "https://archive.org/download/rest037-kay_grove_-_samba_440-night_walk/rest037-04-kay_grove_-_coffetalk.mp3",
+      "cover": "https://archive.org/download/rest037-kay_grove_-_samba_440-night_walk/rest037.jpg",
+      "source": "https://archive.org/details/rest037-kay_grove_-_samba_440-night_walk",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/3.0/"
+    },
+    {
+      "id": "rest037-kay_grove_-_samba_440-night_walk/rest037-05-kay_grove_-_night_walk_2loop_free_mind_dub.mp3",
+      "category": "sunset",
+      "title": "Night Walk (2loop Free Mind Dub)",
+      "artist": "Kay Grove",
+      "album": "Kay Grove - Samba 440 /Night Walk",
+      "duration": 459,
+      "url": "https://archive.org/download/rest037-kay_grove_-_samba_440-night_walk/rest037-05-kay_grove_-_night_walk_2loop_free_mind_dub.mp3",
+      "cover": "https://archive.org/download/rest037-kay_grove_-_samba_440-night_walk/rest037.jpg",
+      "source": "https://archive.org/details/rest037-kay_grove_-_samba_440-night_walk",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/3.0/"
+    },
+    {
+      "id": "rest033-kay_grove_-_brothers_ep/rest033-01-kay_grove_-_brothers.mp3",
+      "category": "sunset",
+      "title": "Brothers",
+      "artist": "Kay Grove",
+      "album": "Kay Grove - Brothers EP",
+      "duration": 424,
+      "url": "https://archive.org/download/rest033-kay_grove_-_brothers_ep/rest033-01-kay_grove_-_brothers.mp3",
+      "cover": "https://archive.org/download/rest033-kay_grove_-_brothers_ep/rest033.jpg",
+      "source": "https://archive.org/details/rest033-kay_grove_-_brothers_ep",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "rest033-kay_grove_-_brothers_ep/rest033-02-kay_grove_-_7th_corner.mp3",
+      "category": "sunset",
+      "title": "7th Corner",
+      "artist": "Kay Grove",
+      "album": "Kay Grove - Brothers EP",
+      "duration": 314,
+      "url": "https://archive.org/download/rest033-kay_grove_-_brothers_ep/rest033-02-kay_grove_-_7th_corner.mp3",
+      "cover": "https://archive.org/download/rest033-kay_grove_-_brothers_ep/rest033.jpg",
+      "source": "https://archive.org/details/rest033-kay_grove_-_brothers_ep",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "rest033-kay_grove_-_brothers_ep/rest033-03-kay_grove_-_expressions.mp3",
+      "category": "sunset",
+      "title": "Expressions",
+      "artist": "Kay Grove",
+      "album": "Kay Grove - Brothers EP",
+      "duration": 366,
+      "url": "https://archive.org/download/rest033-kay_grove_-_brothers_ep/rest033-03-kay_grove_-_expressions.mp3",
+      "cover": "https://archive.org/download/rest033-kay_grove_-_brothers_ep/rest033.jpg",
+      "source": "https://archive.org/details/rest033-kay_grove_-_brothers_ep",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "rest033-kay_grove_-_brothers_ep/rest033-04-kay_grove_-_night_time.mp3",
+      "category": "sunset",
+      "title": "Night Time",
+      "artist": "Kay Grove",
+      "album": "Kay Grove - Brothers EP",
+      "duration": 361,
+      "url": "https://archive.org/download/rest033-kay_grove_-_brothers_ep/rest033-04-kay_grove_-_night_time.mp3",
+      "cover": "https://archive.org/download/rest033-kay_grove_-_brothers_ep/rest033.jpg",
+      "source": "https://archive.org/details/rest033-kay_grove_-_brothers_ep",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "rest033-kay_grove_-_brothers_ep/rest033-05-kay_grove_-_brothers_pnfa_remix.mp3",
+      "category": "sunset",
+      "title": "Brothers (PNFA Remix)",
+      "artist": "Kay Grove",
+      "album": "Kay Grove - Brothers EP",
+      "duration": 416,
+      "url": "https://archive.org/download/rest033-kay_grove_-_brothers_ep/rest033-05-kay_grove_-_brothers_pnfa_remix.mp3",
+      "cover": "https://archive.org/download/rest033-kay_grove_-_brothers_ep/rest033.jpg",
+      "source": "https://archive.org/details/rest033-kay_grove_-_brothers_ep",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "diginet008/diginet008_01_2loop_-_tears_of_strong_man.mp3",
+      "category": "sunset",
+      "title": "tears of strong man",
+      "artist": "2loop",
+      "album": "bedroom sessions",
+      "duration": 376,
+      "url": "https://archive.org/download/diginet008/diginet008_01_2loop_-_tears_of_strong_man.mp3",
+      "cover": "https://archive.org/download/diginet008/diginet008.jpg",
+      "source": "https://archive.org/details/diginet008",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "diginet008/diginet008_02_2loop_-_running_with_stars.mp3",
+      "category": "sunset",
+      "title": "running with stars",
+      "artist": "2loop",
+      "album": "bedroom sessions",
+      "duration": 516,
+      "url": "https://archive.org/download/diginet008/diginet008_02_2loop_-_running_with_stars.mp3",
+      "cover": "https://archive.org/download/diginet008/diginet008.jpg",
+      "source": "https://archive.org/details/diginet008",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "diginet008/diginet008_03_2loop_-_lost_nights.mp3",
+      "category": "sunset",
+      "title": "lost nights",
+      "artist": "2loop",
+      "album": "bedroom sessions",
+      "duration": 541,
+      "url": "https://archive.org/download/diginet008/diginet008_03_2loop_-_lost_nights.mp3",
+      "cover": "https://archive.org/download/diginet008/diginet008.jpg",
+      "source": "https://archive.org/details/diginet008",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "diginet008/diginet008_04_2loop_-_black_street.mp3",
+      "category": "sunset",
+      "title": "black street",
+      "artist": "2loop",
+      "album": "bedroom sessions",
+      "duration": 425,
+      "url": "https://archive.org/download/diginet008/diginet008_04_2loop_-_black_street.mp3",
+      "cover": "https://archive.org/download/diginet008/diginet008.jpg",
+      "source": "https://archive.org/details/diginet008",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "diginet008/diginet008_05_2loop_-_desert.mp3",
+      "category": "sunset",
+      "title": "desert",
+      "artist": "2loop",
+      "album": "bedroom sessions",
+      "duration": 379,
+      "url": "https://archive.org/download/diginet008/diginet008_05_2loop_-_desert.mp3",
+      "cover": "https://archive.org/download/diginet008/diginet008.jpg",
+      "source": "https://archive.org/details/diginet008",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "diginet008/diginet008_06_2loop_-_heartscape.mp3",
+      "category": "sunset",
+      "title": "heartscape",
+      "artist": "2loop",
+      "album": "bedroom sessions",
+      "duration": 490,
+      "url": "https://archive.org/download/diginet008/diginet008_06_2loop_-_heartscape.mp3",
+      "cover": "https://archive.org/download/diginet008/diginet008.jpg",
+      "source": "https://archive.org/details/diginet008",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "diginet008/diginet008_07_2loop_-_show_me_your_love.mp3",
+      "category": "sunset",
+      "title": "show me your love",
+      "artist": "2loop",
+      "album": "bedroom sessions",
+      "duration": 392,
+      "url": "https://archive.org/download/diginet008/diginet008_07_2loop_-_show_me_your_love.mp3",
+      "cover": "https://archive.org/download/diginet008/diginet008.jpg",
+      "source": "https://archive.org/details/diginet008",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "diginet008/diginet008_08_2loop_-_going_in_bedroom.mp3",
+      "category": "sunset",
+      "title": "going in bedroom",
+      "artist": "2loop",
+      "album": "bedroom sessions",
+      "duration": 293,
+      "url": "https://archive.org/download/diginet008/diginet008_08_2loop_-_going_in_bedroom.mp3",
+      "cover": "https://archive.org/download/diginet008/diginet008.jpg",
+      "source": "https://archive.org/details/diginet008",
+      "license": "http://creativecommons.org/licenses/by-nc-nd/2.5/"
+    },
+    {
+      "id": "1bit_004/1bit_004_01_-_Kiorda_Daekin_-_Orange_International.mp3",
+      "category": "sunset",
+      "title": "Orange International",
+      "artist": "Kiorda Däkin",
+      "album": "Kiorda Daekin - Interstellar Paradise [1bit 004]",
+      "duration": 282,
+      "url": "https://archive.org/download/1bit_004/1bit_004_01_-_Kiorda_Daekin_-_Orange_International.mp3",
+      "cover": "https://archive.org/download/1bit_004/1bit_004.jpg",
+      "source": "https://archive.org/details/1bit_004",
+      "license": "http://creativecommons.org/licenses/by-nc-sa/2.0/"
+    },
+    {
+      "id": "1bit_004/1bit_004_02_-_Kiorda_Daekin_-_Far_Away.mp3",
+      "category": "sunset",
+      "title": "Far Away",
+      "artist": "Kiorda Däkin",
+      "album": "Kiorda Daekin - Interstellar Paradise [1bit 004]",
+      "duration": 229,
+      "url": "https://archive.org/download/1bit_004/1bit_004_02_-_Kiorda_Daekin_-_Far_Away.mp3",
+      "cover": "https://archive.org/download/1bit_004/1bit_004.jpg",
+      "source": "https://archive.org/details/1bit_004",
+      "license": "http://creativecommons.org/licenses/by-nc-sa/2.0/"
+    },
+    {
+      "id": "1bit_004/1bit_004_03_-_Kiorda_Daekin_-_Sunrise.mp3",
+      "category": "sunset",
+      "title": "Sunrise",
+      "artist": "Kiorda Däkin",
+      "album": "Kiorda Daekin - Interstellar Paradise [1bit 004]",
+      "duration": 213,
+      "url": "https://archive.org/download/1bit_004/1bit_004_03_-_Kiorda_Daekin_-_Sunrise.mp3",
+      "cover": "https://archive.org/download/1bit_004/1bit_004.jpg",
+      "source": "https://archive.org/details/1bit_004",
+      "license": "http://creativecommons.org/licenses/by-nc-sa/2.0/"
+    },
+    {
+      "id": "1bit_004/1bit_004_04_-_Kiorda_Daekin_-_Real_Deal.mp3",
+      "category": "sunset",
+      "title": "Real Deal",
+      "artist": "Kiorda Däkin",
+      "album": "Kiorda Daekin - Interstellar Paradise [1bit 004]",
+      "duration": 238,
+      "url": "https://archive.org/download/1bit_004/1bit_004_04_-_Kiorda_Daekin_-_Real_Deal.mp3",
+      "cover": "https://archive.org/download/1bit_004/1bit_004.jpg",
+      "source": "https://archive.org/details/1bit_004",
+      "license": "http://creativecommons.org/licenses/by-nc-sa/2.0/"
+    },
+    {
+      "id": "1bit_004/1bit_004_05_-_Kiorda_Daekin_feat._Iblesse_-_I_Miss_You.mp3",
+      "category": "sunset",
+      "title": "I Miss You",
+      "artist": "Kiorda Däkin feat. Iblesse",
+      "album": "Kiorda Daekin - Interstellar Paradise [1bit 004]",
+      "duration": 227,
+      "url": "https://archive.org/download/1bit_004/1bit_004_05_-_Kiorda_Daekin_feat._Iblesse_-_I_Miss_You.mp3",
+      "cover": "https://archive.org/download/1bit_004/1bit_004.jpg",
+      "source": "https://archive.org/details/1bit_004",
+      "license": "http://creativecommons.org/licenses/by-nc-sa/2.0/"
+    },
+    {
+      "id": "stqk011/STQK011_01_-_Zero_Call_-_A-40.mp3",
+      "category": "sunset",
+      "title": "A-40",
+      "artist": "Zero Call",
+      "album": "A Struggle Between Right or Wrong",
+      "duration": 264,
+      "url": "https://archive.org/download/stqk011/STQK011_01_-_Zero_Call_-_A-40.mp3",
+      "cover": "https://archive.org/download/stqk011/__ia_thumb.jpg",
+      "source": "https://archive.org/details/stqk011",
+      "license": "http://creativecommons.org/licenses/by-nc-sa/3.0/"
+    },
+    {
+      "id": "stqk011/STQK011_02_-_Zero_Call_-_Battle_of_Young.mp3",
+      "category": "sunset",
+      "title": "Battle of Young",
+      "artist": "Zero Call",
+      "album": "A Struggle Between Right or Wrong",
+      "duration": 244,
+      "url": "https://archive.org/download/stqk011/STQK011_02_-_Zero_Call_-_Battle_of_Young.mp3",
+      "cover": "https://archive.org/download/stqk011/__ia_thumb.jpg",
+      "source": "https://archive.org/details/stqk011",
+      "license": "http://creativecommons.org/licenses/by-nc-sa/3.0/"
+    },
+    {
+      "id": "stqk011/STQK011_03_-_Zero_Call_-_Say_Hello_to_Devil.mp3",
+      "category": "sunset",
+      "title": "Say Hello to Devil",
+      "artist": "Zero Call",
+      "album": "A Struggle Between Right or Wrong",
+      "duration": 246,
+      "url": "https://archive.org/download/stqk011/STQK011_03_-_Zero_Call_-_Say_Hello_to_Devil.mp3",
+      "cover": "https://archive.org/download/stqk011/__ia_thumb.jpg",
+      "source": "https://archive.org/details/stqk011",
+      "license": "http://creativecommons.org/licenses/by-nc-sa/3.0/"
+    },
+    {
+      "id": "stqk011/STQK011_04_-_Zero_Call_-_Earthquake.mp3",
+      "category": "sunset",
+      "title": "Earthquake",
+      "artist": "Zero Call",
+      "album": "A Struggle Between Right or Wrong",
+      "duration": 209,
+      "url": "https://archive.org/download/stqk011/STQK011_04_-_Zero_Call_-_Earthquake.mp3",
+      "cover": "https://archive.org/download/stqk011/__ia_thumb.jpg",
+      "source": "https://archive.org/details/stqk011",
+      "license": "http://creativecommons.org/licenses/by-nc-sa/3.0/"
+    },
+    {
+      "id": "stqk011/STQK011_05_-_Zero_Call_-_Fear.mp3",
+      "category": "sunset",
+      "title": "Fear",
+      "artist": "Zero Call",
+      "album": "A Struggle Between Right or Wrong",
+      "duration": 308,
+      "url": "https://archive.org/download/stqk011/STQK011_05_-_Zero_Call_-_Fear.mp3",
+      "cover": "https://archive.org/download/stqk011/__ia_thumb.jpg",
+      "source": "https://archive.org/details/stqk011",
+      "license": "http://creativecommons.org/licenses/by-nc-sa/3.0/"
+    },
+    {
+      "id": "stqk011/STQK011_06_-_Zero_Call_-_Sirius.mp3",
+      "category": "sunset",
+      "title": "Sirius",
+      "artist": "Zero Call",
+      "album": "A Struggle Between Right or Wrong",
+      "duration": 293,
+      "url": "https://archive.org/download/stqk011/STQK011_06_-_Zero_Call_-_Sirius.mp3",
+      "cover": "https://archive.org/download/stqk011/__ia_thumb.jpg",
+      "source": "https://archive.org/details/stqk011",
+      "license": "http://creativecommons.org/licenses/by-nc-sa/3.0/"
     }
   ]
 }

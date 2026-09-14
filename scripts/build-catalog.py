@@ -9,11 +9,12 @@ import json, re, urllib.request, urllib.parse, pathlib
 MAX_PER_ITEM = 16
 
 CATEGORIES = {
-    "coding":    {"label": "Coding",    "tag": "steady beats, no vocals", "items": ["DWK031", "DWK155", "DWK127"]},
-    "lofi":      {"label": "Lo-fi",     "tag": "dusty, warm, hiss",       "items": ["DWK312", "DWK044", "DWK163"]},
+    "coding":    {"label": "Coding",    "tag": "steady beats, no vocals", "items": ["DWK031", "DWK155", "DWK127", "DWK312", "DWK044", "DWK163"]},
     "focus":     {"label": "Focus",     "tag": "ambient, slow, wide",     "items": ["CalmPills", "Vkrsnl037CandlegravityAMomentForMyself"]},
     "thinking":  {"label": "Thinking",  "tag": "jazz, late night",        "items": ["DWK119", "ca200_cjazz", "DWK138"]},
     "designing": {"label": "Designing", "tag": "swing, sampled, playful", "items": ["DWK123", "DWK217", "DWK149"]},
+    "sunset":    {"label": "Sunset",    "tag": "chill house, warm, four on the floor",
+                  "items": ["rest037-kay_grove_-_samba_440-night_walk", "rest033-kay_grove_-_brothers_ep", "diginet008", "1bit_004", "stqk011"]},
 }
 
 def fetch(identifier):
@@ -34,7 +35,7 @@ for key, cat in CATEGORIES.items():
     for ident in cat["items"]:
         d = fetch(ident)
         m = d["metadata"]
-        album = m.get("title", ident)
+        album = re.sub(r"^\[[^\]]+\]\s*", "", m.get("title", ident))   # drop netlabel catalogue prefixes like "[rest037] "
         artist = m.get("creator") or ""
         if isinstance(artist, list): artist = artist[0]
         images = [f["name"] for f in d["files"] if f.get("format") in ("JPEG", "PNG") and f.get("source") == "original"]

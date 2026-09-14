@@ -1,6 +1,6 @@
 # Mystery Vinyl
 
-Open the page, a record drops, music plays. Pick a mood (Coding, Lo-fi, Focus, Thinking, Designing) and the deck pulls a random record from that crate. The turntable on the right is drawn entirely with CSS + SVG: the platter spins up and coasts down with real inertia, the tonearm swings in, drops, and tracks inward as the song plays, and the record is swapped when you skip.
+Open the page, a record drops, music plays. Pick a mood (Coding, Focus, Thinking, Designing, Sunset) and the deck pulls a random record from that crate. The turntable on the right is drawn entirely with CSS + SVG: the platter spins up and coasts down with real inertia, the tonearm swings in, drops, and tracks inward as the song plays, and the record is swapped when you skip.
 
 ## Run it
 
