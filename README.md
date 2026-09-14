@@ -11,7 +11,9 @@ python3 -m http.server 8765
 # open http://127.0.0.1:8765/
 ```
 
-Keyboard: `space` play / pause, `→` next record, `←` restart / previous.
+Keyboard: `space` play / pause, `→` next record, `←` restart / previous, `F` full screen, `T` light / dark theme.
+
+Pausing lifts the tonearm back onto its rest; resuming swings it back to the groove you left. Full screen hides everything except the deck, the waveform and the title, and the controls fade out after a few seconds without mouse movement.
 
 ## Where the music comes from
 

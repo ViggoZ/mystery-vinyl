@@ -5,7 +5,8 @@
   const els = {
     modes: $("#modes"), wave: $("#wave"), cur: $("#cur"), dur: $("#dur"),
     title: $("#title"), artist: $("#artist"), credit: $("#credit"),
-    play: $("#play"), prev: $("#prev"), next: $("#next"), vol: $("#vol"), power: $("#power"),
+    play: $("#play"), prev: $("#prev"), next: $("#next"), power: $("#power"),
+    theme: $("#theme"), zen: $("#zen"),
     arm: $("#arm"), record: $("#record"), label: $("#label"), platter: $("#platter"),
     hint: $("#hint"),
   };
@@ -89,6 +90,13 @@
   }
 
   const wctx = els.wave.getContext("2d");
+  let waveOn = "#d9b896", waveOff = "#4a4a4a";
+  function refreshWaveColors() {
+    const cs = getComputedStyle(document.documentElement);
+    waveOn = cs.getPropertyValue("--accent").trim() || waveOn;
+    waveOff = cs.getPropertyValue("--wave-off").trim() || waveOff;
+  }
+  refreshWaveColors();
   const BARS = 48;
   const idle = Array.from({ length: BARS }, (_, i) => 0.08 + 0.05 * Math.abs(Math.sin(i * 1.7)));
   function drawWave() {
@@ -110,7 +118,7 @@
     const progress = audio.duration ? audio.currentTime / audio.duration : 0;
     for (let i = 0; i < BARS; i++) {
       const h = Math.max(4, levels[i] * H);
-      wctx.fillStyle = i / BARS < progress ? "#d9b896" : "#4a4a4a";
+      wctx.fillStyle = i / BARS < progress ? waveOn : waveOff;
       wctx.fillRect(i * (bw + gap), H - h, bw, h);
     }
   }
@@ -225,24 +233,32 @@
     if (e.target.closest && e.target.closest("a, input, .mode, #next, #prev")) { disarm(); return; }
     disarm();
     if (state.busy || state.playing) return;
-    state.busy = true;
-    try {
-      ensureAudioGraph();
-      state.targetOmega = OMEGA_PLAY;
-      setArm(ANGLE_IN, { lifted: true, ms: 1000 });
-      await wait(1000);
-      setArm(ANGLE_IN, { lifted: false, ms: 300 });
-      await wait(250);
-    } finally { state.busy = false; }
-    await play();
+    await resume();
+  }
+  function grooveAngle() {
+    const p = audio.duration ? audio.currentTime / audio.duration : 0;
+    return ANGLE_IN + (ANGLE_OUT - ANGLE_IN) * p;
   }
   function pause() {
     audio.pause();
     state.playing = false; document.body.classList.remove("playing");
     state.targetOmega = 0;
-    setArm(parseFloat(els.arm.style.transform.replace(/[^\d.\-]/g, "")) || ANGLE_IN, { lifted: true, ms: 300 });
+    setArm(ANGLE_REST, { lifted: true, ms: 900 });
   }
-  function toggle() { if (state.busy) return; state.playing ? pause() : play().then(() => { if (state.playing) setArm(parseFloat(els.arm.style.transform.replace(/[^\d.\-]/g, "")) || ANGLE_IN, { lifted: false, ms: 300 }); }); }
+  // Resume from the rest: platter up to speed, arm over the groove we left, drop, sound.
+  async function resume() {
+    if (state.busy || !audio.src) return; state.busy = true;
+    try {
+      ensureAudioGraph();
+      state.targetOmega = OMEGA_PLAY;
+      setArm(grooveAngle(), { lifted: true, ms: 900 });
+      await wait(900);
+      setArm(grooveAngle(), { lifted: false, ms: 300 });
+      await wait(250);
+    } finally { state.busy = false; }
+    await play();
+  }
+  function toggle() { if (state.busy) return; state.playing ? pause() : resume(); }
   function next() { const t = pickNext(); state.history.push(t); return loadAndPlay(t); }
   function prev() {
     if (audio.currentTime > 8 || state.history.length < 2) { audio.currentTime = 0; trackArm(); return; }
@@ -263,21 +279,56 @@
   audio.addEventListener("error", () => { console.warn("track failed, skipping", audio.error); if (!state.busy) next(); });
   audio.addEventListener("waiting", () => { state.targetOmega = state.playing ? OMEGA_PLAY * 0.97 : 0; });
   audio.addEventListener("playing", () => { state.targetOmega = OMEGA_PLAY; });
-  audio.volume = parseFloat(store.get("mv.volume") ?? "0.8"); els.vol.value = audio.volume;
-  els.vol.addEventListener("input", () => { audio.volume = parseFloat(els.vol.value); store.set("mv.volume", els.vol.value); });
 
   els.play.addEventListener("click", toggle);
   els.power.addEventListener("click", toggle);
   els.next.addEventListener("click", () => !state.busy && next());
   els.prev.addEventListener("click", () => !state.busy && prev());
   document.addEventListener("keydown", (e) => {
-    if (e.target.matches("input")) return;
+    if (e.target.matches("input") || e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.code === "Space") { e.preventDefault(); toggle(); }
     else if (e.code === "ArrowRight") { if (!state.busy) next(); }
     else if (e.code === "ArrowLeft") { if (!state.busy) prev(); }
+    else if (e.key === "f" || e.key === "F") toggleZen();
+    else if (e.key === "t" || e.key === "T") toggleTheme();
+    else if (e.key === "Escape" && document.body.classList.contains("zen") && !document.fullscreenElement) setZen(false);
+  });
+
+  // ---------- theme ----------
+  function toggleTheme() {
+    const light = document.documentElement.dataset.theme !== "light";
+    document.documentElement.dataset.theme = light ? "light" : "dark";
+    store.set("mv.theme", light ? "light" : "dark");
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", light ? "#FBF7F1" : "#202020");
+    refreshWaveColors();
+  }
+  els.theme.addEventListener("click", toggleTheme);
+  if (document.documentElement.dataset.theme === "light") document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#FBF7F1");
+
+  // ---------- zen / full screen ----------
+  let idleTimer;
+  function setZen(on) {
+    document.body.classList.toggle("zen", on);
+    document.body.classList.remove("idle");
+    clearTimeout(idleTimer);
+    if (on) idleTimer = setTimeout(() => document.body.classList.add("idle"), 3000);
+  }
+  function toggleZen() {
+    const on = !document.body.classList.contains("zen");
+    if (document.fullscreenEnabled) {
+      (on ? document.documentElement.requestFullscreen() : document.exitFullscreen()).catch(() => setZen(on));
+    } else setZen(on);   // iOS Safari: same layout, no real full screen
+  }
+  document.addEventListener("fullscreenchange", () => setZen(!!document.fullscreenElement));
+  els.zen.addEventListener("click", toggleZen);
+  document.addEventListener("pointermove", () => {
+    if (!document.body.classList.contains("zen")) return;
+    document.body.classList.remove("idle");
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => document.body.classList.add("idle"), 3000);
   });
   if ("mediaSession" in navigator) {
-    navigator.mediaSession.setActionHandler("play", () => play());
+    navigator.mediaSession.setActionHandler("play", () => resume());
     navigator.mediaSession.setActionHandler("pause", () => pause());
     navigator.mediaSession.setActionHandler("nexttrack", () => next());
     navigator.mediaSession.setActionHandler("previoustrack", () => prev());
