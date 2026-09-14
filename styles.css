@@ -268,13 +268,20 @@ body.playing .btn-main .ic-pause { display: block; }
   width: calc(600 / 840 * 100%); aspect-ratio: 1;
   border-radius: 50%;
   background:
-    conic-gradient(from 0deg, transparent 0deg 18deg, rgba(255,255,255,.022) 40deg, transparent 62deg 198deg, rgba(255,255,255,.022) 220deg, transparent 242deg 360deg),
-    radial-gradient(circle at 38% 32%, rgba(255,255,255,.025), transparent 55%),
     radial-gradient(circle, #1a1a1a 0 92%, #101010 92.5% 94%, #2a2a2a 94.5% 95.5%, #151515 96% 100%);
   box-shadow:
     0 0 0 1px #0a0a0a,
     0 6px 20px rgba(0,0,0,.38),
     inset 0 2px 4px rgba(255,255,255,.05);
+}
+/* fixed light on the platter: same geometry, does not rotate with it */
+.platter-light {
+  left: calc(40 / 840 * 100%); top: calc(50 / 680 * 100%);
+  width: calc(600 / 840 * 100%); aspect-ratio: 1; border-radius: 50%;
+  pointer-events: none;
+  background:
+    conic-gradient(from 0deg, transparent 0deg 18deg, rgba(255,255,255,.022) 40deg, transparent 62deg 198deg, rgba(255,255,255,.022) 220deg, transparent 242deg 360deg),
+    radial-gradient(circle at 38% 32%, rgba(255,255,255,.025), transparent 55%);
 }
 .platter::before { /* rubber mat ribs */
   content: ""; position: absolute; inset: 3%; border-radius: 50%;
