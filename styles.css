@@ -38,13 +38,14 @@
   --wave-off: #ddd3c5;
   --hint-bg: #1c1a17;
   --hint-ink: #e8d7c0;
-  --plinth-1: #f3ece2;
-  --plinth-2: #e8dfd1;
-  --plinth-edge: rgba(255,255,255,.9);
-  --plinth-bottom: rgba(90,70,50,.08);
-  --plinth-shadow: 0 1px 0 rgba(90,70,50,.12), 0 30px 60px rgba(70,50,30,.16), 0 10px 20px rgba(70,50,30,.10);
-  --plinth-tex: rgba(0,0,0,.02);
-  --plinth-tex-blend: multiply;
+  /* the deck stays dark in the light theme; only its shadow softens */
+  --plinth-1: #1c1c1c;
+  --plinth-2: #171717;
+  --plinth-edge: rgba(255,255,255,.06);
+  --plinth-bottom: rgba(0,0,0,.6);
+  --plinth-shadow: 0 2px 0 #0d0d0d, 0 30px 60px rgba(60,45,30,.28), 0 10px 20px rgba(60,45,30,.18);
+  --plinth-tex: rgba(255,255,255,.012);
+  --plinth-tex-blend: screen;
   color-scheme: light;
 }
 
@@ -321,7 +322,7 @@ body.playing .btn-main .ic-pause { display: block; }
   width: calc(44 / 840 * 100%); aspect-ratio: 1; border-radius: 50%;
   background: radial-gradient(circle at 40% 35%, #333, #1a1a1a 70%);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 3px 8px rgba(0,0,0,.35);
-  font-size: calc(1.1 * var(--u)); color: var(--muted); display: grid; place-items: center;
+  font-size: calc(1.1 * var(--u)); color: #8a8a8a; display: grid; place-items: center;
 }
 .knob span { position: absolute; }
 .knob span:first-child { left: -55%; top: 12%; }
