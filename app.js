@@ -7,7 +7,7 @@
     title: $("#title"), artist: $("#artist"), credit: $("#credit"),
     play: $("#play"), prev: $("#prev"), next: $("#next"), vol: $("#vol"), power: $("#power"),
     arm: $("#arm"), record: $("#record"), label: $("#label"), platter: $("#platter"),
-    gate: $("#gate"), gateBtn: $("#gate-btn"),
+    hint: $("#hint"),
   };
 
   // ---------- turntable geometry (design space 840x680) ----------
@@ -36,7 +36,7 @@
   // ---------- state ----------
   const state = {
     catalog: null, category: null, queue: [], index: -1,
-    playing: false, omega: 0, angle: 0, targetOmega: 0, busy: false,
+    playing: false, omega: 0, angle: 0, targetOmega: 0, busy: false, armed: false, everPlayed: false,
     history: [],
   };
 
@@ -170,6 +170,9 @@
       audio.src = t.url; audio.load();
       if (swapRecord) { await wait(60); els.record.classList.remove("out"); await wait(380); }
       else await wait(wasPlaying ? 500 : 0);
+      // Before the first play, check whether the browser will let us start
+      // without a gesture. If not, leave the arm on its rest and wait for a click.
+      if (!state.everPlayed && !(await canAutoplay())) { arm(); return; }
       // 3. swing the arm over the lead-in groove, then drop it
       state.targetOmega = OMEGA_PLAY;
       setArm(ANGLE_IN, { lifted: true, ms: 1000 });
@@ -179,19 +182,59 @@
       await play();
     } finally { state.busy = false; }
   }
+  // Probe autoplay with the volume at zero (Chrome treats volume 0 as unmuted,
+  // so a rejected promise here means a real play() would be rejected too).
+  const FORCE_GATE = /[?&]noautoplay/.test(location.search);
+  async function canAutoplay() {
+    if (FORCE_GATE) return false;
+    if (navigator.userActivation?.hasBeenActive) return true;
+    const v = audio.volume; audio.volume = 0;
+    try { await audio.play(); audio.pause(); audio.currentTime = 0; return true; }
+    catch { return false; }
+    finally { audio.volume = v; }
+  }
   async function play() {
     ensureAudioGraph();
     try {
       await audio.play();
-      state.playing = true; document.body.classList.add("playing");
+      state.playing = true; state.everPlayed = true; document.body.classList.add("playing");
       state.targetOmega = OMEGA_PLAY;
-      els.gate.hidden = true;
+      disarm();
       trackArm();
     } catch (err) {
-      // autoplay blocked: keep everything armed and ask for one click
+      // Should only happen if play() was called with no gesture: park the arm
+      // and wait for a click anywhere on the page.
       state.targetOmega = 0;
-      els.gate.hidden = false;
+      setArm(ANGLE_REST, { lifted: true, ms: 600 });
+      arm();
     }
+  }
+  function arm() {
+    if (state.armed) return; state.armed = true;
+    document.body.classList.add("armed"); els.hint.hidden = false;
+    document.addEventListener("pointerdown", onFirstGesture, true);
+    document.addEventListener("keydown", onFirstGesture, true);
+  }
+  function disarm() {
+    if (!state.armed) return; state.armed = false;
+    document.body.classList.remove("armed"); els.hint.hidden = true;
+    document.removeEventListener("pointerdown", onFirstGesture, true);
+    document.removeEventListener("keydown", onFirstGesture, true);
+  }
+  async function onFirstGesture(e) {
+    if (e.target.closest && e.target.closest("a, input, .mode, #next, #prev")) { disarm(); return; }
+    disarm();
+    if (state.busy || state.playing) return;
+    state.busy = true;
+    try {
+      ensureAudioGraph();
+      state.targetOmega = OMEGA_PLAY;
+      setArm(ANGLE_IN, { lifted: true, ms: 1000 });
+      await wait(1000);
+      setArm(ANGLE_IN, { lifted: false, ms: 300 });
+      await wait(250);
+    } finally { state.busy = false; }
+    await play();
   }
   function pause() {
     audio.pause();
@@ -227,7 +270,6 @@
   els.power.addEventListener("click", toggle);
   els.next.addEventListener("click", () => !state.busy && next());
   els.prev.addEventListener("click", () => !state.busy && prev());
-  els.gateBtn.addEventListener("click", () => { ensureAudioGraph(); play().then(() => { if (state.playing) setArm(ANGLE_IN, { lifted: false, ms: 300 }); }); });
   document.addEventListener("keydown", (e) => {
     if (e.target.matches("input")) return;
     if (e.code === "Space") { e.preventDefault(); toggle(); }
