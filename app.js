@@ -58,8 +58,12 @@
     if (isYT(state.cur)) {
       const p = yt.player;
       if (!p || !p.getCurrentTime) return { t: 0, d: 0, live: false };
-      const d = p.getDuration() || 0;
-      return { t: p.getCurrentTime() || 0, d, live: d === 0 && p.getPlayerState && p.getPlayerState() === 1 };
+      const d = p.getDuration() || 0, t = p.getCurrentTime() || 0;
+      // A live stream reports either no duration or a huge, ever-growing one with the
+      // playhead pinned to its end. Show time-since-you-tuned-in instead.
+      const live = d === 0 ? p.getPlayerState && p.getPlayerState() === 1 : (d > 12 * 3600 && d - t < 900);
+      if (live) { if (!yt.liveStart) yt.liveStart = Date.now(); return { t: (Date.now() - yt.liveStart) / 1000, d: 0, live: true }; }
+      return { t, d, live: false };
     }
     const d = isFinite(audio.duration) ? audio.duration : 0;
     return { t: audio.currentTime || 0, d, live: !isFinite(audio.duration) && !audio.paused };
@@ -459,7 +463,7 @@
       if (isYT(state.cur) && !isYT(t)) ytStop();
       if (!isYT(t)) { if (isYT(state.cur)) { /* nothing */ } }
       else if (state.cur && !isYT(state.cur)) audio.pause();
-      state.cur = t;
+      state.cur = t; yt.liveStart = 0;
       renderTrack(t);
       if (isYT(t)) {
         try { await loadYT(); } catch (err) { toast("YouTube player couldn't load"); state.busy = false; return next(); }
