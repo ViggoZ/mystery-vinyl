@@ -68,7 +68,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 a { color: inherit; }
 
 /* ---------- header ---------- */
-.sleeve { position: relative; display: flex; align-items: center; margin-left: 80px; z-index: 6; }
+.sleeve { position: relative; display: flex; align-items: center; justify-self: start; width: max-content; margin-left: 80px; z-index: 6; }
 .logo { display: inline-flex; align-items: center; line-height: 0; padding: 0; }
 .logo svg { height: 60px; width: auto; font-family: var(--font); overflow: visible; }
 /* the record slides out of the sleeve on hover, all the way when the liner notes are open */
