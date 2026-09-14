@@ -106,9 +106,6 @@
             <radialGradient id="weight" cx=".35" cy=".3" r=".9">
               <stop offset="0" stop-color="#5a5a5a"/><stop offset="1" stop-color="#1a1a1a"/>
             </radialGradient>
-            <filter id="armShadow" x="-40%" y="-40%" width="180%" height="180%">
-              <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000" flood-opacity=".55"/>
-            </filter>
           </defs>
 
           <!-- arm rest clip (static) -->
@@ -123,20 +120,22 @@
           <path d="M660 195 A62 62 0 0 0 740 195" fill="none" stroke="#3a3a3a" stroke-width="2" stroke-linecap="round"/>
 
           <!-- the arm: rotates about (700,150) -->
-          <g class="arm" id="arm" filter="url(#armShadow)">
+          <g class="arm" id="arm">
           <g class="arm-wobble" id="armWobble">
-            <!-- counterweight -->
+            <!-- bearing top: turns with the arm but never lifts, so its shadow stays put -->
+            <g class="arm-fixed">
+              <circle cx="700" cy="150" r="30" fill="#2c2c2c" stroke="#111" stroke-width="1.5"/>
+              <circle cx="700" cy="150" r="22" fill="#232323"/>
+              <circle cx="700" cy="150" r="5" fill="#5a5a5a"/>
+              <g transform="translate(748,150)">
+                <circle r="15" fill="#2c2c2c" stroke="#111" stroke-width="1"/>
+                <circle r="9" fill="none" stroke="#5a5a5a" stroke-width="1" stroke-dasharray="1 2"/>
+              </g>
+            </g>
+            <!-- the part that lifts: counterweight, tube, headshell -->
+            <g class="arm-lift">
             <rect x="686" y="48" width="28" height="44" rx="6" fill="url(#weight)" stroke="#111" stroke-width="1"/>
             <rect x="690" y="52" width="20" height="8" rx="2" fill="#1a1a1a"/>
-            <!-- pivot cap -->
-            <circle cx="700" cy="150" r="30" fill="#2c2c2c" stroke="#111" stroke-width="1.5"/>
-            <circle cx="700" cy="150" r="22" fill="#232323"/>
-            <circle cx="700" cy="150" r="5" fill="#5a5a5a"/>
-            <!-- anti-skate dial -->
-            <g transform="translate(748,150)">
-              <circle r="15" fill="#2c2c2c" stroke="#111" stroke-width="1"/>
-              <circle r="9" fill="none" stroke="#5a5a5a" stroke-width="1" stroke-dasharray="1 2"/>
-            </g>
             <!-- tube -->
             <rect x="695" y="90" width="10" height="470" rx="5" fill="url(#tube)"/>
             <rect x="693" y="440" width="14" height="40" rx="3" fill="#2e2e2e" stroke="#111" stroke-width="1"/>
@@ -147,6 +146,7 @@
               <rect x="-4" y="54" width="8" height="10" rx="1.5" fill="#d9b896"/>
               <path d="M-1 64 L0 70 L1 64 Z" fill="#eee"/>
               <circle cx="-6" cy="44" r="1.6" fill="#777"/><circle cx="6" cy="44" r="1.6" fill="#777"/>
+            </g>
             </g>
           </g>
           </g>

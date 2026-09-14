@@ -102,7 +102,7 @@
   // ---------- tonearm ----------
   function setArm(deg, { lifted = false, ms = 1100 } = {}) {
     const wasLifted = els.arm.classList.contains("lifted");
-    els.arm.style.transitionDuration = `${ms}ms, 400ms`;
+    els.arm.style.transitionDuration = `${ms}ms`;
     els.arm.classList.toggle("lifted", lifted);
     els.arm.style.transform = `rotate(${deg}deg)`;
     if (lifted !== wasLifted) {

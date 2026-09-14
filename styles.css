@@ -349,10 +349,13 @@ body.playing .power::after { background: var(--accent); box-shadow: 0 0 10px rgb
 .arm {
   transform-box: view-box;
   transform-origin: 700px 150px;
-  transition: transform 1.1s cubic-bezier(.4, 0, .2, 1), filter .4s;
+  transition: transform 1.1s cubic-bezier(.4, 0, .2, 1);
   will-change: transform;
 }
-.arm.lifted { filter: url(#armShadow) drop-shadow(0 14px 10px rgba(0,0,0,.5)); }
+/* Shadows are plain CSS drop-shadows so the lift can tween instead of snapping. */
+.arm-fixed { filter: drop-shadow(0 4px 4px rgba(0,0,0,.45)); }
+.arm-lift { filter: drop-shadow(0 5px 5px rgba(0,0,0,.5)); transition: filter .45s ease; }
+.arm.lifted .arm-lift { filter: drop-shadow(0 13px 9px rgba(0,0,0,.42)); }
 .arm-wobble { transform-box: view-box; transform-origin: 700px 150px; } /* per-frame wobble, no transition */
 
 /* ---------- footer, hint ---------- */
