@@ -110,4 +110,4 @@ Edit the `CATEGORIES` map there to add or swap albums per mood. Note that YouTub
 
 Code is MIT. The music is not part of this repository: every Internet Archive track streams under its own Creative Commons license (mostly CC BY-NC-ND), shown next to the player; YouTube content belongs to its owners. If you fork this for anything commercial, swap the catalog for music you have the rights to.
 
-Made by [Viggo](https://uiboy.com/) · more at [uiboy.com](https://uiboy.com/)
+Made by [Viggo](https://x.com/decohack) · more at [uiboy.com](https://uiboy.com/)

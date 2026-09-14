@@ -835,10 +835,19 @@
   }
   logoBtn.addEventListener("click", (e) => { e.stopPropagation(); setLiner(liner.hidden); });
   document.addEventListener("pointerdown", (e) => { if (!liner.hidden && !e.target.closest("#sleeve")) setLiner(false); });
-  $("#liner-side").addEventListener("click", (e) => {
-    const b = e.currentTarget; b.textContent = b.textContent.trim() === "side A" ? "side B" : "side A";
-    const slot = document.querySelector(".record-slot"); slot.classList.remove("flip"); void slot.offsetWidth; slot.classList.add("flip");
-    if (ctx && crackle.popBuf) pop(0.5);
+  // Turn the record over: needle up, record lifted off and set back down the other way, needle down.
+  $("#liner-side").addEventListener("click", async (e) => {
+    if (state.busy || state.flipping) return;
+    const b = e.currentTarget, slot = document.querySelector(".record-slot");
+    state.flipping = true;
+    const wasDown = !els.arm.classList.contains("lifted");
+    if (wasDown) { setArm(armAngleNow(), { lifted: true, ms: 250 }); await wait(260); }
+    slot.classList.add("lifting");
+    setTimeout(() => { slot.classList.toggle("side-b"); b.textContent = slot.classList.contains("side-b") ? "side B" : "side A"; }, 450);
+    await wait(900); slot.classList.remove("lifting");
+    if (ctx && crackle.popBuf) pop(0.35);
+    if (wasDown) setArm(armAngleNow(), { lifted: false, ms: 250 });
+    state.flipping = false;
   });
 
   // ---------- toast ----------
