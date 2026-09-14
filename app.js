@@ -61,7 +61,9 @@
       const d = p.getDuration() || 0, t = p.getCurrentTime() || 0;
       // A live stream reports either no duration or a huge, ever-growing one with the
       // playhead pinned to its end. Show time-since-you-tuned-in instead.
-      const live = d === 0 ? p.getPlayerState && p.getPlayerState() === 1 : (d > 12 * 3600 && d - t < 900);
+      if (yt.lastDur > 0 && d > yt.lastDur + 1) yt.isLive = true;     // duration keeps growing: live
+      yt.lastDur = d;
+      const live = yt.isLive || d > 12 * 3600 || (d === 0 && p.getPlayerState && p.getPlayerState() === 1);
       if (live) { if (!yt.liveStart) yt.liveStart = Date.now(); return { t: (Date.now() - yt.liveStart) / 1000, d: 0, live: true }; }
       return { t, d, live: false };
     }
@@ -349,6 +351,7 @@
     const v = yt.player.getVideoData ? yt.player.getVideoData() : null;
     if (!v || !v.video_id) return;
     const t = state.cur;
+    if (t.videoNow !== v.video_id) { yt.liveStart = 0; yt.lastDur = 0; yt.isLive = false; }
     t.title = v.title || t.title; t.artist = v.author || "YouTube"; t.videoNow = v.video_id;
     t.cover = `https://i.ytimg.com/vi/${v.video_id}/mqdefault.jpg`;
     t.covers = [`https://i.ytimg.com/vi/${v.video_id}/maxresdefault.jpg`, `https://i.ytimg.com/vi/${v.video_id}/mqdefault.jpg`];
@@ -463,7 +466,7 @@
       if (isYT(state.cur) && !isYT(t)) ytStop();
       if (!isYT(t)) { if (isYT(state.cur)) { /* nothing */ } }
       else if (state.cur && !isYT(state.cur)) audio.pause();
-      state.cur = t; yt.liveStart = 0;
+      state.cur = t; yt.liveStart = 0; yt.lastDur = 0; yt.isLive = false;
       renderTrack(t);
       if (isYT(t)) {
         try { await loadYT(); } catch (err) { toast("YouTube player couldn't load"); state.busy = false; return next(); }
