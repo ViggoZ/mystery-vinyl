@@ -59,7 +59,8 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: var(--band) 1fr var(--band);   /* equal header / footer bands so the stage is truly centred */
+  --band: 128px;
   min-height: 100vh;
   transition: background .35s ease, color .35s ease;
 }
@@ -67,11 +68,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 a { color: inherit; }
 
 /* ---------- header ---------- */
-.logo { display: inline-block; margin: 44px 0 0 80px; line-height: 0; }
+.logo { display: inline-flex; align-items: center; margin: 0 0 0 80px; line-height: 0; }
 .logo svg { height: 60px; width: auto; font-family: var(--font); }
 
 .topnav {
-  position: absolute; top: 48px; right: 80px;
+  position: absolute; top: calc(var(--band) / 2 - 18px); right: 80px;
   display: flex; align-items: center; gap: 6px;
 }
 .nav-btn {
@@ -209,7 +210,8 @@ body.playing .btn-main .ic-pause { display: block; }
 .turntable {
   position: relative;
   width: 100%;
-  max-width: 840px;
+  /* never taller than the stage between the two bands */
+  max-width: min(840px, calc((100vh - var(--band) * 2 - 48px) * 840 / 680));
   aspect-ratio: 840 / 680;
   container-type: inline-size;
   --u: 1cqw; /* 1 unit == 1/100 of turntable width; layout below is in 840-wide design px */
@@ -368,8 +370,8 @@ body.playing .power::after { background: var(--accent); box-shadow: 0 0 10px rgb
 
 /* ---------- footer, hint ---------- */
 .foot {
-  display: flex; justify-content: space-between;
-  padding: 0 80px 36px;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 80px;
   font-size: 13px; color: var(--faint);
 }
 .foot a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
@@ -404,29 +406,32 @@ body.zen .logo, body.zen .foot, body.zen .credit, body.zen .modes-wrap { display
 body.zen .topnav { top: 24px; right: 24px; }
 body.zen .topnav > :not(#zen) { display: none; }
 body.zen .stage { padding: 0 6vw; gap: 4vw; min-height: 100vh; }
-body.zen .turntable { max-width: min(920px, 46vw); }
+body.zen .turntable { max-width: min(920px, 46vw, calc((100vh - 96px) * 840 / 680)); }
 body.zen .topnav, body.zen .controls, body.zen .time { transition: opacity .5s ease; }
 body.zen.idle .topnav, body.zen.idle .controls, body.zen.idle .time { opacity: 0; }
 body.zen.idle { cursor: none; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 1100px) {
-  .logo { margin: 28px 0 0 40px; }
-  .topnav { right: 40px; top: 36px; }
+  body { --band: 100px; }
+  .logo { margin: 0 0 0 40px; }
+  .topnav { right: 40px; }
   .stage { padding: 0 40px; gap: 32px; }
-  .foot { padding: 0 40px 24px; }
+  .foot { padding: 0 40px; }
   .title { font-size: 24px; }
 }
 @media (max-width: 860px) {
-  body { overflow: auto; }
+  body { overflow: auto; grid-template-rows: auto 1fr auto; }
   .stage { grid-template-columns: 1fr; padding: 24px 24px 0; align-content: start; }
   .deck { order: -1; }
   .turntable { max-width: 520px; }
+  body.zen .turntable { max-width: 520px; }
   .panel { max-width: none; }
   .wave { width: 100%; }
   .title { white-space: normal; }
   .logo { margin: 20px 0 0 24px; } .logo svg { height: 48px; }
   .topnav { right: 16px; top: 22px; }
+  .foot { align-items: flex-start; }
   .foot { flex-direction: column; gap: 6px; padding: 32px 24px 24px; }
   body.zen .stage { grid-template-columns: 1fr; padding: 24px; }
   body.zen .turntable { max-width: 520px; }
