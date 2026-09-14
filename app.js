@@ -681,7 +681,7 @@
           <svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg>
         </a>
         <button class="crate-remove" data-i="${i}" aria-label="Remove">×</button>
-      </li>`).join("") || `<li class="crate-empty">Nothing here yet. Paste a link above.</li>`;
+      </li>`).join("") || `<li class="crate-empty">YouTube video, playlist or live · archive.org album · mp3 or radio stream</li>`;
   }
   function playSource(i) {
     const src = state.sources[i]; if (!src || state.busy) return;
