@@ -342,7 +342,8 @@
     if (!v || !v.video_id) return;
     const t = state.cur;
     t.title = v.title || t.title; t.artist = v.author || "YouTube"; t.videoNow = v.video_id;
-    t.cover = `https://i.ytimg.com/vi/${v.video_id}/hqdefault.jpg`;
+    t.cover = `https://i.ytimg.com/vi/${v.video_id}/mqdefault.jpg`;
+    t.covers = [`https://i.ytimg.com/vi/${v.video_id}/maxresdefault.jpg`, `https://i.ytimg.com/vi/${v.video_id}/mqdefault.jpg`];
     renderTrack(t);
     // remember the real title in the crate list (single videos only; playlists keep their generic label)
     const src = state.sources.find((s) => s.url === t.srcKey);
@@ -393,16 +394,30 @@
       els.modes.appendChild(b);
     }
     const add = document.createElement("button");
-    add.className = "mode mode-add"; add.textContent = "+"; add.title = "Add your own music"; add.setAttribute("aria-label", "Add your own music");
+    add.className = "mode mode-add"; add.innerHTML = '<svg viewBox="0 0 12 12"><path d="M6 1v10M1 6h10"/></svg>'; add.title = "Add your own music"; add.setAttribute("aria-label", "Add your own music");
     add.addEventListener("click", (e) => { e.stopPropagation(); toggleCrate(); });
     els.modes.appendChild(add);
+  }
+  // Record label art: try each candidate in order, fall back to the Mystery Vinyl label.
+  let labelReq = 0;
+  function setLabel(urls) {
+    const req = ++labelReq;
+    const tryAt = (i) => {
+      if (i >= urls.length) { if (req === labelReq) els.label.style.backgroundImage = ""; return; }
+      const img = new Image();
+      img.onload = () => { if (req === labelReq) els.label.style.backgroundImage = `url("${urls[i]}")`; };
+      img.onerror = () => tryAt(i + 1);
+      img.src = urls[i];
+    };
+    if (!urls.length) { els.label.style.backgroundImage = ""; return; }
+    tryAt(0);
   }
   function renderTrack(t) {
     // YouTube titles usually carry the artist already ("Artist - Song"); don't double it.
     const dup = t.artist && t.title.toLowerCase().startsWith(t.artist.toLowerCase());
     els.title.textContent = t.artist && !dup ? `${t.artist} - ${t.title}` : t.title;
     els.artist.textContent = t.album || "";
-    els.label.style.backgroundImage = t.cover ? `url("${t.cover}")` : "";
+    setLabel(t.covers || (t.cover ? [t.cover] : []));
     if (t.kind === "yt") {
       els.credit.innerHTML = `Playing from <a href="${esc(t.source)}" target="_blank" rel="noopener">YouTube</a> · added by you`;
     } else if (t.category === "yours" && !t.license) {
@@ -612,7 +627,9 @@
   }
   function sourceTracks(src) {
     if (src.kind === "yt") return [{ kind: "yt", category: "yours", videoId: src.videoId, listId: src.listId, title: src.label, artist: "", album: "YouTube",
-      cover: src.videoId ? `https://i.ytimg.com/vi/${src.videoId}/hqdefault.jpg` : "", source: src.url, srcKey: src.url }];
+      cover: src.videoId ? `https://i.ytimg.com/vi/${src.videoId}/mqdefault.jpg` : "",
+      covers: src.videoId ? [`https://i.ytimg.com/vi/${src.videoId}/maxresdefault.jpg`, `https://i.ytimg.com/vi/${src.videoId}/mqdefault.jpg`] : [],
+      source: src.url, srcKey: src.url }];
     if (src.kind === "audio") return [{ kind: "audio", category: "yours", title: src.label, artist: "", album: src.host, cover: "", url: src.url, source: src.url, host: src.host, srcKey: src.url }];
     return iaCache.get(src.id) || [];
   }
