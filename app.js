@@ -736,6 +736,11 @@
 
   els.play.addEventListener("click", toggle);
   els.power.addEventListener("click", toggle);
+  // Speed selector: purely cosmetic, the platter keeps its 33⅓. A small click for the hand.
+  $("#knob").addEventListener("click", (e) => {
+    const k = e.currentTarget; k.dataset.speed = k.dataset.speed === "33" ? "45" : "33";
+    if (ctx && crackle.popBuf) { const p = ctx.createBufferSource(); p.buffer = crackle.popBuf; p.playbackRate.value = 0.8; const g = ctx.createGain(); g.gain.value = 0.12; p.connect(g).connect(ctx.destination); p.start(); }
+  });
   els.next.addEventListener("click", () => !state.busy && next());
   els.prev.addEventListener("click", () => !state.busy && prev());
   document.addEventListener("keydown", (e) => {

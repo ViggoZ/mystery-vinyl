@@ -324,10 +324,15 @@ body.playing .btn-main .ic-pause { display: block; }
   box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 3px 8px rgba(0,0,0,.35);
   font-size: calc(1.1 * var(--u)); color: #8a8a8a; display: grid; place-items: center;
 }
-.knob span { position: absolute; }
+.knob { cursor: pointer; transition: transform .1s; }
+.knob:active { transform: scale(.96); }
+.knob span { position: absolute; transition: color .25s; }
 .knob span:first-child { left: -55%; top: 12%; }
 .knob span:last-child { left: -55%; bottom: 12%; }
-.knob i { position: absolute; left: 50%; top: 50%; width: 42%; height: 2px; background: #bbb; transform-origin: 0 50%; transform: rotate(-30deg); }
+.knob[data-speed="33"] span:first-child, .knob[data-speed="45"] span:last-child { color: var(--accent); }
+.knob i { position: absolute; left: 50%; top: 50%; width: 42%; height: 2px; background: #bbb; transform-origin: 0 50%;
+  transform: rotate(-150deg); transition: transform .35s cubic-bezier(.3, 1.4, .5, 1); }  /* points at "33", upper-left */
+.knob[data-speed="45"] i { transform: rotate(150deg); }                                     /* points at "45", lower-left */
 .power {
   left: calc(692 / 840 * 100%); top: calc(46 / 680 * 100%);
   width: calc(80 / 840 * 100%); aspect-ratio: 1; border-radius: 50%;
