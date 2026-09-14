@@ -468,7 +468,7 @@
       if (isYT(state.cur) && !isYT(t)) ytStop();
       if (!isYT(t)) { if (isYT(state.cur)) { /* nothing */ } }
       else if (state.cur && !isYT(state.cur)) audio.pause();
-      state.cur = t; yt.liveStart = 0; yt.lastDur = 0; yt.isLive = false;
+      state.cur = t; state.retried = false; yt.liveStart = 0; yt.lastDur = 0; yt.isLive = false;
       renderTrack(t);
       if (isYT(t)) {
         try { await loadYT(); } catch (err) { toast("YouTube player couldn't load"); state.busy = false; return next(); }
@@ -791,7 +791,14 @@
   audio.addEventListener("timeupdate", () => { if (isYT(state.cur)) return; updateClock(); if (Math.floor(audio.currentTime) % 3 === 0) trackArm(); });
   audio.addEventListener("durationchange", () => { if (!isYT(state.cur)) updateClock(); });
   audio.addEventListener("ended", () => { if (!isYT(state.cur)) next(); });
-  audio.addEventListener("error", () => { if (isYT(state.cur) || !audio.src) return; console.warn("track failed, skipping", audio.error); toast("Couldn't play that · skipping"); if (!state.busy) next(); });
+  audio.addEventListener("error", () => {
+    if (isYT(state.cur) || !audio.src) return;
+    console.warn("track failed", audio.error && audio.error.code, audio.src);
+    // archive.org occasionally answers a mirror without CORS headers; retry once through its /cors/ path
+    const m = audio.src.match(/^https:\/\/archive\.org\/download\/(.+)$/);
+    if (m && !state.retried) { state.retried = true; const at = audio.currentTime; audio.src = `https://archive.org/cors/${m[1]}`; audio.load(); if (at) audio.currentTime = at; if (state.playing) audio.play().catch(() => {}); return; }
+    toast("Couldn't play that · skipping"); if (!state.busy) next();
+  });
   audio.addEventListener("waiting", () => { if (!isYT(state.cur)) state.targetOmega = state.playing ? OMEGA_PLAY * 0.97 : 0; });
   audio.addEventListener("playing", () => { if (!isYT(state.cur)) state.targetOmega = OMEGA_PLAY; });
 
