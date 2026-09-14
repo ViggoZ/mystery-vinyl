@@ -305,6 +305,10 @@
       yt.failures = 0;
       if (yt.waiter) yt.waiter.resolve();
       disarm(); ytMeta(); updateClock(); trackArm();
+    } else if (e.data === S.PAUSED) {
+      if (state.playing && !state.busy) setTimeout(() => {
+        if (state.playing && !state.busy && yt.player.getPlayerState() === S.PAUSED) yt.player.playVideo();
+      }, 600);
     } else if (e.data === S.BUFFERING) {
       state.targetOmega = state.playing ? OMEGA_PLAY * 0.97 : state.targetOmega;
     } else if (e.data === S.CUED && state.cur.listId) {
@@ -393,10 +397,18 @@
       b.addEventListener("click", () => selectCategory(c.id));
       els.modes.appendChild(b);
     }
-    const add = document.createElement("button");
-    add.className = "mode mode-add"; add.innerHTML = '<svg viewBox="0 0 12 12"><path d="M6 1v10M1 6h10"/></svg>'; add.title = "Add your own music"; add.setAttribute("aria-label", "Add your own music");
-    add.addEventListener("click", (e) => { e.stopPropagation(); toggleCrate(); });
-    els.modes.appendChild(add);
+    // "Yours" always sits at the end: it selects the crate (when it has records) and opens it.
+    const yours = document.createElement("button");
+    yours.className = "mode mode-yours"; yours.role = "tab"; yours.title = "Your own music";
+    yours.innerHTML = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1v10M1 6h10"/></svg>Yours';
+    yours.setAttribute("aria-selected", String(state.category === "yours"));
+    yours.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (state.yoursTracks.length && state.category !== "yours" && !state.busy) selectCategory("yours");
+      toggleCrate(true);
+    });
+    const old = Array.from(els.modes.children).find((b) => b.textContent === "Yours"); if (old) old.remove();
+    els.modes.appendChild(yours);
   }
   // Record label art: try each candidate in order, fall back to the Mystery Vinyl label.
   let labelReq = 0;
@@ -571,7 +583,8 @@
   function selectCategory(id, first) {
     if (state.busy || (id === state.category && !first)) return;
     state.category = id; store.set("mv.category", id);
-    renderModes(); buildQueue(id, first); next();
+    renderModes(); buildQueue(id, first);
+    const t = pickNext(); state.history.push(t); return loadAndPlay(t);   // straight from the queue, never a playlist step
   }
 
   // ---------- "Yours": user-added sources ----------
@@ -687,7 +700,7 @@
   }
   els.crateForm.addEventListener("submit", (e) => { e.preventDefault(); addSource(els.crateInput.value); });
   els.crateList.addEventListener("click", (e) => { const b = e.target.closest(".crate-remove"); if (b) removeSource(+b.dataset.i); });
-  document.addEventListener("pointerdown", (e) => { if (!els.crate.hidden && !e.target.closest("#crate, .mode-add")) toggleCrate(false); });
+  document.addEventListener("pointerdown", (e) => { if (!els.crate.hidden && !e.target.closest("#crate, .mode-yours")) toggleCrate(false); });
 
   // ---------- events ----------
   audio.addEventListener("timeupdate", () => { if (isYT(state.cur)) return; updateClock(); if (Math.floor(audio.currentTime) % 3 === 0) trackArm(); });

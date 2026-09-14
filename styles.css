@@ -120,8 +120,9 @@ body.zen .ic-collapse { display: block; }
 
 .modes-wrap { position: relative; margin-bottom: 44px; }
 .modes { display: flex; flex-wrap: wrap; gap: 8px; }
-.mode-add { width: 34px; padding: 7px 0; display: grid; place-items: center; font-size: 13px; line-height: 1; }
-.mode-add svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; fill: none; }
+.mode-yours { display: inline-flex; align-items: center; gap: 6px; padding-left: 11px; }
+.mode-yours svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; fill: none; transition: transform .2s; }
+.mode-yours:hover svg { transform: rotate(90deg); }
 
 /* ---------- "Yours" crate popover ---------- */
 .crate {
