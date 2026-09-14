@@ -117,7 +117,41 @@ body.zen .ic-collapse { display: block; }
 
 .panel { max-width: 560px; }
 
-.modes { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 44px; }
+.modes-wrap { position: relative; margin-bottom: 44px; }
+.modes { display: flex; flex-wrap: wrap; gap: 8px; }
+.mode-add { width: 34px; padding: 7px 0; text-align: center; font-size: 15px; line-height: 1; }
+
+/* ---------- "Yours" crate popover ---------- */
+.crate {
+  position: absolute; left: 0; top: calc(100% + 12px); z-index: 5;
+  width: min(560px, calc(100vw - 48px));
+  padding: 14px; border-radius: 14px;
+  background: var(--bg); border: 1px solid var(--line);
+  box-shadow: 0 24px 60px rgba(0,0,0,.35);
+  animation: hint-in .2s ease both;
+}
+.crate[hidden] { display: none; }
+.crate-form { display: flex; gap: 8px; }
+.crate-form input {
+  flex: 1; min-width: 0; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--btn-hover); color: var(--ink); font: inherit; font-size: 13px;
+}
+.crate-form input:focus { outline: none; border-color: var(--accent); }
+.crate-add { padding: 0 16px; border-radius: 10px; background: var(--accent); color: var(--on-accent); font-size: 13px; font-weight: 600; }
+.crate-add:hover { background: var(--accent-hover); }
+.crate-list { list-style: none; margin: 10px 0 0; padding: 0; max-height: 220px; overflow: auto; }
+.crate-item { display: flex; align-items: center; gap: 10px; padding: 7px 4px; border-top: 1px solid var(--line); font-size: 13px; }
+.crate-kind { flex: none; width: 60px; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--faint); }
+.crate-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); text-decoration: none; }
+.crate-name:hover { color: var(--accent); }
+.crate-remove { flex: none; width: 24px; height: 24px; border-radius: 50%; color: var(--muted); font-size: 16px; line-height: 1; }
+.crate-remove:hover { background: var(--btn-hover); color: var(--ink); }
+.crate-empty { padding: 10px 4px; font-size: 13px; color: var(--muted); }
+.crate-note { margin: 10px 0 0; font-size: 11px; color: var(--faint); }
+
+/* hidden YouTube player: present in the viewport but invisible */
+#yt-shell { position: fixed; right: 0; bottom: 0; width: 200px; height: 200px; opacity: 0.001; pointer-events: none; overflow: hidden; z-index: -1; }
+#yt-shell iframe { width: 200px; height: 200px; border: 0; }
 .mode {
   padding: 7px 14px;
   border-radius: 999px;
@@ -346,7 +380,7 @@ body.armed .btn-main { animation: pulse-btn 1.6s ease-in-out infinite; }
 
 /* ---------- zen / full screen ---------- */
 body.zen { grid-template-rows: 1fr; }
-body.zen .logo, body.zen .foot, body.zen .credit, body.zen .modes { display: none; }
+body.zen .logo, body.zen .foot, body.zen .credit, body.zen .modes-wrap { display: none; }
 body.zen .topnav { top: 24px; right: 24px; }
 body.zen .topnav > :not(#zen) { display: none; }
 body.zen .stage { padding: 0 6vw; gap: 4vw; min-height: 100vh; }

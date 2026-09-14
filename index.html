@@ -48,7 +48,17 @@
 
   <main class="stage">
     <section class="panel" aria-label="Now playing">
-      <div class="modes" role="tablist" aria-label="Mood" id="modes"></div>
+      <div class="modes-wrap">
+        <div class="modes" role="tablist" aria-label="Mood" id="modes"></div>
+        <div class="crate" id="crate" hidden>
+          <form class="crate-form" id="crate-form">
+            <input id="crate-input" type="url" placeholder="Paste a YouTube video, playlist or live link · an archive.org album · an mp3 or stream URL" autocomplete="off" spellcheck="false" required />
+            <button class="crate-add" type="submit">Add</button>
+          </form>
+          <ul class="crate-list" id="crate-list"></ul>
+          <p class="crate-note">Kept in this browser only. YouTube plays through a hidden player, so a few videos may refuse to play.</p>
+        </div>
+      </div>
 
       <canvas class="wave" id="wave" width="840" height="120" aria-hidden="true"></canvas>
       <div class="time"><span id="cur">00:00</span> / <span id="dur">00:00</span></div>
@@ -161,6 +171,7 @@
   <p class="hint" id="hint" hidden>Click anywhere to drop the needle</p>
   <p class="toast" id="toast" hidden></p>
 
+  <div id="yt-shell" aria-hidden="true"></div>
   <audio id="audio" crossorigin="anonymous" preload="auto"></audio>
   <script src="app.js"></script>
 </body>

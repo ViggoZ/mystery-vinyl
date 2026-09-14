@@ -17,6 +17,16 @@ The surface noise is synthesized with Web Audio (a filtered pink-noise loop plus
 
 Pausing lifts the tonearm back onto its rest; resuming swings it back to the groove you left. Full screen hides everything except the deck, the waveform and the title, and the controls fade out after a few seconds without mouse movement.
 
+## Your own music
+
+The `+` chip at the end of the mood row opens your crate. Paste a link and it becomes a "Yours" mood:
+
+- a YouTube video, playlist or live link (played through a hidden IFrame player, so no waveform, and a few videos that forbid embedding will be skipped)
+- an `archive.org/details/…` album (full support: waveform, crackle, attribution)
+- a direct mp3 / m4a / stream URL (Icecast radio streams work too)
+
+Sources are kept in localStorage only.
+
 ## Where the music comes from
 
 All tracks are Creative Commons albums hosted on the Internet Archive (mostly the Dusted Wax Kingdom netlabel, plus a few ambient/jazz releases). The archive serves MP3s with CORS headers, so the browser can stream them directly and run them through the Web Audio analyser for the waveform. Each track shows its album, license and a link back to the source, which is what CC BY / BY-NC licenses ask for.
