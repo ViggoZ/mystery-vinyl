@@ -6,6 +6,7 @@
   <title>Mystery Vinyl</title>
   <meta name="description" content="Drop the needle. Random records for coding, focus, thinking and designing." />
   <meta name="theme-color" content="#202020" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23E8D7C0'/%3E%3Ccircle cx='32' cy='32' r='22' fill='%23000'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%23E8D7C0'/%3E%3Ccircle cx='32' cy='32' r='1.6' fill='%23000'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://archive.org" crossorigin />
   <link rel="stylesheet" href="styles.css" />
   <script>
@@ -118,6 +119,7 @@
 
           <!-- the arm: rotates about (700,150) -->
           <g class="arm" id="arm" filter="url(#armShadow)">
+          <g class="arm-wobble" id="armWobble">
             <!-- counterweight -->
             <rect x="686" y="48" width="28" height="44" rx="6" fill="url(#weight)" stroke="#111" stroke-width="1"/>
             <rect x="690" y="52" width="20" height="8" rx="2" fill="#1a1a1a"/>
@@ -141,6 +143,7 @@
               <path d="M-1 64 L0 70 L1 64 Z" fill="#eee"/>
               <circle cx="-6" cy="44" r="1.6" fill="#777"/><circle cx="6" cy="44" r="1.6" fill="#777"/>
             </g>
+          </g>
           </g>
         </svg>
       </div>

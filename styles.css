@@ -297,6 +297,7 @@ body.playing .power::after { background: var(--accent); box-shadow: 0 0 10px rgb
   will-change: transform;
 }
 .arm.lifted { filter: url(#armShadow) drop-shadow(0 14px 10px rgba(0,0,0,.5)); }
+.arm-wobble { transform-box: view-box; transform-origin: 700px 150px; } /* per-frame wobble, no transition */
 
 /* ---------- footer, hint ---------- */
 .foot {

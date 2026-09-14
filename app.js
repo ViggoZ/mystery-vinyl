@@ -7,7 +7,7 @@
     title: $("#title"), artist: $("#artist"), credit: $("#credit"),
     play: $("#play"), prev: $("#prev"), next: $("#next"), power: $("#power"),
     theme: $("#theme"), zen: $("#zen"),
-    arm: $("#arm"), record: $("#record"), label: $("#label"), platter: $("#platter"),
+    arm: $("#arm"), armWobble: $("#armWobble"), record: $("#record"), label: $("#label"), platter: $("#platter"),
     hint: $("#hint"),
   };
 
@@ -37,7 +37,9 @@
   // ---------- state ----------
   const state = {
     catalog: null, category: null, queue: [], index: -1,
-    playing: false, omega: 0, angle: 0, targetOmega: 0, busy: false, armed: false, everPlayed: false,
+    playing: false, targetOmega: 0, brake: false, busy: false, armed: false, everPlayed: false,
+    omega: 0, angle: 0,              // platter (motor-driven)
+    recOmega: 0, recAngle: 0,        // record: sits on the mat, slips a little against it
     history: [],
   };
 
@@ -48,15 +50,28 @@
   const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 
   // ---------- platter physics (spin-up / spin-down) ----------
+  // Two bodies, like the real thing: the motor drives the platter, and the
+  // record follows the platter through the mat with its own inertia, so it
+  // lags on start-up and overruns a touch when the platter stops.
   let last = performance.now();
   function spin(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    const k = state.targetOmega > state.omega ? 1.6 : 0.7;   // motor pulls faster than it coasts
-    state.omega += (state.targetOmega - state.omega) * (1 - Math.exp(-k * dt));
-    if (Math.abs(state.targetOmega - state.omega) < 0.05) state.omega = state.targetOmega;
-    state.angle = (state.angle + state.omega * dt) % 360;
-    els.record.style.transform = `rotate(${state.angle}deg)`;
-    els.platter.style.transform = `rotate(${state.angle * 0.999}deg)`;
+    const s = state;
+    const kMotor = s.targetOmega > s.omega ? 1.6 : (s.brake ? 4.5 : 0.7);   // pull-up / brake / coast
+    s.omega += (s.targetOmega - s.omega) * (1 - Math.exp(-kMotor * dt));
+    if (Math.abs(s.targetOmega - s.omega) < 0.05) s.omega = s.targetOmega;
+    const kSlip = 3.2;
+    s.recOmega += (s.omega - s.recOmega) * (1 - Math.exp(-kSlip * dt));
+    if (Math.abs(s.omega - s.recOmega) < 0.05) s.recOmega = s.omega;
+    s.angle = (s.angle + s.omega * dt) % 360;
+    s.recAngle = (s.recAngle + s.recOmega * dt) % 360;
+    els.platter.style.transform = `rotate(${s.angle}deg)`;
+    els.record.style.transform = `rotate(${s.recAngle}deg)`;
+    // Tonearm wobble: a slightly warped record nudges the arm once per revolution.
+    const onRecord = s.playing && !els.arm.classList.contains("lifted");
+    const rad = s.recAngle * Math.PI / 180;
+    const wobble = onRecord ? 0.22 * Math.sin(rad) + 0.07 * Math.sin(2 * rad + 1.3) : 0;
+    els.armWobble.style.transform = `rotate(${wobble.toFixed(3)}deg)`;
     drawWave();
     requestAnimationFrame(spin);
   }
@@ -170,7 +185,8 @@
     try {
       const wasPlaying = state.playing;
       state.playing = false; document.body.classList.remove("playing");
-      // 1. lift the arm and return it to the rest
+      // 1. lift the arm and return it to the rest; brake the platter (skip = electronic stop)
+      state.brake = true; state.targetOmega = 0;
       setArm(ANGLE_REST, { lifted: true, ms: wasPlaying ? 900 : 300 });
       // 2. swap the record while the arm travels
       if (swapRecord) { els.record.classList.add("out"); await wait(420); }
@@ -182,7 +198,7 @@
       // without a gesture. If not, leave the arm on its rest and wait for a click.
       if (!state.everPlayed && !(await canAutoplay())) { arm(); return; }
       // 3. swing the arm over the lead-in groove, then drop it
-      state.targetOmega = OMEGA_PLAY;
+      state.brake = false; state.targetOmega = OMEGA_PLAY;
       setArm(ANGLE_IN, { lifted: true, ms: 1000 });
       await wait(1000);
       setArm(ANGLE_IN, { lifted: false, ms: 300 });
@@ -242,7 +258,7 @@
   function pause() {
     audio.pause();
     state.playing = false; document.body.classList.remove("playing");
-    state.targetOmega = 0;
+    state.brake = false; state.targetOmega = 0;   // power-off style coast
     setArm(ANGLE_REST, { lifted: true, ms: 900 });
   }
   // Resume from the rest: platter up to speed, arm over the groove we left, drop, sound.
@@ -250,7 +266,7 @@
     if (state.busy || !audio.src) return; state.busy = true;
     try {
       ensureAudioGraph();
-      state.targetOmega = OMEGA_PLAY;
+      state.brake = false; state.targetOmega = OMEGA_PLAY;
       setArm(grooveAngle(), { lifted: true, ms: 900 });
       await wait(900);
       setArm(grooveAngle(), { lifted: false, ms: 300 });
