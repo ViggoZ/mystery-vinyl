@@ -395,7 +395,9 @@
     els.modes.appendChild(add);
   }
   function renderTrack(t) {
-    els.title.textContent = t.artist ? `${t.artist} - ${t.title}` : t.title;
+    // YouTube titles usually carry the artist already ("Artist - Song"); don't double it.
+    const dup = t.artist && t.title.toLowerCase().startsWith(t.artist.toLowerCase());
+    els.title.textContent = t.artist && !dup ? `${t.artist} - ${t.title}` : t.title;
     els.artist.textContent = t.album || "";
     els.label.style.backgroundImage = t.cover ? `url("${t.cover}")` : "";
     if (t.kind === "yt") {
@@ -469,6 +471,11 @@
     ensureAudioGraph();
     if (isYT(state.cur)) {
       state.targetOmega = OMEGA_PLAY;
+      if (yt.player.getPlayerState() === YT.PlayerState.PLAYING) {   // already rolling (e.g. playlist step): nothing to wait for
+        state.playing = true; state.everPlayed = true; document.body.classList.add("playing");
+        disarm(); ytMeta(); updateClock(); trackArm();
+        return;
+      }
       const waiting = ytAwaitPlaying();
       yt.player.playVideo();            // state.playing flips in onYTState(PLAYING)
       try { await waiting; }
