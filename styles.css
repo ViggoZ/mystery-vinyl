@@ -16,6 +16,7 @@
   --plinth-1: #1c1c1c;
   --plinth-2: #171717;
   --plinth-edge: rgba(255,255,255,.06);
+  --plinth-bottom: rgba(0,0,0,.6);
   --plinth-shadow: 0 2px 0 #0d0d0d, 0 30px 60px rgba(0,0,0,.55), 0 10px 20px rgba(0,0,0,.4);
   --plinth-tex: rgba(255,255,255,.012);
   --plinth-tex-blend: screen;
@@ -39,7 +40,8 @@
   --plinth-1: #f3ece2;
   --plinth-2: #e8dfd1;
   --plinth-edge: rgba(255,255,255,.9);
-  --plinth-shadow: 0 2px 0 #d6cbbb, 0 30px 60px rgba(70,50,30,.18), 0 10px 20px rgba(70,50,30,.12);
+  --plinth-bottom: rgba(90,70,50,.08);
+  --plinth-shadow: 0 1px 0 rgba(90,70,50,.12), 0 30px 60px rgba(70,50,30,.16), 0 10px 20px rgba(70,50,30,.10);
   --plinth-tex: rgba(0,0,0,.02);
   --plinth-tex-blend: multiply;
   color-scheme: light;
@@ -172,7 +174,7 @@ body.playing .btn-main .ic-pause { display: block; }
     linear-gradient(var(--plinth-1), var(--plinth-2));
   box-shadow:
     inset 0 1px 0 var(--plinth-edge),
-    inset 0 -1px 0 rgba(0,0,0,.25),
+    inset 0 -1px 0 var(--plinth-bottom),
     var(--plinth-shadow);
   transition: background .35s ease, box-shadow .35s ease;
 }
