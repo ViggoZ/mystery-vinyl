@@ -13,12 +13,12 @@
   --wave-off: #4a4a4a;
   --hint-bg: #2a2a2a;
   --hint-ink: #d9b896;
-  --plinth-1: #1c1c1c;
-  --plinth-2: #171717;
-  --plinth-edge: rgba(255,255,255,.06);
-  --plinth-bottom: rgba(0,0,0,.6);
-  --plinth-shadow: 0 2px 0 #0d0d0d, 0 30px 60px rgba(0,0,0,.55), 0 10px 20px rgba(0,0,0,.4);
-  --plinth-tex: rgba(255,255,255,.012);
+  --plinth-1: #232323;
+  --plinth-2: #1d1d1d;
+  --plinth-edge: rgba(255,255,255,.07);
+  --plinth-bottom: rgba(0,0,0,.55);
+  --plinth-shadow: 0 2px 0 #111, 0 30px 60px rgba(0,0,0,.55), 0 10px 20px rgba(0,0,0,.4);
+  --plinth-tex: rgba(255,255,255,.018);
   --plinth-tex-blend: screen;
   --label-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='100' fill='%23E8D7C0'/%3E%3Cpath d='M42 100 A58 58 0 0 1 158 100 Z' fill='%23000'/%3E%3Ccircle cx='100' cy='100' r='20' fill='%23E8D7C0'/%3E%3Ccircle cx='100' cy='98' r='2.8' fill='%23000'/%3E%3Ctext x='100' y='140' text-anchor='middle' font-family='Inter,Helvetica,Arial,sans-serif' font-size='23' font-weight='900' fill='%23000' textLength='120' lengthAdjust='spacingAndGlyphs'%3EMYSTERY%3C/text%3E%3Ctext x='100' y='166' text-anchor='middle' font-family='Inter,Helvetica,Arial,sans-serif' font-size='23' font-weight='900' fill='%23000' textLength='76' lengthAdjust='spacingAndGlyphs'%3EVINYL%3C/text%3E%3C/svg%3E");
   --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -243,7 +243,7 @@ body.playing .btn-main .ic-pause { display: block; }
     radial-gradient(circle, #1a1a1a 0 92%, #101010 92.5% 94%, #2a2a2a 94.5% 95.5%, #151515 96% 100%);
   box-shadow:
     0 0 0 1px #0a0a0a,
-    0 12px 30px rgba(0,0,0,.6),
+    0 10px 24px rgba(0,0,0,.42),
     inset 0 2px 4px rgba(255,255,255,.05);
 }
 .platter::before { /* rubber mat ribs */
@@ -267,7 +267,7 @@ body.playing .btn-main .ic-pause { display: block; }
 .record {
   position: absolute; inset: 0; border-radius: 50%;
   background: #121212;
-  box-shadow: 0 6px 18px rgba(0,0,0,.6), inset 0 0 0 1px #050505;
+  box-shadow: 0 4px 12px rgba(0,0,0,.32), inset 0 0 0 1px #050505;
   will-change: transform;
   transition: opacity .35s ease, scale .35s ease;
 }
