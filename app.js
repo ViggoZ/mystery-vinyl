@@ -551,7 +551,7 @@
     document.removeEventListener("keydown", onFirstGesture, true);
   }
   async function onFirstGesture(e) {
-    if (e.target.closest && e.target.closest("a, input, .mode, #next, #prev, #crate")) { disarm(); return; }
+    if (e.target.closest && e.target.closest("a, input, .mode, #next, #prev, #crate, #sleeve")) { disarm(); return; }
     disarm();
     if (state.busy || state.playing) return;
     await resume();
@@ -820,11 +820,26 @@
     else if (e.key === "t" || e.key === "T") toggleTheme();
     else if (e.key === "n" || e.key === "N") toggleCrackle();
     else if (e.key === "Escape") {
-      if (!els.crate.hidden) toggleCrate(false);
+      if (!liner.hidden) setLiner(false);
+      else if (!els.crate.hidden) toggleCrate(false);
       else if (document.body.classList.contains("zen") && !document.fullscreenElement) setZen(false);
     }
   });
   els.crateInput.addEventListener("keydown", (e) => { if (e.key === "Escape") toggleCrate(false); });
+
+  // ---------- liner notes (about) ----------
+  const sleeve = $("#sleeve"), liner = $("#liner"), logoBtn = $("#logo");
+  function setLiner(open) {
+    sleeve.classList.toggle("open", open); liner.hidden = !open;
+    logoBtn.setAttribute("aria-expanded", String(open));
+  }
+  logoBtn.addEventListener("click", (e) => { e.stopPropagation(); setLiner(liner.hidden); });
+  document.addEventListener("pointerdown", (e) => { if (!liner.hidden && !e.target.closest("#sleeve")) setLiner(false); });
+  $("#liner-side").addEventListener("click", (e) => {
+    const b = e.currentTarget; b.textContent = b.textContent.trim() === "side A" ? "side B" : "side A";
+    const slot = document.querySelector(".record-slot"); slot.classList.remove("flip"); void slot.offsetWidth; slot.classList.add("flip");
+    if (ctx && crackle.popBuf) pop(0.5);
+  });
 
   // ---------- toast ----------
   let toastTimer;

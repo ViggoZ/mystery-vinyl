@@ -68,8 +68,40 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 a { color: inherit; }
 
 /* ---------- header ---------- */
-.logo { display: inline-flex; align-items: center; margin: 0 0 0 80px; line-height: 0; }
-.logo svg { height: 60px; width: auto; font-family: var(--font); }
+.sleeve { position: relative; display: flex; align-items: center; margin-left: 80px; z-index: 6; }
+.logo { display: inline-flex; align-items: center; line-height: 0; padding: 0; }
+.logo svg { height: 60px; width: auto; font-family: var(--font); overflow: visible; }
+/* the record slides out of the sleeve on hover, all the way when the liner notes are open */
+.sleeve-disc { transform-box: view-box; transform-origin: 208px 155px; transition: transform .45s cubic-bezier(.3, 1.3, .5, 1); }
+.logo:hover .sleeve-disc, .logo:focus-visible .sleeve-disc { transform: translateY(-14px) rotate(-20deg); }
+.sleeve.open .sleeve-disc { transform: translateY(-40px) rotate(-70deg); }
+.sleeve.open .logo:hover .sleeve-disc { transform: translateY(-40px) rotate(-90deg); }
+
+/* liner notes: the back of the sleeve */
+.liner {
+  position: absolute; left: 0; top: calc(100% + 12px); width: 340px;
+  padding: 16px 18px 14px; border-radius: 14px;
+  background: #E8D7C0; color: #1c1a17;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12px; line-height: 1.55;
+  box-shadow: 0 24px 60px rgba(0,0,0,.35), inset 0 0 0 1px rgba(0,0,0,.06);
+  transform-origin: 24px 0; animation: crate-in .2s ease both;
+}
+.liner[hidden] { display: none; }
+.liner p { margin: 0 0 10px; }
+.liner a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(0,0,0,.35); }
+.liner a:hover { border-color: #1c1a17; }
+.liner-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-weight: 700; letter-spacing: .08em; font-size: 11px; }
+.liner-side { font: inherit; color: inherit; letter-spacing: .08em; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(0,0,0,.35); cursor: pointer; }
+.liner-side:hover { background: rgba(0,0,0,.08); }
+.liner-keys { display: grid; grid-template-columns: max-content 1fr; gap: 3px 12px; margin: 12px 0; padding: 10px 0; border-top: 1px dashed rgba(0,0,0,.3); border-bottom: 1px dashed rgba(0,0,0,.3); }
+.liner-keys dt { font-weight: 700; }
+.liner-keys dd { margin: 0; opacity: .8; }
+.liner-foot { margin: 0; opacity: .85; }
+
+/* flipping the record over (side B) */
+.record-slot.flip { animation: flip .9s cubic-bezier(.4, 0, .2, 1); }
+@keyframes flip { 50% { transform: rotateY(90deg) scale(.96); } 100% { transform: rotateY(0) } }
+.deck { perspective: 1400px; }
 
 .topnav {
   position: absolute; top: calc(var(--band) / 2 - 18px); right: 80px;
@@ -401,7 +433,7 @@ body.armed .btn-main { animation: pulse-btn 1.6s ease-in-out infinite; }
 
 /* ---------- zen / full screen ---------- */
 body.zen { grid-template-rows: 1fr; }
-body.zen .logo, body.zen .foot, body.zen .credit, body.zen .modes-wrap { display: none; }
+body.zen .sleeve, body.zen .foot, body.zen .credit, body.zen .modes-wrap { display: none; }
 body.zen .topnav { top: 24px; right: 24px; }
 body.zen .topnav > :not(#zen) { display: none; }
 body.zen .stage { padding: 0 6vw; gap: 4vw; min-height: 100vh; }
@@ -413,7 +445,7 @@ body.zen.idle { cursor: none; }
 /* ---------- responsive ---------- */
 @media (max-width: 1100px) {
   body { --band: 100px; }
-  .logo { margin: 0 0 0 40px; }
+  .sleeve { margin-left: 40px; }
   .topnav { right: 40px; }
   .stage { padding: 0 40px; gap: 32px; }
   .foot { padding: 0 40px; }
@@ -428,7 +460,8 @@ body.zen.idle { cursor: none; }
   .panel { max-width: none; }
   .wave { width: 100%; }
   .title { white-space: normal; }
-  .logo { margin: 20px 0 0 24px; } .logo svg { height: 48px; }
+  .sleeve { margin: 20px 0 0 24px; } .logo svg { height: 48px; }
+  .liner { width: min(340px, calc(100vw - 48px)); }
   .topnav { right: 16px; top: 22px; }
   .foot { align-items: flex-start; }
   .foot { flex-direction: column; gap: 6px; padding: 32px 24px 24px; }

@@ -4,8 +4,24 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mystery Vinyl</title>
-  <meta name="description" content="Drop the needle. Random records for coding, focus, thinking and designing." />
+  <meta name="description" content="A turntable in your browser. Random lo-fi, jazz, ambient and chill house records for coding and focus, on a deck drawn in CSS and SVG. Drop the needle." />
   <meta name="theme-color" content="#202020" />
+  <link rel="canonical" href="https://vinyl.uiboy.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Mystery Vinyl" />
+  <meta property="og:title" content="Mystery Vinyl — a turntable in your browser" />
+  <meta property="og:description" content="Random lo-fi, jazz, ambient and chill house records for coding and focus. Real vinyl crackle, a tonearm you can drag, and a deck drawn entirely in CSS and SVG." />
+  <meta property="og:url" content="https://vinyl.uiboy.com/" />
+  <meta property="og:image" content="https://vinyl.uiboy.com/assets/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Mystery Vinyl — a turntable in your browser" />
+  <meta name="twitter:description" content="Random lo-fi, jazz, ambient and chill house records for coding and focus. Drop the needle." />
+  <meta name="twitter:image" content="https://vinyl.uiboy.com/assets/og.png" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Mystery Vinyl","url":"https://vinyl.uiboy.com/","applicationCategory":"MultimediaApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript and Web Audio","description":"A turntable in your browser that plays random Creative Commons records for coding and focus, with vinyl crackle and a draggable tonearm.","image":"https://vinyl.uiboy.com/assets/og.png","author":{"@type":"Person","name":"Viggo","url":"https://uiboy.com/"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://github.com/ViggoZ/mystery-vinyl/blob/main/LICENSE"}
+  </script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23E8D7C0'/%3E%3Ccircle cx='32' cy='32' r='22' fill='%23000'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%23E8D7C0'/%3E%3Ccircle cx='32' cy='32' r='1.6' fill='%23000'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://archive.org" crossorigin />
   <link rel="stylesheet" href="styles.css" />
@@ -15,16 +31,42 @@
   </script>
 </head>
 <body>
-  <a class="logo" href="./" aria-label="Mystery Vinyl">
-    <svg viewBox="63 38 288 245" aria-hidden="true">
-      <rect x="63" y="77" width="288" height="206" rx="18" fill="#E8D7C0"/>
-      <path d="M91 155 A117 117 0 0 1 325 155 Z" fill="#000"/>
-      <circle cx="208" cy="155" r="40" fill="#E8D7C0"/>
-      <circle cx="208" cy="152" r="5.5" fill="#000"/>
-      <text x="76" y="215" font-size="54" font-weight="900" textLength="263" lengthAdjust="spacingAndGlyphs" fill="#000">MYSTERY</text>
-      <text x="76" y="265" font-size="54" font-weight="900" textLength="165" lengthAdjust="spacingAndGlyphs" fill="#000">VINYL</text>
-    </svg>
-  </a>
+  <div class="sleeve" id="sleeve">
+    <button class="logo" id="logo" aria-label="About Mystery Vinyl" aria-expanded="false">
+      <svg viewBox="63 38 288 245" aria-hidden="true">
+        <!-- sleeve back -->
+        <rect x="63" y="77" width="288" height="206" rx="18" fill="#E8D7C0"/>
+        <!-- the record: a full disc, its lower half tucked inside the sleeve -->
+        <g class="sleeve-disc">
+          <circle cx="208" cy="155" r="117" fill="#000"/>
+          <circle cx="208" cy="155" r="96" fill="none" stroke="#1c1c1c" stroke-width="1.5"/>
+          <circle cx="208" cy="155" r="72" fill="none" stroke="#1c1c1c" stroke-width="1.5"/>
+          <path d="M136 92 A96 96 0 0 1 176 64" fill="none" stroke="#3a3a3a" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="208" cy="155" r="40" fill="#E8D7C0"/>
+          <circle cx="208" cy="152" r="5.5" fill="#000"/>
+        </g>
+        <!-- sleeve front, covers the lower half of the disc -->
+        <path d="M63 155 H351 V265 a18 18 0 0 1 -18 18 H81 a18 18 0 0 1 -18 -18 Z" fill="#E8D7C0"/>
+        <text x="76" y="215" font-size="54" font-weight="900" textLength="263" lengthAdjust="spacingAndGlyphs" fill="#000">MYSTERY</text>
+        <text x="76" y="265" font-size="54" font-weight="900" textLength="165" lengthAdjust="spacingAndGlyphs" fill="#000">VINYL</text>
+      </svg>
+    </button>
+
+    <div class="liner" id="liner" hidden>
+      <div class="liner-head"><span>MYSTERY VINYL</span><button class="liner-side" id="liner-side" title="Flip the record">side A</button></div>
+      <p>A turntable in your browser. Pressed with CSS, SVG and Web Audio: no images on the deck, no samples in the crackle.</p>
+      <p>Records from the <a href="https://archive.org/" target="_blank" rel="noopener">Internet Archive</a>, Creative Commons licensed. Sunset and anything you add play through YouTube.</p>
+      <dl class="liner-keys">
+        <dt>space</dt><dd>play / pause</dd>
+        <dt>← →</dt><dd>records</dd>
+        <dt>F</dt><dd>full screen</dd>
+        <dt>T</dt><dd>theme</dd>
+        <dt>N</dt><dd>crackle</dd>
+        <dt>drag</dt><dd>the tonearm to seek</dd>
+      </dl>
+      <p class="liner-foot">Cut by <a href="https://uiboy.com/" target="_blank" rel="noopener">Viggo</a> · <a href="https://github.com/ViggoZ/mystery-vinyl" target="_blank" rel="noopener">Source on GitHub</a></p>
+    </div>
+  </div>
 
   <nav class="topnav" aria-label="Site">
     <a class="nav-btn" href="https://github.com/ViggoZ/mystery-vinyl" target="_blank" rel="noopener" data-tip="Source on GitHub" aria-label="GitHub repository">
