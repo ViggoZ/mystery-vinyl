@@ -39,12 +39,12 @@
   --hint-bg: #1c1a17;
   --hint-ink: #e8d7c0;
   /* the deck stays dark in the light theme; only its shadow softens */
-  --plinth-1: #1c1c1c;
-  --plinth-2: #171717;
-  --plinth-edge: rgba(255,255,255,.06);
-  --plinth-bottom: rgba(0,0,0,.6);
-  --plinth-shadow: 0 2px 0 #0d0d0d, 0 30px 60px rgba(60,45,30,.28), 0 10px 20px rgba(60,45,30,.18);
-  --plinth-tex: rgba(255,255,255,.012);
+  --plinth-1: #2e2e2e;
+  --plinth-2: #262626;
+  --plinth-edge: rgba(255,255,255,.09);
+  --plinth-bottom: rgba(0,0,0,.5);
+  --plinth-shadow: 0 2px 0 #161616, 0 30px 60px rgba(60,45,30,.26), 0 10px 20px rgba(60,45,30,.16);
+  --plinth-tex: rgba(255,255,255,.02);
   --plinth-tex-blend: screen;
   color-scheme: light;
 }

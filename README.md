@@ -39,7 +39,7 @@ Sunset is the odd one out: that sound has no free-licensed equivalent, so the cr
 ## Your own music
 
 <p align="center">
-  <img src="assets/crate.png" alt="The Yours crate: paste a link, get a list of your own sources" width="100%">
+  <img src="assets/crate-2.png" alt="The Yours crate: paste a link, get a list of your own sources" width="100%">
 </p>
 
 The *Yours* chip opens your crate. Paste a link, press Add:
@@ -54,8 +54,8 @@ Click a source in the list to play it. Sources live in `localStorage` only.
 
 <table>
   <tr>
-    <td width="50%"><img src="assets/light.png" alt="Light theme with a cream plinth"></td>
-    <td width="50%"><img src="assets/zen.png" alt="Full-screen mode: only the deck, waveform and title"></td>
+    <td width="50%"><img src="assets/light-2.png" alt="Light theme with a cream plinth"></td>
+    <td width="50%"><img src="assets/zen-2.png" alt="Full-screen mode: only the deck, waveform and title"></td>
   </tr>
   <tr>
     <td align="center">Light theme (<code>T</code>)</td>
