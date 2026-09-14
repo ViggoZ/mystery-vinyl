@@ -9,12 +9,29 @@ import json, re, urllib.request, urllib.parse, pathlib
 MAX_PER_ITEM = 16
 
 CATEGORIES = {
-    "coding":    {"label": "Coding",    "tag": "steady beats, no vocals", "items": ["DWK031", "DWK155", "DWK127", "DWK312", "DWK044", "DWK163"]},
-    "focus":     {"label": "Focus",     "tag": "ambient, slow, wide",     "items": ["CalmPills", "Vkrsnl037CandlegravityAMomentForMyself"]},
-    "thinking":  {"label": "Thinking",  "tag": "jazz, late night",        "items": ["DWK119", "ca200_cjazz", "DWK138"]},
-    "designing": {"label": "Designing", "tag": "swing, sampled, playful", "items": ["DWK123", "DWK217", "DWK149"]},
-    "sunset":    {"label": "Sunset",    "tag": "chill house, warm, four on the floor",
-                  "items": ["rest037-kay_grove_-_samba_440-night_walk", "rest033-kay_grove_-_brothers_ep", "diginet008", "1bit_004", "stqk011"]},
+    "coding": {"label": "Coding", "tag": "steady beats, swing, no vocals",
+               "items": ["DWK031", "DWK155", "DWK127", "DWK217", "DWK149"]},
+    "lofi":   {"label": "Lo-fi",  "tag": "dusty, warm, sampled",
+               "items": ["DWK312", "DWK044", "DWK163", "DWK123"]},
+    "focus":  {"label": "Focus",  "tag": "ambient and late-night jazz",
+               "items": ["CalmPills", "Vkrsnl037CandlegravityAMomentForMyself", "DWK119", "ca200_cjazz", "DWK138"]},
+    # Sunset is chill / deep house of the "Good Life Radio" kind. Nothing like it exists
+    # under a free license, so this crate is YouTube 24/7 radios and long mixes, played
+    # through the hidden player. (id, title, channel) — titles are just initial labels.
+    "sunset": {"label": "Sunset", "tag": "chill house, deep house, positive energy", "youtube": [
+        ("pRyS8QREMEs", "The Good Life Radio · 24/7 Live Radio", "Summerchillout"),
+        ("UcrtmnGBUjM", "ChillYourMind Radio · 24/7 Chill House", "ChillYourMind"),
+        ("8EuP8FKvNIY", "Morning Coffee · Chillout House 24/7", "Chilluxe"),
+        ("sgEJ4sOwboM", "Summer Tropical & Deep House · 24/7", "We Are Diamond"),
+        ("WsDyRAPFBC8", "Deep & Melodic House 24/7", "Monstercat Silk"),
+        ("Ihm9OQWmibA", "Deep House · Smooth Background Music 24/7", "The Grand Sound"),
+        ("m0eLLeGNuXk", "Gentleman Radio · Deep House, Chillout, Lounge", "Gentleman"),
+        ("GjHIEdEAYqI", "Summer Deep House · Luxury Ocean Lounge 24/7", "Surfboard Deep Chillout"),
+        ("m4rFr3YKUNI", "Morning Chillout · Smooth Deep House & Lounge Beats", "Chilluxe"),
+        ("Ca5EtR-TAco", "Chill Deep House Mix · Relaxing Sunset Vibes", "Inner Deep Radio"),
+        ("QhMs-t7EhXY", "Best Deep House Songs Of All Time · Deep House Vibes", "Inner Deep Radio"),
+        ("ApWnwX1FPmY", "Best Tropical House Mix · Relaxing Summer Vibes", "TheHugProject"),
+    ]},
 }
 
 def fetch(identifier):
@@ -32,7 +49,15 @@ def clean_title(name, meta_title, artist):
 out = {"categories": [], "tracks": []}
 for key, cat in CATEGORIES.items():
     out["categories"].append({"id": key, "label": cat["label"], "tag": cat["tag"]})
-    for ident in cat["items"]:
+    for vid, title, channel in cat.get("youtube", []):
+        out["tracks"].append({
+            "id": f"yt/{vid}", "kind": "yt", "category": key, "videoId": vid,
+            "title": title, "artist": channel, "album": "YouTube",
+            "cover": f"https://i.ytimg.com/vi/{vid}/mqdefault.jpg",
+            "covers": [f"https://i.ytimg.com/vi/{vid}/maxresdefault.jpg", f"https://i.ytimg.com/vi/{vid}/mqdefault.jpg"],
+            "source": f"https://www.youtube.com/watch?v={vid}",
+        })
+    for ident in cat.get("items", []):
         d = fetch(ident)
         m = d["metadata"]
         album = re.sub(r"^\[[^\]]+\]\s*", "", m.get("title", ident))   # drop netlabel catalogue prefixes like "[rest037] "

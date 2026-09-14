@@ -1,6 +1,6 @@
 # Mystery Vinyl
 
-Open the page, a record drops, music plays. Pick a mood (Coding, Focus, Thinking, Designing, Sunset) and the deck pulls a random record from that crate. The turntable on the right is drawn entirely with CSS + SVG: the platter spins up and coasts down with real inertia, the tonearm swings in, drops, and tracks inward as the song plays, and the record is swapped when you skip.
+Open the page, a record drops, music plays. Pick a mood (Coding, Lo-fi, Focus, Sunset) and the deck pulls a random record from that crate. The turntable on the right is drawn entirely with CSS + SVG: the platter spins up and coasts down with real inertia, the tonearm swings in, drops, and tracks inward as the song plays, and the record is swapped when you skip.
 
 ## Run it
 
@@ -29,7 +29,9 @@ Sources are kept in localStorage only. Note for local development: YouTube refus
 
 ## Where the music comes from
 
-All tracks are Creative Commons albums hosted on the Internet Archive (mostly the Dusted Wax Kingdom netlabel, plus a few ambient/jazz releases). The archive serves MP3s with CORS headers, so the browser can stream them directly and run them through the Web Audio analyser for the waveform. Each track shows its album, license and a link back to the source, which is what CC BY / BY-NC licenses ask for.
+Sunset is the exception: that "positive chill / deep house" sound has no free-licensed equivalent, so the crate is a curated list of YouTube 24/7 radios and long mixes, played through the same hidden player as your own links. Edit the `youtube` list in `scripts/build-catalog.py` to swap them.
+
+All other tracks are Creative Commons albums hosted on the Internet Archive (mostly the Dusted Wax Kingdom netlabel, plus a few ambient/jazz releases). The archive serves MP3s with CORS headers, so the browser can stream them directly and run them through the Web Audio analyser for the waveform. Each track shows its album, license and a link back to the source, which is what CC BY / BY-NC licenses ask for.
 
 `data/catalog.json` is generated, not hand-written:
 

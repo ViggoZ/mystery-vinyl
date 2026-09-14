@@ -73,14 +73,6 @@ a { color: inherit; }
   position: absolute; top: 48px; right: 80px;
   display: flex; align-items: center; gap: 6px;
 }
-.nav-link {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 8px 12px; margin-right: 6px; border-radius: 999px;
-  font-size: 13px; color: var(--muted); text-decoration: none;
-  transition: color .2s, background .2s;
-}
-.nav-link svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.nav-link:hover { color: var(--ink); background: var(--btn-hover); }
 .nav-btn {
   width: 36px; height: 36px; border-radius: 50%;
   display: grid; place-items: center; color: var(--muted);
@@ -413,7 +405,6 @@ body.zen.idle { cursor: none; }
   .title { white-space: normal; }
   .logo { margin: 20px 0 0 24px; } .logo svg { height: 48px; }
   .topnav { right: 16px; top: 22px; }
-  .nav-link { display: none; }
   .foot { flex-direction: column; gap: 6px; padding: 32px 24px 24px; }
   body.zen .stage { grid-template-columns: 1fr; padding: 24px; }
   body.zen .turntable { max-width: 520px; }

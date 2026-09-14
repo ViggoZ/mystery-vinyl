@@ -438,7 +438,7 @@
     els.artist.textContent = t.album || "";
     setLabel(t.covers || (t.cover ? [t.cover] : []));
     if (t.kind === "yt") {
-      els.credit.innerHTML = `Playing from <a href="${esc(t.source)}" target="_blank" rel="noopener">YouTube</a> · added by you`;
+      els.credit.innerHTML = `Playing from <a href="${esc(t.source)}" target="_blank" rel="noopener">YouTube</a>${t.category === "yours" ? " · added by you" : ` · ${esc(t.artist || "")}`}`;
     } else if (t.category === "yours" && !t.license) {
       els.credit.innerHTML = `Stream · <a href="${esc(t.source)}" target="_blank" rel="noopener">${esc(t.host || t.source)}</a> · added by you`;
     } else {
