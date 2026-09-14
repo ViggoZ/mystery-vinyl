@@ -7,7 +7,7 @@
     title: $("#title"), artist: $("#artist"), credit: $("#credit"),
     play: $("#play"), prev: $("#prev"), next: $("#next"), power: $("#power"),
     theme: $("#theme"), zen: $("#zen"), crackle: $("#crackle"), toast: $("#toast"),
-    arm: $("#arm"), armWobble: $("#armWobble"), record: $("#record"), label: $("#label"), platter: $("#platter"),
+    arm: $("#arm"), armWobble: $("#armWobble"), record: $("#record"), carrier: $("#carrier"), label: $("#label"), platter: $("#platter"),
     hint: $("#hint"), turntable: $("#turntable"), armTip: $("#arm-tip"),
     crate: $("#crate"), crateForm: $("#crate-form"), crateInput: $("#crate-input"), crateList: $("#crate-list"), ytShell: $("#yt-shell"),
   };
@@ -464,7 +464,7 @@
       state.brake = true; state.targetOmega = 0;
       setArm(ANGLE_REST, { lifted: true, ms: wasPlaying ? 900 : 300 });
       // 2. swap the record while the arm travels
-      if (swapRecord) { els.record.classList.add("out"); await wait(560); }
+      if (swapRecord) { els.carrier.classList.add("out"); await wait(560); }
       // stop whichever backend was sounding
       if (isYT(state.cur) && !isYT(t)) ytStop();
       if (!isYT(t)) { if (isYT(state.cur)) { /* nothing */ } }
@@ -482,9 +482,9 @@
       }
       if (swapRecord) {
         // jump to the entry position without a transition, then let it slide onto the platter
-        els.record.classList.add("enter"); els.record.classList.remove("out");
-        void els.record.offsetWidth;
-        els.record.classList.remove("enter");
+        els.carrier.classList.add("enter"); els.carrier.classList.remove("out");
+        void els.carrier.offsetWidth;
+        els.carrier.classList.remove("enter");
         await wait(560);
       }
       else await wait(wasPlaying ? 500 : 0);
