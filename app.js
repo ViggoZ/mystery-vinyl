@@ -463,7 +463,7 @@
       state.brake = true; state.targetOmega = 0;
       setArm(ANGLE_REST, { lifted: true, ms: wasPlaying ? 900 : 300 });
       // 2. swap the record while the arm travels
-      if (swapRecord) { els.record.classList.add("out"); await wait(420); }
+      if (swapRecord) { els.record.classList.add("out"); await wait(520); }
       // stop whichever backend was sounding
       if (isYT(state.cur) && !isYT(t)) ytStop();
       if (!isYT(t)) { if (isYT(state.cur)) { /* nothing */ } }
@@ -479,7 +479,13 @@
       } else {
         audio.src = t.url; audio.load();
       }
-      if (swapRecord) { await wait(60); els.record.classList.remove("out"); await wait(380); }
+      if (swapRecord) {
+        // jump to the entry position without a transition, then let it slide onto the platter
+        els.record.classList.add("enter"); els.record.classList.remove("out");
+        void els.record.offsetWidth;
+        els.record.classList.remove("enter");
+        await wait(520);
+      }
       else await wait(wasPlaying ? 500 : 0);
       // Before the first play, check whether the browser will let us start
       // without a gesture. If not, leave the arm on its rest and wait for a click.

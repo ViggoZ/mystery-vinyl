@@ -297,9 +297,11 @@ body.playing .btn-main .ic-pause { display: block; }
   background: #121212;
   box-shadow: 0 4px 12px rgba(0,0,0,.32), inset 0 0 0 1px #050505;
   will-change: transform;
-  transition: opacity .35s ease, scale .35s ease;
+  transition: translate .5s cubic-bezier(.4, 0, .2, 1), scale .5s cubic-bezier(.4, 0, .2, 1), opacity .3s ease, box-shadow .5s ease;
 }
-.record.out { opacity: 0; scale: .96; }
+/* swapping records: the old one slides off to the left, the new one comes in from the right */
+.record.out { translate: -36% -12%; scale: .97; opacity: 0; box-shadow: 0 26px 40px rgba(0,0,0,.45), inset 0 0 0 1px #050505; transition-timing-function: cubic-bezier(.5, 0, .8, .4); transition-delay: 0s, 0s, .22s, 0s; }
+.record.enter { transition: none; translate: 36% -12%; scale: .97; opacity: 0; box-shadow: 0 26px 40px rgba(0,0,0,.45), inset 0 0 0 1px #050505; }
 .grooves {
   position: absolute; inset: 0; border-radius: 50%;
   background:
