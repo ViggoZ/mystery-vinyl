@@ -6,7 +6,7 @@
     modes: $("#modes"), wave: $("#wave"), cur: $("#cur"), dur: $("#dur"),
     title: $("#title"), artist: $("#artist"), credit: $("#credit"),
     play: $("#play"), prev: $("#prev"), next: $("#next"), power: $("#power"),
-    theme: $("#theme"), zen: $("#zen"),
+    theme: $("#theme"), zen: $("#zen"), crackle: $("#crackle"),
     arm: $("#arm"), armWobble: $("#armWobble"), record: $("#record"), label: $("#label"), platter: $("#platter"),
     hint: $("#hint"),
   };
@@ -79,9 +79,14 @@
 
   // ---------- tonearm ----------
   function setArm(deg, { lifted = false, ms = 1100 } = {}) {
+    const wasLifted = els.arm.classList.contains("lifted");
     els.arm.style.transitionDuration = `${ms}ms, 400ms`;
     els.arm.classList.toggle("lifted", lifted);
     els.arm.style.transform = `rotate(${deg}deg)`;
+    if (lifted !== wasLifted) {
+      if (lifted) { needleLift(); setCrackle(false); }
+      else setTimeout(() => { needleDrop(); setCrackle(true); }, 220);   // after the drop animation
+    }
   }
   function trackArm() {
     if (!state.playing || !audio.duration) return;
@@ -101,7 +106,84 @@
       analyser.smoothingTimeConstant = 0.82;
       src.connect(analyser); analyser.connect(ctx.destination);
       data = new Uint8Array(analyser.frequencyBinCount);
+      buildCrackle();
+      setCrackle(!els.arm.classList.contains("lifted"));
     } catch (e) { console.warn("Web Audio unavailable", e); }
+  }
+
+  // ---------- vinyl surface noise (synthesized, no samples) ----------
+  // A looped pink-ish hiss through a band-pass, plus randomly spaced pops
+  // (short decaying noise bursts, a few of them big). Everything is scheduled
+  // on the audio clock, so it keeps ticking in a background tab.
+  const CRACKLE_LEVEL = 0.16;
+  const crackle = { on: store.get("mv.crackle") !== "off", gain: null, hp: null, popBuf: null, nextPop: 0, timer: null };
+  function buildCrackle() {
+    if (!ctx || crackle.gain) return;
+    crackle.gain = ctx.createGain(); crackle.gain.gain.value = 0; crackle.gain.connect(ctx.destination);
+    // hiss
+    const n = ctx.sampleRate * 2, buf = ctx.createBuffer(1, n, ctx.sampleRate), d = buf.getChannelData(0);
+    let b0 = 0, b1 = 0, b2 = 0;
+    for (let i = 0; i < n; i++) {
+      const w = Math.random() * 2 - 1;
+      b0 = 0.99765 * b0 + w * 0.0990460; b1 = 0.96300 * b1 + w * 0.2965164; b2 = 0.57000 * b2 + w * 1.0526913;
+      d[i] = (b0 + b1 + b2 + w * 0.1848) * 0.06;
+    }
+    const hiss = ctx.createBufferSource(); hiss.buffer = buf; hiss.loop = true;
+    const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 4200; bp.Q.value = 0.45;
+    const hissGain = ctx.createGain(); hissGain.gain.value = 0.4;
+    hiss.connect(bp).connect(hissGain).connect(crackle.gain); hiss.start();
+    // pops
+    const pl = Math.floor(ctx.sampleRate * 0.04), pb = ctx.createBuffer(1, pl, ctx.sampleRate), pd = pb.getChannelData(0);
+    for (let i = 0; i < pl; i++) pd[i] = (Math.random() * 2 - 1) * Math.exp(-i / (pl * 0.07));
+    crackle.popBuf = pb;
+    crackle.hp = ctx.createBiquadFilter(); crackle.hp.type = "highpass"; crackle.hp.frequency.value = 1600;
+    crackle.hp.connect(crackle.gain);
+    crackle.nextPop = ctx.currentTime;
+    schedulePops();
+  }
+  function pop(level, when = ctx.currentTime) {
+    const src = ctx.createBufferSource(); src.buffer = crackle.popBuf;
+    src.playbackRate.value = 0.6 + Math.random() * 1.4;
+    const g = ctx.createGain(); g.gain.value = level;
+    src.connect(g).connect(crackle.hp); src.start(when);
+  }
+  function schedulePops() {
+    clearTimeout(crackle.timer);
+    const horizon = ctx.currentTime + 1.6;
+    while (crackle.nextPop < horizon) {
+      const big = Math.random() < 0.07;
+      pop(big ? 0.5 + Math.random() * 0.5 : 0.04 + Math.random() * 0.16, crackle.nextPop);
+      crackle.nextPop += -Math.log(1 - Math.random()) / 8;   // ~8 pops/s, exponential spacing
+    }
+    crackle.timer = setTimeout(schedulePops, 700);
+  }
+  // Fade the surface noise in when the needle sits in the groove, out when it lifts.
+  function setCrackle(onRecord) {
+    if (!crackle.gain) return;
+    const g = crackle.gain.gain, t = ctx.currentTime;
+    g.cancelScheduledValues(t); g.setTargetAtTime(onRecord && crackle.on ? CRACKLE_LEVEL : 0, t, 0.12);
+  }
+  function needleDrop() {
+    if (!ctx || !crackle.on) return;
+    const t = ctx.currentTime;
+    const o = ctx.createOscillator(); o.type = "sine";
+    o.frequency.setValueAtTime(120, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.2);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.3, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+    o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + 0.3);
+    const p = ctx.createBufferSource(); p.buffer = crackle.popBuf; p.playbackRate.value = 0.5;
+    const pg = ctx.createGain(); pg.gain.value = 0.25; p.connect(pg).connect(ctx.destination); p.start(t);
+  }
+  function needleLift() {
+    if (!ctx || !crackle.on || !crackle.popBuf) return;
+    const p = ctx.createBufferSource(); p.buffer = crackle.popBuf; p.playbackRate.value = 1.2;
+    const g = ctx.createGain(); g.gain.value = 0.08; p.connect(g).connect(ctx.destination); p.start();
+  }
+  function toggleCrackle() {
+    crackle.on = !crackle.on;
+    store.set("mv.crackle", crackle.on ? "on" : "off");
+    els.crackle.setAttribute("aria-pressed", String(crackle.on));
+    setCrackle(!els.arm.classList.contains("lifted"));
   }
 
   const wctx = els.wave.getContext("2d");
@@ -307,6 +389,7 @@
     else if (e.code === "ArrowLeft") { if (!state.busy) prev(); }
     else if (e.key === "f" || e.key === "F") toggleZen();
     else if (e.key === "t" || e.key === "T") toggleTheme();
+    else if (e.key === "n" || e.key === "N") toggleCrackle();
     else if (e.key === "Escape" && document.body.classList.contains("zen") && !document.fullscreenElement) setZen(false);
   });
 
@@ -319,6 +402,8 @@
     refreshWaveColors();
   }
   els.theme.addEventListener("click", toggleTheme);
+  els.crackle.addEventListener("click", toggleCrackle);
+  els.crackle.setAttribute("aria-pressed", String(crackle.on));
   if (document.documentElement.dataset.theme === "light") document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#FBF7F1");
 
   // ---------- zen / full screen ----------
@@ -350,7 +435,7 @@
     navigator.mediaSession.setActionHandler("previoustrack", () => prev());
   }
 
-  window.__mv = { state, audio, get analyser() { return analyser; }, get data() { return data; } };
+  window.__mv = { state, audio, crackle, get ctx() { return ctx; }, get analyser() { return analyser; }, get data() { return data; } };
 
   // ---------- boot ----------
   fetch("data/catalog.json").then((r) => r.json()).then((cat) => {
