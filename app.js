@@ -1122,7 +1122,7 @@
 
   // ---------- easter egg: the night cat (00:00–05:00 local, or ?cat) ----------
   const cat = $("#cat"), CAT_FORCED = /[?&]cat\b/.test(location.search);
-  function catCheck() { const h = new Date().getHours(); cat.hidden = !(CAT_FORCED || h < 5); }
+  function catCheck() { const h = new Date().getHours(); cat.toggleAttribute("hidden", !(CAT_FORCED || h < 5)); }
   catCheck(); setInterval(catCheck, 60000);
 
   // ---------- easter egg: dust ----------
