@@ -1,12 +1,12 @@
 <p align="center">
-  <a href="https://vinyl.uiboy.com/"><img src="assets/dark-5.png" alt="Mystery Vinyl — a turntable drawn in CSS and SVG, playing a random record" width="100%"></a>
+  <a href="https://fm.uiboy.com/"><img src="assets/dark-5.png" alt="Mystery Vinyl — a turntable drawn in CSS and SVG, playing a random record" width="100%"></a>
 </p>
 
 <h1 align="center">Mystery Vinyl</h1>
 
 <p align="center">
   Open the page, a record drops, music plays.<br>
-  <a href="https://vinyl.uiboy.com/"><strong>vinyl.uiboy.com</strong></a>
+  <a href="https://fm.uiboy.com/"><strong>fm.uiboy.com</strong></a>
 </p>
 
 <p align="center">
