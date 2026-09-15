@@ -19,7 +19,8 @@ Pick a mood and the deck pulls a random record from that crate. The turntable on
 
 - **Drops the needle for you.** The tonearm swings over the lead-in groove, drops, and tracks inward as the song plays. Skipping brakes the platter, swaps the record and starts again.
 - **Real turntable physics.** The platter spins at 33⅓ with motor pull-up and coast-down. The record sits on the mat with its own inertia, so it lags on start and overruns when the platter stops. A slightly warped pressing nudges the arm once per revolution.
-- **Sounds like vinyl.** Surface hiss and random crackle are synthesized with Web Audio (no samples), fade in when the needle lands and out when it lifts. Dropping the needle thumps. Toggle it with `N`.
+- **Sounds like vinyl.** Surface hiss and random crackle are synthesized with Web Audio (no samples), fade in when the needle lands and out when it lifts. Dropping the needle thumps. Toggle it with `N`, set its level in the Ambience panel.
+- **Room sounds.** The Ambience panel (sliders icon) has eight loops from [Moodist](https://github.com/remvze/moodist): light rain, rain on a window, thunder, café, campfire, waves, wind in trees, a village at night. Each has its own level; they belong to the room, so they keep going when the record stops. Off by default, remembered per browser.
 - **Live waveform.** The bars are the actual spectrum from an `AnalyserNode`, coloured up to the playhead. Click to seek.
 - **Grab the tonearm.** Drag the headshell along the record and let go to drop the needle there; drag it all the way out to the rest to pause.
 - **Your own music.** Paste a YouTube video, playlist or live link, a Spotify link, an archive.org album, or an mp3 / radio stream into the *Yours* crate.
@@ -103,8 +104,9 @@ Edit the `AUDIUS`, `YT` and `CATEGORIES` maps there to add or swap sources per m
 ## Files
 
 - `index.html` — markup, logo, the tonearm SVG, the crate popover
-- `styles.css` — theme tokens, layout, the plinth / platter / record / sheen, zen mode
-- `app.js` — queue and transport, platter physics, tonearm geometry, waveform, crackle, YouTube backend, crate
+- `styles.css` — theme tokens, layout, the plinth / platter / record / sheen, zen mode, ambience panel
+- `app.js` — queue and transport, platter physics, tonearm geometry, waveform, crackle, room sounds, YouTube and Spotify backends, crate
+- `assets/sounds/` — the eight ambient loops (see `CREDITS.md` there)
 - `scripts/build-catalog.py` — builds `data/catalog.json`
 
 ## License

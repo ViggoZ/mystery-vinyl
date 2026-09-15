@@ -6,7 +6,7 @@
     modes: $("#modes"), wave: $("#wave"), cur: $("#cur"), dur: $("#dur"),
     title: $("#title"), artist: $("#artist"), credit: $("#credit"),
     play: $("#play"), prev: $("#prev"), next: $("#next"), power: $("#power"),
-    theme: $("#theme"), zen: $("#zen"), crackle: $("#crackle"), toast: $("#toast"),
+    theme: $("#theme"), zen: $("#zen"), crackle: $("#crackle"), crackleLevel: $("#crackle-level"), ambience: $("#ambience"), amb: $("#amb"), ambGrid: $("#amb-grid"), toast: $("#toast"),
     arm: $("#arm"), armWobble: $("#armWobble"), record: $("#record"), carrier: $("#carrier"), label: $("#label"), platter: $("#platter"),
     hint: $("#hint"), turntable: $("#turntable"), armTip: $("#arm-tip"),
     crate: $("#crate"), crateForm: $("#crate-form"), crateInput: $("#crate-input"), crateList: $("#crate-list"), ytShell: $("#yt-shell"), spShell: $("#sp-shell"),
@@ -145,8 +145,9 @@
   // A looped pink-ish hiss through a band-pass, plus randomly spaced pops
   // (short decaying noise bursts, a few of them big). Everything is scheduled
   // on the audio clock, so it keeps ticking in a background tab.
-  const CRACKLE_LEVEL = 0.16;
-  const crackle = { on: store.get("mv.crackle") !== "off", gain: null, hp: null, popBuf: null, nextPop: 0, timer: null };
+  const CRACKLE_MAX = 0.27;                                   // slider at 1.0
+  const crackle = { on: store.get("mv.crackle") !== "off", level: Math.min(1, Math.max(0, parseFloat(store.get("mv.crackle.level") ?? "0.6"))), gain: null, hp: null, popBuf: null, nextPop: 0, timer: null };
+  const CRACKLE_LEVEL = () => CRACKLE_MAX * crackle.level;
   function buildCrackle() {
     if (!ctx || crackle.gain) return;
     crackle.gain = ctx.createGain(); crackle.gain.gain.value = 0; crackle.gain.connect(ctx.destination);
@@ -191,7 +192,7 @@
   function setCrackle(onRecord) {
     if (!crackle.gain) return;
     const g = crackle.gain.gain, t = ctx.currentTime;
-    g.cancelScheduledValues(t); g.setTargetAtTime(onRecord && crackle.on ? CRACKLE_LEVEL : 0, t, 0.12);
+    g.cancelScheduledValues(t); g.setTargetAtTime(onRecord && crackle.on ? CRACKLE_LEVEL() : 0, t, 0.12);
   }
   function needleDrop() {
     if (!ctx || !crackle.on) return;
@@ -213,10 +214,86 @@
     crackle.on = !crackle.on;
     store.set("mv.crackle", crackle.on ? "on" : "off");
     els.crackle.setAttribute("aria-pressed", String(crackle.on));
-    els.crackle.dataset.tip = crackle.on ? "Vinyl crackle on · N" : "Vinyl crackle off · N";
     setCrackle(!els.arm.classList.contains("lifted"));
     toast(crackle.on ? "Vinyl crackle on" : "Vinyl crackle off");
   }
+
+  // ---------- room sounds (ambience) ----------
+  // Loops from Moodist (Pixabay / CC0), decoded once and looped gaplessly. They are part of the
+  // room, not the record: they keep playing while the needle is up. Not routed through the
+  // analyser, so the waveform stays the music's.
+  const AMBIENCE = [
+    { id: "light-rain", label: "Light rain" }, { id: "rain-on-window", label: "Rainy window" },
+    { id: "thunder", label: "Thunder" }, { id: "cafe", label: "Café" },
+    { id: "campfire", label: "Campfire" }, { id: "waves", label: "Waves" },
+    { id: "wind-in-trees", label: "Wind" }, { id: "night-village", label: "Night" },
+  ];
+  const amb = { levels: {}, on: {}, nodes: {}, buffers: {}, master: null };
+  try { const saved = JSON.parse(store.get("mv.ambience") || "{}"); amb.levels = saved.levels || {}; amb.on = saved.on || {}; } catch {}
+  function saveAmbience() { store.set("mv.ambience", JSON.stringify({ levels: amb.levels, on: amb.on })); }
+  function ambMaster() {
+    if (!ctx) ensureAudioGraph();
+    if (!ctx) return null;
+    if (!amb.master) { amb.master = ctx.createGain(); amb.master.gain.value = 1; amb.master.connect(ctx.destination); }
+    if (ctx.state === "suspended") ctx.resume();
+    return amb.master;
+  }
+  async function ambBuffer(id) {
+    if (amb.buffers[id]) return amb.buffers[id];
+    const r = await fetch(`assets/sounds/${id}.mp3`); const ab = await r.arrayBuffer();
+    amb.buffers[id] = await ctx.decodeAudioData(ab);
+    return amb.buffers[id];
+  }
+  async function ambStart(id) {
+    const master = ambMaster(); if (!master) return;
+    if (amb.nodes[id]) return;
+    const gain = ctx.createGain(); gain.gain.value = 0; gain.connect(master);
+    amb.nodes[id] = { gain, src: null };
+    let buf; try { buf = await ambBuffer(id); } catch { toast("Couldn't load that sound"); delete amb.nodes[id]; return; }
+    if (!amb.nodes[id] || !amb.on[id]) { gain.disconnect(); delete amb.nodes[id]; return; }   // switched off while loading
+    const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true; src.connect(gain);
+    src.start(0, Math.random() * buf.duration);                       // start somewhere inside the loop
+    amb.nodes[id].src = src;
+    gain.gain.setTargetAtTime(amb.levels[id] ?? 0.5, ctx.currentTime, 0.4);
+  }
+  function ambStop(id) {
+    const n = amb.nodes[id]; if (!n) return;
+    const t = ctx.currentTime; n.gain.gain.setTargetAtTime(0, t, 0.25);
+    const src = n.src; setTimeout(() => { try { src && src.stop(); } catch {} n.gain.disconnect(); }, 900);
+    delete amb.nodes[id];
+  }
+  function ambSet(id, on, level) {
+    if (level != null) amb.levels[id] = level;
+    if (on != null) amb.on[id] = on;
+    saveAmbience();
+    if (amb.on[id]) { if (amb.nodes[id] && amb.nodes[id].src) amb.nodes[id].gain.gain.setTargetAtTime(amb.levels[id] ?? 0.5, ctx.currentTime, 0.1); else ambStart(id); }
+    else ambStop(id);
+  }
+  function renderAmbience() {
+    els.ambGrid.innerHTML = AMBIENCE.map((s) => `
+      <div class="amb-row">
+        <button class="amb-toggle" data-id="${s.id}" aria-pressed="${amb.on[s.id] ? "true" : "false"}"><span class="amb-dot"></span><span class="amb-name">${s.label}</span></button>
+        <input class="amb-level" type="range" min="0" max="1" step="0.01" value="${amb.levels[s.id] ?? 0.5}" data-id="${s.id}" aria-label="${s.label} level" />
+      </div>`).join("");
+    els.crackle.setAttribute("aria-pressed", String(crackle.on));
+    els.crackleLevel.value = crackle.level;
+  }
+  function toggleAmbience(force) {
+    const open = force ?? els.amb.hidden;
+    els.amb.hidden = !open; els.ambience.setAttribute("aria-expanded", String(open));
+    if (open) renderAmbience();
+  }
+  els.ambience.addEventListener("click", (e) => { e.stopPropagation(); toggleAmbience(); });
+  els.ambGrid.addEventListener("click", (e) => {
+    const b = e.target.closest(".amb-toggle"); if (!b) return;
+    const on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", String(on)); ambSet(b.dataset.id, on, null);
+  });
+  els.ambGrid.addEventListener("input", (e) => { const r = e.target.closest(".amb-level"); if (r) ambSet(r.dataset.id, null, parseFloat(r.value)); });
+  els.crackleLevel.addEventListener("input", () => { crackle.level = parseFloat(els.crackleLevel.value); store.set("mv.crackle.level", String(crackle.level)); setCrackle(!els.arm.classList.contains("lifted")); });
+  document.addEventListener("pointerdown", (e) => { if (!els.amb.hidden && !e.target.closest("#amb, #ambience")) toggleAmbience(false); });
+  // sounds left on last time come back on the first gesture (the audio context needs one)
+  function ambResumeSaved() { for (const s of AMBIENCE) if (amb.on[s.id]) ambStart(s.id); }
+  document.addEventListener("pointerdown", function once() { document.removeEventListener("pointerdown", once, true); setTimeout(ambResumeSaved, 300); }, true);
 
   const wctx = els.wave.getContext("2d");
   let waveOn = "#d9b896", waveOff = "#4a4a4a";
@@ -638,7 +715,7 @@
     document.removeEventListener("keydown", onFirstGesture, true);
   }
   async function onFirstGesture(e) {
-    if (e.target.closest && e.target.closest("a, input, .mode, #next, #prev, #crate, #sleeve")) { disarm(); return; }
+    if (e.target.closest && e.target.closest("a, input, .mode, #next, #prev, #crate, #sleeve, #amb, #ambience")) { disarm(); return; }
     disarm();
     if (state.busy || state.playing) return;
     await resume();
@@ -924,6 +1001,7 @@
     else if (e.key === "n" || e.key === "N") toggleCrackle();
     else if (e.key === "Escape") {
       if (!liner.hidden) setLiner(false);
+      else if (!els.amb.hidden) toggleAmbience(false);
       else if (!els.crate.hidden) toggleCrate(false);
       else if (document.body.classList.contains("zen") && !document.fullscreenElement) setZen(false);
     }
@@ -959,7 +1037,6 @@
   els.theme.addEventListener("click", toggleTheme);
   els.crackle.addEventListener("click", toggleCrackle);
   els.crackle.setAttribute("aria-pressed", String(crackle.on));
-  els.crackle.dataset.tip = crackle.on ? "Vinyl crackle on · N" : "Vinyl crackle off · N";
   if (document.documentElement.dataset.theme === "light") document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#FBF7F1");
 
   // ---------- zen / full screen ----------
@@ -993,7 +1070,7 @@
     navigator.mediaSession.setActionHandler("previoustrack", () => prev());
   }
 
-  window.__mv = { state, audio, crackle, yt, addSource, parseSource, get ctx() { return ctx; }, get analyser() { return analyser; }, get data() { return data; } };
+  window.__mv = { state, audio, crackle, yt, amb, addSource, parseSource, get ctx() { return ctx; }, get analyser() { return analyser; }, get data() { return data; } };
 
   // ---------- boot ----------
   fetch("data/catalog.json").then((r) => r.json()).then(async (cat) => {

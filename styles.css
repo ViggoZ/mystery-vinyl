@@ -187,6 +187,32 @@ body.zen .ic-collapse { display: block; }
 .crate-remove:hover { background: var(--btn-hover); color: var(--ink); }
 .crate-empty { padding: 12px 4px 4px; font-size: 12px; color: var(--faint); }
 
+/* ---------- ambience panel ---------- */
+.amb {
+  position: fixed; z-index: 7; right: 80px; top: calc(var(--band) / 2 + 26px);
+  width: min(440px, calc(100vw - 32px)); padding: 12px 14px 10px; border-radius: 14px;
+  background: var(--bg); border: 1px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,.35);
+  transform-origin: calc(100% - 24px) 0; animation: crate-in .18s ease both;
+}
+.amb[hidden] { display: none; }
+.amb-row { display: grid; grid-template-columns: 1fr 96px; align-items: center; gap: 10px; padding: 6px 2px; }
+.amb-toggle { display: flex; align-items: center; gap: 10px; text-align: left; font-size: 12px; color: var(--muted); min-width: 0; }
+.amb-toggle .amb-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.amb-dot { flex: none; width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--line); background: transparent; transition: background .2s, border-color .2s, box-shadow .2s; }
+.amb-toggle[aria-pressed="true"] { color: var(--ink); }
+.amb-toggle[aria-pressed="true"] .amb-dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 8px rgba(217,184,150,.5); }
+.amb-toggle:hover { color: var(--ink); }
+.amb-level { width: 96px; accent-color: var(--accent); opacity: .35; transition: opacity .2s; }
+.amb-row:has(.amb-toggle[aria-pressed="true"]) .amb-level { opacity: 1; }
+.amb-sep { height: 1px; background: var(--line); margin: 6px 0; }
+.amb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+.amb-grid .amb-row { grid-template-columns: 1fr 70px; }
+.amb-grid .amb-level { width: 70px; }
+.amb-note { margin: 8px 2px 0; font-size: 11px; color: var(--faint); }
+body.zen .amb { display: none; }
+@media (max-width: 1100px) { .amb { right: 40px; } }
+@media (max-width: 860px) { .amb { right: 16px; top: 64px; } .amb-grid { grid-template-columns: 1fr; } }
+
 /* hidden YouTube player: present in the viewport but invisible */
 #yt-shell, #sp-shell { position: fixed; right: 0; bottom: 0; width: 300px; height: 200px; opacity: 0.001; pointer-events: none; overflow: hidden; z-index: -1; }
 #yt-shell iframe { width: 200px; height: 200px; border: 0; }
