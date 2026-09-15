@@ -146,6 +146,13 @@
   // (short decaying noise bursts, a few of them big). Everything is scheduled
   // on the audio clock, so it keeps ticking in a background tab.
   const CRACKLE_MAX = 0.27;                                   // slider at 1.0
+  // music volume: the audio element and the YouTube player follow it; Spotify's embed has no volume API
+  const music = { level: Math.min(1, Math.max(0, parseFloat(store.get("mv.music.level") ?? "1"))) };
+  function applyMusicVolume() {
+    audio.volume = music.level;
+    try { yt.player?.setVolume?.(Math.round(music.level * 100)); } catch {}
+  }
+  audio.volume = music.level;
   const crackle = { on: store.get("mv.crackle") !== "off", level: Math.min(1, Math.max(0, parseFloat(store.get("mv.crackle.level") ?? "0.6"))), gain: null, hp: null, popBuf: null, nextPop: 0, timer: null };
   const CRACKLE_LEVEL = () => CRACKLE_MAX * crackle.level;
   function buildCrackle() {
@@ -282,9 +289,15 @@
   function renderAmbience() {
     const active = ambActive();
     // mixer: crackle first, then every room sound that's on
+    const sp = isSP(state.cur);
     els.ambMixer.innerHTML = `
+      <div class="amb-row is-music${sp ? " is-off" : ""}">
+        ${ICON("music")}<span class="amb-name">Music${sp ? ' <span class="amb-note">· Spotify sets its own</span>' : ""}</span>
+        <input class="amb-level" type="range" min="0" max="1" step="0.01" value="${music.level}" data-id="music" aria-label="Music level"${sp ? " disabled" : ""} />
+        <span></span>
+      </div>
       <div class="amb-row is-crackle">
-        ${ICON("music")}<span class="amb-name">Vinyl crackle</span>
+        ${ICON("audio-waveform")}<span class="amb-name">Vinyl crackle</span>
         <input class="amb-level" type="range" min="0" max="1" step="0.01" value="${crackle.on ? crackle.level : 0}" data-id="crackle" aria-label="Vinyl crackle level" />
         <button class="amb-off" data-id="crackle" title="${crackle.on ? "Turn off" : "Turn on"}" aria-pressed="${crackle.on}">${ICON(crackle.on ? "close" : "plus")}</button>
       </div>` + active.map((s) => `
@@ -315,6 +328,7 @@
   els.ambMixer.addEventListener("input", (e) => {
     const r = e.target.closest(".amb-level"); if (!r) return;
     r.style.setProperty("--p", `${Math.round(r.value * 100)}%`);
+    if (r.dataset.id === "music") { music.level = parseFloat(r.value); store.set("mv.music.level", String(music.level)); applyMusicVolume(); return; }
     if (r.dataset.id === "crackle") { crackle.level = parseFloat(r.value); store.set("mv.crackle.level", String(crackle.level)); if (!crackle.on && crackle.level > 0) toggleCrackle(true); else setCrackle(); return; }
     ambSet(r.dataset.id, null, parseFloat(r.value));
   });
@@ -407,7 +421,7 @@
           width: 200, height: 200,
           playerVars: { controls: 0, disablekb: 1, playsinline: 1, rel: 0, iv_load_policy: 3, origin: location.origin },
           events: {
-            onReady: () => { clearTimeout(timeout); resolve(yt.player); },
+            onReady: () => { clearTimeout(timeout); applyMusicVolume(); resolve(yt.player); },
             onStateChange: onYTState,
             onError: onYTError,
           },
@@ -609,6 +623,7 @@
     tryAt(0);
   }
   function renderTrack(t) {
+    if (!els.amb.hidden) renderAmbience();
     // YouTube titles usually carry the artist already ("Artist - Song"); don't double it.
     const dup = t.artist && t.title.toLowerCase().startsWith(t.artist.toLowerCase());
     els.title.textContent = t.artist && !dup ? `${t.artist} - ${t.title}` : t.title;

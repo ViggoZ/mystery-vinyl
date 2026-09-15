@@ -313,7 +313,11 @@ body.zen .ic-collapse { display: block; }
 .amb-off { width: 22px; height: 22px; border-radius: 0; color: var(--muted); display: grid; place-items: center; }
 .amb-off svg { width: 14px; height: 14px; fill: currentColor; color: inherit; }
 .amb-off:hover { background: var(--btn-hover); color: var(--ink); }
-.amb-row.is-crackle { padding-top: 0; }
+.amb-row.is-music { padding-top: 0; }
+.amb-row.is-off { color: var(--muted); }
+.amb-row.is-off svg { color: var(--muted); }
+.amb-note { color: var(--faint); font-size: 11px; }
+.amb-level:disabled { opacity: .35; cursor: default; }
 /* tabs */
 .amb-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding-bottom: 8px; }
 .amb-tab { font-size: 11px; padding: 4px 9px; border-radius: 0; border: 1px solid transparent; color: var(--muted); }
