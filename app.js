@@ -381,7 +381,7 @@
 
   // ---------- Spotify backend (hidden Embed player via the IFrame API) ----------
   // Full tracks only when the browser is logged in to Spotify; otherwise 30-second previews.
-  const sp = { api: null, ready: null, controller: null, position: 0, duration: 0, paused: true, waiter: null, lastArm: 0, endedFor: null };
+  const sp = { api: null, ready: null, controller: null, position: 0, duration: 0, paused: true, waiter: null, lastArm: 0, endedFor: null, expect: false };
   function loadSP() {
     if (sp.ready) return sp.ready;
     sp.ready = new Promise((resolve, reject) => {
@@ -410,6 +410,7 @@
     const d = e.data || {};
     sp.position = (d.position || 0) / 1000; sp.duration = (d.duration || 0) / 1000; sp.paused = !!d.isPaused;
     if (!sp.paused) {
+      if (!sp.expect) { try { sp.controller.pause(); } catch {} return; }   // a stale update after we paused: ignore, keep it paused
       if (!state.playing) { state.playing = true; state.everPlayed = true; document.body.classList.add("playing"); state.targetOmega = OMEGA_PLAY; disarm(); }
       if (sp.waiter) sp.waiter.resolve();
       updateClock();
@@ -425,7 +426,7 @@
       sp.waiter = { resolve: () => { clearTimeout(timer); sp.waiter = null; resolve(); } };
     });
   }
-  function spStop() { if (sp.controller) { try { sp.controller.pause(); } catch {} } }
+  function spStop() { sp.expect = false; if (sp.controller) { try { sp.controller.pause(); } catch {} } }
   async function spMeta(url) {
     // oEmbed gives the title and cover without any auth
     try {
@@ -583,6 +584,7 @@
     ensureAudioGraph();
     if (isSP(state.cur)) {
       state.targetOmega = OMEGA_PLAY;
+      sp.expect = true;
       const waiting = spAwaitPlaying();
       try { sp.controller.play(); } catch {}
       try { await waiting; }
