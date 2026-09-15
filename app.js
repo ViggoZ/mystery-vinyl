@@ -584,7 +584,7 @@
     return cats;
   }
 
-  const MODE_ICON = { lofi: "music", focus: "clock", chill: "coffee", night: "moon", yours: "heart" };
+  const MODE_ICON = { lofi: "coffee", focus: "clock", chill: "music", night: "moon", yours: "heart" };
   function renderModes() {
     els.modes.innerHTML = "";
     for (const c of categories()) {
