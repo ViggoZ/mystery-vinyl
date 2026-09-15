@@ -1051,6 +1051,7 @@
     else if (e.key === "f" || e.key === "F") toggleZen();
     else if (e.key === "t" || e.key === "T") toggleTheme();
     else if (e.key === "n" || e.key === "N") toggleCrackle();
+    else if (e.key === "a" || e.key === "A") toggleAmbience();
     else if (e.key === "Escape") {
       if (!liner.hidden) setLiner(false);
       else if (!els.amb.hidden) toggleAmbience(false);

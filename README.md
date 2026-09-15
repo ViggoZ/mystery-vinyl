@@ -75,7 +75,8 @@ Click a source in the list to play it. Sources live in `localStorage` only.
 | `F` | Full screen |
 | `T` | Light / dark |
 | `N` | Vinyl crackle on / off |
-| `Esc` | Close the crate, leave full screen |
+| `A` | Ambience panel |
+| `Esc` | Close the crate or panel, leave full screen |
 
 ## How the turntable is built
 
