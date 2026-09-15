@@ -286,19 +286,19 @@
       <div class="amb-row is-crackle">
         ${ICON("music")}<span class="amb-name">Vinyl crackle</span>
         <input class="amb-level" type="range" min="0" max="1" step="0.01" value="${crackle.on ? crackle.level : 0}" data-id="crackle" aria-label="Vinyl crackle level" />
-        <button class="amb-off" data-id="crackle" title="${crackle.on ? "Turn off" : "Turn on"}" aria-pressed="${crackle.on}">${crackle.on ? "×" : "+"}</button>
+        <button class="amb-off" data-id="crackle" title="${crackle.on ? "Turn off" : "Turn on"}" aria-pressed="${crackle.on}">${ICON(crackle.on ? "close" : "plus")}</button>
       </div>` + active.map((s) => `
       <div class="amb-row">
         ${ICON(s.icon)}<span class="amb-name">${s.label}</span>
         <input class="amb-level" type="range" min="0" max="1" step="0.01" value="${amb.levels[s.id] ?? 0.5}" data-id="${s.id}" aria-label="${s.label} level" />
-        <button class="amb-off" data-id="${s.id}" title="Turn off">×</button>
+        <button class="amb-off" data-id="${s.id}" title="Turn off">${ICON("close")}</button>
       </div>`).join("");
     paintLevels(els.ambMixer);
     els.ambCount.textContent = active.length ? `${active.length} on` : "";
     els.ambMute.hidden = !active.length && !crackle.on;
-    els.ambTabs.innerHTML = AMBIENCE.map((g) => { const n = g.items.filter((s) => amb.on[s.id]).length; return `<button class="amb-tab" role="tab" data-tab="${g.group}" aria-selected="${g.group === amb.tab}">${g.group}${n ? `<span class="n">${n}</span>` : ""}</button>`; }).join("");
+    els.ambTabs.innerHTML = AMBIENCE.map((g) => { const n = g.items.filter((s) => amb.on[s.id]).length; return `<button class="amb-tab px" role="tab" data-tab="${g.group}" aria-selected="${g.group === amb.tab}">${g.group}${n ? `<span class="n">${n}</span>` : ""}</button>`; }).join("");
     const g = AMBIENCE.find((x) => x.group === amb.tab) || AMBIENCE[0];
-    els.ambTiles.innerHTML = g.items.map((s) => `<button class="amb-tile" data-id="${s.id}" aria-pressed="${amb.on[s.id] ? "true" : "false"}" title="${s.label}">${ICON(s.icon)}<span>${s.label}</span></button>`).join("");
+    els.ambTiles.innerHTML = g.items.map((s) => `<button class="amb-tile px" data-id="${s.id}" aria-pressed="${amb.on[s.id] ? "true" : "false"}" title="${s.label}">${ICON(s.icon)}<span>${s.label}</span></button>`).join("");
   }
   function toggleAmbience(force) {
     const open = force ?? els.amb.hidden;
@@ -361,10 +361,13 @@
     }
     const { t, d, live } = pos();
     const progress = live ? 1 : (d ? t / d : 0);
+    // dotted bars: 3px blocks with 2px gaps (canvas is 2x), snapped to whole blocks
+    const SEG = 6, STEP = 10, maxSegs = Math.floor((H + (STEP - SEG)) / STEP);
     for (let i = 0; i < BARS; i++) {
-      const h = Math.max(4, levels[i] * H);
+      const segs = Math.max(1, Math.round(levels[i] * maxSegs));
       wctx.fillStyle = i / BARS < progress ? waveOn : waveOff;
-      wctx.fillRect(i * (bw + gap), H - h, bw, h);
+      const x = Math.round(i * (bw + gap));
+      for (let k = 0; k < segs; k++) wctx.fillRect(x, H - SEG - k * STEP, Math.round(bw), SEG);
     }
   }
   els.wave.addEventListener("click", (e) => {
@@ -571,16 +574,16 @@
     els.modes.innerHTML = "";
     for (const c of categories()) {
       const b = document.createElement("button");
-      b.className = "mode"; b.role = "tab"; b.textContent = c.label; b.title = c.tag;
+      b.className = "mode px"; b.role = "tab"; b.textContent = c.label; b.title = c.tag;
       b.setAttribute("aria-selected", String(c.id === state.category));
       b.addEventListener("click", () => selectCategory(c.id));
       els.modes.appendChild(b);
     }
     // "Yours" always sits at the end: it selects the crate (when it has records) and opens it.
     const yours = document.createElement("button");
-    yours.className = "mode mode-yours"; yours.role = "tab"; yours.title = "Your own music";
+    yours.className = "mode mode-yours px"; yours.role = "tab"; yours.title = "Your own music";
     // a little record crate
-    yours.innerHTML = '<svg viewBox="0 0 14 12" aria-hidden="true"><path d="M1.5 3.5h11l-1 7.5h-9z"/><path d="M1 3.5h12M5 6.5h4"/></svg>Yours';
+    yours.innerHTML = '<svg aria-hidden="true"><use href="assets/pixelarticons.svg#archive"></use></svg>Yours';
     yours.setAttribute("aria-selected", String(state.category === "yours"));
     yours.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -887,10 +890,8 @@
       <li class="crate-item${s.url === now ? " is-playing" : ""}">
         <span class="crate-kind">${s.kind === "yt" ? "YouTube" : s.kind === "sp" ? "Spotify" : s.kind === "ia" ? "Archive" : "Stream"}</span>
         <button class="crate-name" data-i="${i}" title="Play">${esc(s.label || s.url)}</button>
-        <a class="crate-open" href="${esc(s.url)}" target="_blank" rel="noopener" title="Open the link" aria-label="Open the link">
-          <svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg>
-        </a>
-        <button class="crate-remove" data-i="${i}" aria-label="Remove">×</button>
+        <a class="crate-open" href="${esc(s.url)}" target="_blank" rel="noopener" title="Open the link" aria-label="Open the link"><svg aria-hidden="true"><use href="assets/pixelarticons.svg#external-link"></use></svg></a>
+        <button class="crate-remove" data-i="${i}" aria-label="Remove"><svg aria-hidden="true"><use href="assets/pixelarticons.svg#close"></use></svg></button>
       </li>`).join("") || `<li class="crate-empty">YouTube video, playlist or live · Spotify track, album or playlist · archive.org album · mp3 or radio stream</li>`;
   }
   function playSource(i) {
