@@ -648,7 +648,7 @@ body.zen.idle { cursor: none; }
   body { --band: 72px; }
   .sleeve { margin: 16px 0 0 16px; } .logo svg { height: 40px; }
   .topnav { right: 10px; top: 16px; }
-  .stage { padding: 4px 16px 0; gap: 22px; }
+  .stage { padding: 20px 16px 0; gap: 22px; }
   .turntable, body.zen .turntable { max-width: 100%; }
   /* the panel sits under the deck and reads centred, like the deck above it */
   .panel { max-width: none; text-align: center; }
