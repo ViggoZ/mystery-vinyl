@@ -586,7 +586,8 @@
       state.targetOmega = OMEGA_PLAY;
       sp.expect = true;
       const waiting = spAwaitPlaying();
-      try { sp.controller.play(); } catch {}
+      // play() restarts the track; resume() continues from the pause point
+      try { if (sp.position > 0.5 && sp.controller.resume) sp.controller.resume(); else sp.controller.play(); } catch {}
       try { await waiting; }
       catch (err) {
         if (!navigator.userActivation?.hasBeenActive) { state.targetOmega = 0; setArm(ANGLE_REST, { lifted: true, ms: 600 }); arm(); }
