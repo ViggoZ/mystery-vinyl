@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://vinyl.uiboy.com/"><img src="assets/dark-4.png" alt="Mystery Vinyl — a turntable drawn in CSS and SVG, playing a random record" width="100%"></a>
+  <a href="https://vinyl.uiboy.com/"><img src="assets/dark-5.png" alt="Mystery Vinyl — a turntable drawn in CSS and SVG, playing a random record" width="100%"></a>
 </p>
 
 <h1 align="center">Mystery Vinyl</h1>
@@ -10,21 +10,21 @@
 </p>
 
 <p align="center">
-  <img src="assets/record-swap-4.gif" alt="Skipping a record: the arm lifts, the platter brakes, the record is swapped, the arm swings back in and drops" width="100%">
+  <img src="assets/record-swap-5.gif" alt="Skipping a record: the arm lifts, the platter brakes, the record is swapped, the arm swings back in and drops" width="100%">
 </p>
 
-Pick a mood and the deck pulls a random record from that crate. The turntable on the right is not an image: the plinth, platter, record, grooves and sheen are CSS, the tonearm is SVG, and everything moves the way the real thing does.
+Pick a mood and the deck pulls a random record from that crate. The turntable on the right is not an image: the plinth, platter, record, grooves and sheen are CSS, the tonearm is SVG, and everything moves the way the real thing does. Everything around the deck is drawn on a pixel grid: [Pixelarticons](https://github.com/halfmage/pixelarticons) for the icons, stepped corners instead of rounded ones, a dotted waveform, [Departure Mono](https://departuremono.com/) for the type.
 
 ## What it does
 
 - **Drops the needle for you.** The tonearm swings over the lead-in groove, drops, and tracks inward as the song plays. Skipping brakes the platter, swaps the record and starts again.
 - **Real turntable physics.** The platter spins at 33⅓ with motor pull-up and coast-down. The record sits on the mat with its own inertia, so it lags on start and overruns when the platter stops. A slightly warped pressing nudges the arm once per revolution.
 - **Sounds like vinyl.** Surface hiss and random crackle are synthesized with Web Audio (no samples). On by default, `N` toggles it, its level lives in the Ambience panel. Dropping the needle thumps.
-- **Room sounds.** The Ambience panel (headphone icon) has 88 loops from [Moodist](https://github.com/remvze/moodist) in nine groups: rain, nature, places, things, city, travel, animals, noise, binaural. Tap a tile to add a sound, mix levels in the list above, mute all in one click. The music itself has a row at the top of that mixer (Spotify's embed sets its own volume, so that row goes quiet while a Spotify link plays). They belong to the room, so they keep going when the record stops. Off by default, remembered per browser, downloaded only when switched on. Icons are [Pixelarticons](https://github.com/halfmage/pixelarticons).
-- **Live waveform.** The bars are the actual spectrum from an `AnalyserNode`, coloured up to the playhead. Click to seek.
+- **Room sounds.** The Ambience panel (headphone icon, or `A`) has 88 loops from [Moodist](https://github.com/remvze/moodist) in nine groups: rain, nature, places, things, city, travel, animals, noise, binaural. Tap a tile to add a sound, mix levels in the list above, mute all in one click. The music itself has a row at the top of that mixer (Spotify's embed sets its own volume, so that row goes quiet while a Spotify link plays). Room sounds belong to the room, so they keep going when the record stops. Off by default, remembered per browser, downloaded only when switched on.
+- **Live waveform.** The dotted bars are the actual spectrum from an `AnalyserNode`, coloured up to the playhead. Click to seek.
 - **Grab the tonearm.** Drag the headshell along the record and let go to drop the needle there; drag it all the way out to the rest to pause.
 - **Your own music.** Paste a YouTube video, playlist or live link, a Spotify link, an archive.org album, or an mp3 / radio stream into the *Yours* crate.
-- **Light and dark**, a **full-screen** mode that hides everything but the deck, keyboard shortcuts, Media Session support for hardware keys.
+- **Light and dark**, a **full-screen** mode that hides everything but the deck, keyboard shortcuts, Media Session support for hardware keys, a phone layout with the deck on top.
 
 ## The crates
 
@@ -38,10 +38,16 @@ Pick a mood and the deck pulls a random record from that crate. The turntable on
 
 Two kinds of source. **Audius** serves real audio with CORS headers, so those records get the live waveform, the crackle and a proper credit line (artist, label, link). Audius is the open catalog the labels publish to themselves: Chillhop Music has ~790 free-to-stream tracks there, College Music ~500. The build script keeps only tracks whose access allows streaming and skips paid ones. **YouTube** radios play through a hidden player (the same thing every lofi radio site does); live stream ids change when a channel restarts a stream, so `python3 scripts/build-catalog.py --check` asks yt-dlp which ones still play and drops the rest.
 
+## Room sounds
+
+<p align="center">
+  <img src="assets/ambience-5.png" alt="The Ambience panel: a mixer with the music, the crackle and three room sounds, tabs for the nine groups, a grid of pixel-icon tiles" width="100%">
+</p>
+
 ## Your own music
 
 <p align="center">
-  <img src="assets/crate-4.png" alt="The Yours crate: paste a link, get a list of your own sources" width="100%">
+  <img src="assets/crate-5.png" alt="The Yours crate: paste a link, get a list of your own sources" width="100%">
 </p>
 
 The *Yours* chip opens your crate. Paste a link, press Add:
@@ -57,8 +63,8 @@ Click a source in the list to play it. Sources live in `localStorage` only.
 
 <table>
   <tr>
-    <td width="50%"><img src="assets/light-4.png" alt="Light theme: cream page, charcoal deck"></td>
-    <td width="50%"><img src="assets/zen-4.png" alt="Full-screen mode: only the deck, waveform and title"></td>
+    <td width="50%"><img src="assets/light-5.png" alt="Light theme: cream page, charcoal deck"></td>
+    <td width="50%"><img src="assets/zen-5.png" alt="Full-screen mode: only the deck, waveform and title"></td>
   </tr>
   <tr>
     <td align="center">Light theme (<code>T</code>)</td>
@@ -105,9 +111,11 @@ Edit the `AUDIUS`, `YT` and `CATEGORIES` maps there to add or swap sources per m
 ## Files
 
 - `index.html` — markup, logo, the tonearm SVG, the crate popover
-- `styles.css` — theme tokens, layout, the plinth / platter / record / sheen, zen mode, ambience panel
+- `styles.css` — theme tokens, layout, the pixel corners, the plinth / platter / record / sheen, zen mode, ambience panel, phone layout
 - `app.js` — queue and transport, platter physics, tonearm geometry, waveform, crackle, room sounds, YouTube and Spotify backends, crate
 - `assets/sounds/` — the ambient loops (see `CREDITS.md` there)
+- `assets/pixelarticons.svg` — the icon sprite (Pixelarticons, MIT, plus a four-corner full-screen glyph drawn on the same grid)
+- `assets/fonts/` — Departure Mono (MIT)
 - `scripts/build-catalog.py` — builds `data/catalog.json`
 
 ## License
