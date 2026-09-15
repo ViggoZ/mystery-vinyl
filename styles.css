@@ -187,7 +187,7 @@ a { color: inherit; }
 
 
 .topnav {
-  position: absolute; top: calc(var(--band) / 2 - 18px); right: 80px;
+  position: absolute; top: calc(var(--band) / 2 - 18px); right: 80px; z-index: 6;
   display: flex; align-items: center; gap: 6px;
 }
 .nav-btn {
