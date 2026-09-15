@@ -20,12 +20,48 @@
   --hint-bg: #2a2a2a;
   --hint-ink: #d9b896;
   --hard: #000;
-  --pxc: 3px;
+  --pxu: 2px;
   --px-corner: polygon(
-    0 calc(2 * var(--pxc)), var(--pxc) calc(2 * var(--pxc)), var(--pxc) var(--pxc), calc(2 * var(--pxc)) var(--pxc), calc(2 * var(--pxc)) 0,
-    calc(100% - 2 * var(--pxc)) 0, calc(100% - 2 * var(--pxc)) var(--pxc), calc(100% - var(--pxc)) var(--pxc), calc(100% - var(--pxc)) calc(2 * var(--pxc)), 100% calc(2 * var(--pxc)),
-    100% calc(100% - 2 * var(--pxc)), calc(100% - var(--pxc)) calc(100% - 2 * var(--pxc)), calc(100% - var(--pxc)) calc(100% - var(--pxc)), calc(100% - 2 * var(--pxc)) calc(100% - var(--pxc)), calc(100% - 2 * var(--pxc)) 100%,
-    calc(2 * var(--pxc)) 100%, calc(2 * var(--pxc)) calc(100% - var(--pxc)), var(--pxc) calc(100% - var(--pxc)), var(--pxc) calc(100% - 2 * var(--pxc)), 0 calc(100% - 2 * var(--pxc)));
+    0 calc(5 * var(--pxu)),
+    calc(1 * var(--pxu)) calc(5 * var(--pxu)),
+    calc(1 * var(--pxu)) calc(3 * var(--pxu)),
+    calc(2 * var(--pxu)) calc(3 * var(--pxu)),
+    calc(2 * var(--pxu)) calc(2 * var(--pxu)),
+    calc(3 * var(--pxu)) calc(2 * var(--pxu)),
+    calc(3 * var(--pxu)) calc(1 * var(--pxu)),
+    calc(4 * var(--pxu)) calc(1 * var(--pxu)),
+    calc(5 * var(--pxu)) calc(1 * var(--pxu)),
+    calc(5 * var(--pxu)) 0,
+    calc(100% - 5 * var(--pxu)) 0,
+    calc(100% - 5 * var(--pxu)) calc(1 * var(--pxu)),
+    calc(100% - 4 * var(--pxu)) calc(1 * var(--pxu)),
+    calc(100% - 3 * var(--pxu)) calc(1 * var(--pxu)),
+    calc(100% - 3 * var(--pxu)) calc(2 * var(--pxu)),
+    calc(100% - 2 * var(--pxu)) calc(2 * var(--pxu)),
+    calc(100% - 2 * var(--pxu)) calc(3 * var(--pxu)),
+    calc(100% - 1 * var(--pxu)) calc(3 * var(--pxu)),
+    calc(100% - 1 * var(--pxu)) calc(5 * var(--pxu)),
+    100% calc(5 * var(--pxu)),
+    100% calc(100% - 5 * var(--pxu)),
+    calc(100% - 1 * var(--pxu)) calc(100% - 5 * var(--pxu)),
+    calc(100% - 1 * var(--pxu)) calc(100% - 3 * var(--pxu)),
+    calc(100% - 2 * var(--pxu)) calc(100% - 3 * var(--pxu)),
+    calc(100% - 2 * var(--pxu)) calc(100% - 2 * var(--pxu)),
+    calc(100% - 3 * var(--pxu)) calc(100% - 2 * var(--pxu)),
+    calc(100% - 3 * var(--pxu)) calc(100% - 1 * var(--pxu)),
+    calc(100% - 4 * var(--pxu)) calc(100% - 1 * var(--pxu)),
+    calc(100% - 5 * var(--pxu)) calc(100% - 1 * var(--pxu)),
+    calc(100% - 5 * var(--pxu)) 100%,
+    calc(5 * var(--pxu)) 100%,
+    calc(5 * var(--pxu)) calc(100% - 1 * var(--pxu)),
+    calc(4 * var(--pxu)) calc(100% - 1 * var(--pxu)),
+    calc(3 * var(--pxu)) calc(100% - 1 * var(--pxu)),
+    calc(3 * var(--pxu)) calc(100% - 2 * var(--pxu)),
+    calc(2 * var(--pxu)) calc(100% - 2 * var(--pxu)),
+    calc(2 * var(--pxu)) calc(100% - 3 * var(--pxu)),
+    calc(1 * var(--pxu)) calc(100% - 3 * var(--pxu)),
+    calc(1 * var(--pxu)) calc(100% - 5 * var(--pxu)),
+    0 calc(100% - 5 * var(--pxu)));
   --plinth-1: #232323;
   --plinth-2: #1d1d1d;
   --plinth-edge: rgba(255,255,255,.07);
@@ -73,7 +109,7 @@
 .px::before { inset: 0; background: var(--px-line, var(--line)); }
 .px::after { inset: 1px; background: var(--px-fill, var(--bg)); }
 .px-shadow { filter: drop-shadow(5px 5px 0 var(--hard)); }
-.px-lg { --pxc: 4px; }
+.px-lg { --pxu: 3px; }
 html, body { height: 100%; }
 body {
   margin: 0;
