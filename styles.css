@@ -527,12 +527,15 @@ body.playing .btn-main .ic-pause { display: block; }
 
 /* ---------- easter eggs: the night cat, dust ---------- */
 .cat {
-  left: calc(690 / 840 * 100%); top: calc(583 / 680 * 100%);
-  width: calc(120 / 840 * 100%); height: auto; overflow: visible;
+  left: calc(722 / 840 * 100%); top: calc(606 / 680 * 100%);
+  width: calc(76 / 840 * 100%); height: auto; overflow: visible;
   shape-rendering: crispEdges; pointer-events: none;
   transform-origin: 50% 100%;
   animation: cat-breathe 4s ease-in-out infinite;
+  /* only while a record plays: with the arm on its rest it would sit right under it */
+  opacity: 0; visibility: hidden; transition: opacity .8s ease, visibility .8s;
 }
+body.playing .cat { opacity: 1; visibility: visible; }
 .cat[hidden] { display: none; }
 .cat-body { fill: #E8D7C0; }
 .cat-stripe { fill: #cdbba2; }
