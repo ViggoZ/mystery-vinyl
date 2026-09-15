@@ -188,8 +188,9 @@ body.zen .ic-collapse { display: block; }
 .crate-empty { padding: 12px 4px 4px; font-size: 12px; color: var(--faint); }
 
 /* hidden YouTube player: present in the viewport but invisible */
-#yt-shell { position: fixed; right: 0; bottom: 0; width: 200px; height: 200px; opacity: 0.001; pointer-events: none; overflow: hidden; z-index: -1; }
+#yt-shell, #sp-shell { position: fixed; right: 0; bottom: 0; width: 300px; height: 200px; opacity: 0.001; pointer-events: none; overflow: hidden; z-index: -1; }
 #yt-shell iframe { width: 200px; height: 200px; border: 0; }
+#sp-shell iframe { width: 300px; height: 80px; border: 0; }
 .mode {
   padding: 7px 14px;
   border-radius: 999px;

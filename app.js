@@ -9,7 +9,7 @@
     theme: $("#theme"), zen: $("#zen"), crackle: $("#crackle"), toast: $("#toast"),
     arm: $("#arm"), armWobble: $("#armWobble"), record: $("#record"), carrier: $("#carrier"), label: $("#label"), platter: $("#platter"),
     hint: $("#hint"), turntable: $("#turntable"), armTip: $("#arm-tip"),
-    crate: $("#crate"), crateForm: $("#crate-form"), crateInput: $("#crate-input"), crateList: $("#crate-list"), ytShell: $("#yt-shell"),
+    crate: $("#crate"), crateForm: $("#crate-form"), crateInput: $("#crate-input"), crateList: $("#crate-list"), ytShell: $("#yt-shell"), spShell: $("#sp-shell"),
   };
 
   // ---------- turntable geometry (design space 840x680) ----------
@@ -52,9 +52,12 @@
   const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const isYT = (t) => !!t && t.kind === "yt";
+  const isSP = (t) => !!t && t.kind === "sp";
+  const isEmbed = (t) => isYT(t) || isSP(t);   // plays inside a hidden third-party player: no audio data
 
   // Where are we in the current record? Works for both backends.
   function pos() {
+    if (isSP(state.cur)) return { t: sp.position, d: sp.duration, live: false };
     if (isYT(state.cur)) {
       const p = yt.player;
       if (!p || !p.getCurrentTime) return { t: 0, d: 0, live: false };
@@ -229,8 +232,8 @@
     const W = els.wave.width, H = els.wave.height, gap = 8, bw = (W - gap * (BARS - 1)) / BARS;
     wctx.clearRect(0, 0, W, H);
     let levels = idle;
-    if (state.playing && isYT(state.cur)) {
-      // No audio data from the YouTube player: a slow breathing pattern instead.
+    if (state.playing && isEmbed(state.cur)) {
+      // No audio data from an embedded player: a slow breathing pattern instead.
       const t = now / 1000;
       levels = idle.map((v, i) => 0.1 + 0.32 * Math.abs(Math.sin(t * 1.1 + i * 0.37)) * (0.6 + 0.4 * Math.sin(t * 0.7 + i * 0.11)));
     } else if (analyser && state.playing) {
@@ -262,6 +265,7 @@
   });
   function seek(sec) {
     if (isYT(state.cur)) { yt.player && yt.player.seekTo(sec, true); }
+    else if (isSP(state.cur)) { sp.controller && sp.controller.seek(sec); sp.position = sec; }
     else audio.currentTime = sec;
   }
   function updateClock() {
@@ -375,6 +379,62 @@
     if (yt.player && yt.player.stopVideo) { try { yt.player.stopVideo(); } catch {} }
   }
 
+  // ---------- Spotify backend (hidden Embed player via the IFrame API) ----------
+  // Full tracks only when the browser is logged in to Spotify; otherwise 30-second previews.
+  const sp = { api: null, ready: null, controller: null, position: 0, duration: 0, paused: true, waiter: null, lastArm: 0, endedFor: null };
+  function loadSP() {
+    if (sp.ready) return sp.ready;
+    sp.ready = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error("Spotify API timeout")), 15000);
+      window.onSpotifyIframeApiReady = (api) => { clearTimeout(timeout); sp.api = api; resolve(api); };
+      const s = document.createElement("script"); s.src = "https://open.spotify.com/embed/iframe-api/v1"; s.async = true;
+      s.onerror = () => { clearTimeout(timeout); reject(new Error("Spotify API blocked")); };
+      document.head.appendChild(s);
+    });
+    return sp.ready;
+  }
+  function spLoad(uri) {
+    return new Promise((resolve) => {
+      sp.position = 0; sp.duration = 0; sp.paused = true; sp.endedFor = null;
+      if (sp.controller) { sp.controller.loadUri(uri); resolve(sp.controller); return; }
+      const host = document.createElement("div"); els.spShell.appendChild(host);
+      sp.api.createController(host, { uri, width: 300, height: 80 }, (c) => {
+        sp.controller = c;
+        c.addListener("playback_update", onSPUpdate);
+        resolve(c);
+      });
+    });
+  }
+  function onSPUpdate(e) {
+    if (!isSP(state.cur)) return;
+    const d = e.data || {};
+    sp.position = (d.position || 0) / 1000; sp.duration = (d.duration || 0) / 1000; sp.paused = !!d.isPaused;
+    if (!sp.paused) {
+      if (!state.playing) { state.playing = true; state.everPlayed = true; document.body.classList.add("playing"); state.targetOmega = OMEGA_PLAY; disarm(); }
+      if (sp.waiter) sp.waiter.resolve();
+      updateClock();
+      if (performance.now() - sp.lastArm > 3000) { sp.lastArm = performance.now(); trackArm(); }
+    } else if (state.playing && !state.busy && sp.duration > 0 && sp.position >= sp.duration - 1.5 && sp.endedFor !== state.cur) {
+      sp.endedFor = state.cur;             // reached the end (or the end of a 30 s preview): next record
+      next();
+    }
+  }
+  function spAwaitPlaying(ms = 9000) {
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => { sp.waiter = null; reject(new Error("timeout")); }, ms);
+      sp.waiter = { resolve: () => { clearTimeout(timer); sp.waiter = null; resolve(); } };
+    });
+  }
+  function spStop() { if (sp.controller) { try { sp.controller.pause(); } catch {} } }
+  async function spMeta(url) {
+    // oEmbed gives the title and cover without any auth
+    try {
+      const r = await fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent(url)}`);
+      const d = await r.json();
+      return { title: d.title || "", cover: d.thumbnail_url || "" };
+    } catch { return null; }
+  }
+
   // ---------- catalogue / queue ----------
   function tracksIn(cat) { return cat === "yours" ? state.yoursTracks : state.catalog.tracks.filter((t) => t.category === cat); }
   function currentTrack() { return state.queue[state.index]; }
@@ -439,7 +499,9 @@
     els.title.textContent = t.artist && !dup ? `${t.artist} - ${t.title}` : t.title;
     els.artist.textContent = t.album || "";
     setLabel(t.covers || (t.cover ? [t.cover] : []));
-    if (t.kind === "yt") {
+    if (t.kind === "sp") {
+      els.credit.innerHTML = `Playing from <a href="${esc(t.source)}" target="_blank" rel="noopener">Spotify</a> · added by you · full tracks need a Spotify login in this browser`;
+    } else if (t.kind === "yt") {
       els.credit.innerHTML = `Playing from <a href="${esc(t.source)}" target="_blank" rel="noopener">YouTube</a>${t.category === "yours" ? " · added by you" : ` · ${esc(t.artist || "")}`}`;
     } else if (t.provider === "audius") {
       els.credit.innerHTML = `<a href="${esc(t.source)}" target="_blank" rel="noopener">${esc(t.title)}</a> by ${esc(t.artist)} · ${esc(t.album)} on Audius`;
@@ -469,11 +531,13 @@
       if (swapRecord) { els.carrier.classList.add("out"); await wait(620); }
       // stop whichever backend was sounding
       if (isYT(state.cur) && !isYT(t)) ytStop();
-      if (!isYT(t)) { if (isYT(state.cur)) { /* nothing */ } }
-      else if (state.cur && !isYT(state.cur)) audio.pause();
+      if (isSP(state.cur) && !isSP(t)) spStop();
+      if (state.cur && !isEmbed(state.cur) && isEmbed(t)) audio.pause();
       state.cur = t; state.retried = false; yt.liveStart = 0; yt.lastDur = 0; yt.isLive = false;
       renderTrack(t);
-      if (isYT(t)) {
+      if (isSP(t)) {
+        try { await loadSP(); await spLoad(t.spUri); } catch (err) { toast("Spotify player couldn't load"); state.busy = false; return next(); }
+      } else if (isYT(t)) {
         try { await loadYT(); } catch (err) { toast("YouTube player couldn't load"); state.busy = false; return next(); }
         if (ytStepDir) { yt.player.mute(); ytStepDir > 0 ? yt.player.nextVideo() : yt.player.previousVideo(); }
         else if (t.listId) yt.player.cuePlaylist({ listType: "playlist", list: t.listId });
@@ -509,7 +573,7 @@
   async function canAutoplay() {
     if (FORCE_GATE) return false;
     if (navigator.userActivation?.hasBeenActive) return true;
-    if (isYT(state.cur)) return false;                      // can't probe the iframe; wait for a click
+    if (isEmbed(state.cur)) return false;                   // can't probe an iframe; wait for a click
     const v = audio.volume; audio.volume = 0;
     try { await audio.play(); audio.pause(); audio.currentTime = 0; return true; }
     catch { return false; }
@@ -517,6 +581,17 @@
   }
   async function play() {
     ensureAudioGraph();
+    if (isSP(state.cur)) {
+      state.targetOmega = OMEGA_PLAY;
+      const waiting = spAwaitPlaying();
+      try { sp.controller.play(); } catch {}
+      try { await waiting; }
+      catch (err) {
+        if (!navigator.userActivation?.hasBeenActive) { state.targetOmega = 0; setArm(ANGLE_REST, { lifted: true, ms: 600 }); arm(); }
+        else { toast("Spotify didn't start · skipping"); setTimeout(() => { if (!state.busy) next(); }, 400); }
+      }
+      return;
+    }
     if (isYT(state.cur)) {
       state.targetOmega = OMEGA_PLAY;
       if (yt.player.getPlayerState() === YT.PlayerState.PLAYING) {   // already rolling (e.g. playlist step): nothing to wait for
@@ -566,7 +641,9 @@
     await resume();
   }
   function pause() {
-    if (isYT(state.cur)) { yt.player && yt.player.pauseVideo(); } else audio.pause();
+    if (isYT(state.cur)) { yt.player && yt.player.pauseVideo(); }
+    else if (isSP(state.cur)) spStop();
+    else audio.pause();
     state.playing = false; document.body.classList.remove("playing");
     state.brake = false; state.targetOmega = 0;   // power-off style coast
     setArm(ANGLE_REST, { lifted: true, ms: 900 });
@@ -607,7 +684,10 @@
 
   // ---------- "Yours": user-added sources ----------
   function parseSource(text) {
-    let u; try { u = new URL(text.trim()); } catch { return null; }
+    text = text.trim();
+    const sm = text.match(/^spotify:(track|album|playlist|episode|show):([A-Za-z0-9]{22})$/);
+    if (sm) text = `https://open.spotify.com/${sm[1]}/${sm[2]}`;
+    let u; try { u = new URL(text); } catch { return null; }
     if (!/^https?:$/.test(u.protocol)) return null;
     const h = u.hostname.replace(/^(www|m|music)\./, "");
     if (h === "youtube.com" || h === "youtu.be" || h === "youtube-nocookie.com") {
@@ -618,6 +698,11 @@
       if (list) return { kind: "yt", listId: list, url: u.href, label: "YouTube playlist" };
       if (v && /^[\w-]{11}$/.test(v)) return { kind: "yt", videoId: v, url: u.href, label: "YouTube video" };
       return null;
+    }
+    if (h === "open.spotify.com" || h === "spotify.link") {
+      const m = u.pathname.match(/\/(?:intl-[a-z]{2}\/)?(track|album|playlist|episode|show)\/([A-Za-z0-9]{22})/);
+      if (!m) return null;
+      return { kind: "sp", spType: m[1], spUri: `spotify:${m[1]}:${m[2]}`, url: `https://open.spotify.com/${m[1]}/${m[2]}`, label: `Spotify ${m[1]}` };
     }
     if (h === "archive.org") {
       const m = u.pathname.match(/^\/(details|download)\/([^/]+)/);
@@ -657,6 +742,8 @@
     return out;
   }
   function sourceTracks(src) {
+    if (src.kind === "sp") return [{ kind: "sp", category: "yours", spUri: src.spUri, spType: src.spType, title: src.label, artist: "", album: "Spotify",
+      cover: src.cover || "", source: src.url, srcKey: src.url }];
     if (src.kind === "yt") return [{ kind: "yt", category: "yours", videoId: src.videoId, listId: src.listId, title: src.label, artist: "", album: "YouTube",
       cover: src.videoId ? `https://i.ytimg.com/vi/${src.videoId}/mqdefault.jpg` : "",
       covers: src.videoId ? [`https://i.ytimg.com/vi/${src.videoId}/maxresdefault.jpg`, `https://i.ytimg.com/vi/${src.videoId}/mqdefault.jpg`] : [],
@@ -684,13 +771,13 @@
     const now = state.cur && state.cur.srcKey;
     els.crateList.innerHTML = state.sources.map((s, i) => `
       <li class="crate-item${s.url === now ? " is-playing" : ""}">
-        <span class="crate-kind">${s.kind === "yt" ? "YouTube" : s.kind === "ia" ? "Archive" : "Stream"}</span>
+        <span class="crate-kind">${s.kind === "yt" ? "YouTube" : s.kind === "sp" ? "Spotify" : s.kind === "ia" ? "Archive" : "Stream"}</span>
         <button class="crate-name" data-i="${i}" title="Play">${esc(s.label || s.url)}</button>
         <a class="crate-open" href="${esc(s.url)}" target="_blank" rel="noopener" title="Open the link" aria-label="Open the link">
           <svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg>
         </a>
         <button class="crate-remove" data-i="${i}" aria-label="Remove">×</button>
-      </li>`).join("") || `<li class="crate-empty">YouTube video, playlist or live · archive.org album · mp3 or radio stream</li>`;
+      </li>`).join("") || `<li class="crate-empty">YouTube video, playlist or live · Spotify track, album or playlist · archive.org album · mp3 or radio stream</li>`;
   }
   function playSource(i) {
     const src = state.sources[i]; if (!src || state.busy) return;
@@ -707,6 +794,10 @@
     if (src.kind === "ia") {
       toast("Reading the album…");
       try { await iaTracks(src); } catch { toast("Couldn't find playable MP3s in that archive.org item"); return; }
+    }
+    if (src.kind === "sp") {
+      const meta = await spMeta(src.url);
+      if (meta) { if (meta.title) src.label = meta.title; src.cover = meta.cover; }
     }
     state.sources.push(src); saveSources();
     await expandSources();
@@ -762,7 +853,7 @@
     drag.active = true; drag.angle = armAngleNow(); drag.offset = pointerAngle(e) - drag.angle;
     els.arm.classList.add("dragging");
     state.playing = false; document.body.classList.remove("playing");
-    if (isYT(state.cur)) yt.player.pauseVideo(); else audio.pause();
+    if (isYT(state.cur)) yt.player.pauseVideo(); else if (isSP(state.cur)) spStop(); else audio.pause();
     setArm(drag.angle, { lifted: true, ms: 200 });
     els.armTip.hidden = false; updateTip(e, drag.angle);
   });

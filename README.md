@@ -22,7 +22,7 @@ Pick a mood and the deck pulls a random record from that crate. The turntable on
 - **Sounds like vinyl.** Surface hiss and random crackle are synthesized with Web Audio (no samples), fade in when the needle lands and out when it lifts. Dropping the needle thumps. Toggle it with `N`.
 - **Live waveform.** The bars are the actual spectrum from an `AnalyserNode`, coloured up to the playhead. Click to seek.
 - **Grab the tonearm.** Drag the headshell along the record and let go to drop the needle there; drag it all the way out to the rest to pause.
-- **Your own music.** Paste a YouTube video, playlist or live link, an archive.org album, or an mp3 / radio stream into the *Yours* crate.
+- **Your own music.** Paste a YouTube video, playlist or live link, a Spotify link, an archive.org album, or an mp3 / radio stream into the *Yours* crate.
 - **Light and dark**, a **full-screen** mode that hides everything but the deck, keyboard shortcuts, Media Session support for hardware keys.
 
 ## The crates
@@ -46,6 +46,7 @@ Two kinds of source. **Audius** serves real audio with CORS headers, so those re
 The *Yours* chip opens your crate. Paste a link, press Add:
 
 - **YouTube** video, playlist, mix or live stream. Played through a hidden IFrame player, so there is no waveform, and a few videos that forbid embedding are skipped automatically.
+- **Spotify** track, album, playlist or episode link. Played through Spotify's hidden Embed player: full tracks only when this browser is logged in to Spotify, otherwise 30-second previews; an album or playlist plays through on its own (no skipping inside it).
 - **archive.org** album (`archive.org/details/…`). Read client-side, full support: waveform, crackle, attribution.
 - **mp3 / m4a / stream URL.** Icecast radio streams work and show as LIVE.
 
