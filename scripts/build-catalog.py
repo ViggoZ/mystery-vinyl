@@ -24,13 +24,11 @@ YT = {
         ("YOF0AEY1G1U", "Hyperfocus Music 24/7 · deep work radio", "Hyperfocus Night Office"),
     ],
     "lofi": [
-        ("JD-kMIpDfnY", "lofi hip hop radio · beats to sleep/chill to", "Lofi Girl"),
         ("1Tl2FtV06qo", "asian lofi radio · beats to relax/study to", "Lofi Girl"),
         ("0muHFBSiybw", "summer lofi radio · music to put you in a better mood", "Lofi Girl"),
         ("CwPCy1GLS38", "sad lofi radio · beats for rainy days", "Lofi Girl"),
         ("5yx6BWlEVcY", "Chillhop Radio · jazzy & lofi hip hop beats", "Chillhop Music"),
-        ("i6WzngxTnBA", "late night vibes radio · calm lofi / dreamy beats", "Chillhop Music"),
-        ("rPjez8z61rI", "lofi hip hop radio · beats to sleep/study/relax to", "STEEZYASFUCK"),
+        ("TfmECBzmOn4", "Lofi Hip Hop Radio · relaxing beats", "Lofi Fruits"),
         ("OFsJen4j9VY", "Purrple Cat · lofi radio", "Purrple Cat"),
         ("vrB9wC6quaU", "Chill out lofi · rain on the rooftop", "Lofi on the Rooftop"),
         ("4Q9jq-tdOoE", "Peaceful Lofi Coffee in 90's Tokyo Street", "Lofi on the Rooftop"),
@@ -48,7 +46,16 @@ YT = {
         ("tNkZsRW7h2c", "Space Ambient Music · 24/7", "lofi.cafe pick"),
         ("UedTcufyrHc", "ChillSynth FM · lofi synthwave for retro dreaming", "Nightride FM"),
     ],
-    "sunset": [
+    "night": [
+        ("JD-kMIpDfnY", "lofi hip hop radio · beats to sleep/chill to", "Lofi Girl"),
+        ("xORCbIptqcc", "sleep ambient music · relaxing radio to fall asleep to", "Lofi Girl"),
+        ("i6WzngxTnBA", "late night vibes radio · calm lofi / dreamy beats", "Chillhop Music"),
+        ("rPjez8z61rI", "lofi hip hop radio · beats to sleep/study/relax to", "STEEZYASFUCK"),
+        ("dZz075kjNzE", "Late Night Deep Bass Jazz · 24/7", "FM Jazz Bar"),
+        ("Pr6wm391iF0", "Velvet Cat Jazz · vintage noir jazz 24/7", "Velvet Cat Jazz"),
+        ("AXvnFk38sDQ", "Cosmic Ambient Transmission · 24/7", "Roelf Staal"),
+    ],
+    "chill": [
         ("pRyS8QREMEs", "The Good Life Radio · 24/7 Live Radio", "Summerchillout"),
         ("UcrtmnGBUjM", "ChillYourMind Radio · 24/7 Chill House", "ChillYourMind"),
         ("8EuP8FKvNIY", "Morning Coffee · Chillout House 24/7", "Chilluxe"),
@@ -73,9 +80,13 @@ AUDIUS = {
         ("D2P6Z", "College Music", {"Lo-Fi", "Hip-Hop/Rap"}, 60),
     ],
     "focus": [
-        ("D2P6Z", "College Music", {"Ambient", "Jazz"}, 90),
+        ("D2P6Z", "College Music", {"Jazz", "Lo-Fi"}, 80),
+        ("n3YPZ", "Radio Juicy", {"Jazz", "Lo-Fi", "R&B/Soul"}, 60),
+    ],
+    "night": [
+        ("D2P6Z", "College Music", {"Ambient"}, 68),
         ("DNNg0", "Inner Ocean Records", {"Ambient", "Electronic"}, 19),
-        ("n3YPZ", "Radio Juicy", {"Jazz", "Lo-Fi"}, 50),
+        ("L52N6", "Stereofox", {"Ambient", "Downtempo"}, 20),
     ],
 }
 
@@ -111,15 +122,11 @@ def audius_tracks(user_id, label, genres, cap):
     return out[:cap]
 
 CATEGORIES = {
-    "coding":  {"label": "Coding",  "tag": "beats to work to, 24/7 radios",        "youtube": YT["coding"]},
-    "lofi":    {"label": "Lo-fi",   "tag": "the lofi radios everyone leaves on",    "youtube": YT["lofi"]},
-    "focus":   {"label": "Focus",   "tag": "piano, jazz, ambient",                  "youtube": YT["focus"]},
-    "sunset":  {"label": "Sunset",  "tag": "chill house, deep house, positive energy", "youtube": YT["sunset"]},
-    # Creative Commons records from the Internet Archive: the only crate with real audio data
-    # (waveform, crackle) and proper attribution.
-    "records": {"label": "Records", "tag": "Creative Commons vinyl from the Internet Archive",
-                "items": ["DWK031", "DWK155", "DWK127", "DWK217", "DWK149", "DWK312", "DWK044", "DWK163", "DWK123",
-                          "CalmPills", "Vkrsnl037CandlegravityAMomentForMyself", "DWK119", "DWK138"]},
+    "coding": {"label": "Coding", "tag": "beats to work to",                         "youtube": YT["coding"]},
+    "lofi":   {"label": "Lo-fi",  "tag": "the lofi radios everyone leaves on",       "youtube": YT["lofi"]},
+    "focus":  {"label": "Focus",  "tag": "jazz, piano, no vocals",                   "youtube": YT["focus"]},
+    "chill":  {"label": "Chill",  "tag": "chill house, deep house, positive energy", "youtube": YT["chill"]},
+    "night":  {"label": "Night",  "tag": "sleep lofi, ambient, late-night jazz",     "youtube": YT["night"]},
 }
 
 def check_live(entries):

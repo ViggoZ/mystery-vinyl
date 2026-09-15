@@ -30,13 +30,13 @@ Pick a mood and the deck pulls a random record from that crate. The turntable on
 | Mood | What's in it | Source |
 | --- | --- | --- |
 | **Coding** | Chillhop Music and College Music records, plus a few 24/7 radios | Audius (official label accounts) + YouTube |
-| **Lo-fi** | The lofi radios everyone leaves on: sleep, rain, summer, Tokyo | YouTube 24/7 radios |
-| **Focus** | Ambient and jazz from College Music, Inner Ocean, Radio Juicy, plus piano radios | Audius + YouTube |
-| **Sunset** | Positive chill / deep house, Good-Life-Radio style | YouTube 24/7 radios and long mixes |
-| **Records** | Netlabel vinyl: lo-fi, jazz-hop, ambient | Creative Commons MP3s from the Internet Archive |
+| **Lo-fi** | The lofi radios everyone leaves on: rain, summer, Tokyo | YouTube 24/7 radios |
+| **Focus** | Jazz and lo-fi from College Music and Radio Juicy, plus piano radios | Audius + YouTube |
+| **Chill** | Positive chill / deep house, Good-Life-Radio style | YouTube 24/7 radios and long mixes |
+| **Night** | Sleep lofi, ambient from College Music, Inner Ocean and Stereofox, late-night jazz radios | Audius + YouTube |
 | **Yours** | Whatever you paste in | You |
 
-Two kinds of source. **Audius** and the **Internet Archive** serve real audio with CORS headers, so those records get the live waveform, the crackle and a proper credit line (artist, label, link). Audius is the open catalog the labels publish to themselves: Chillhop Music has ~790 free-to-stream tracks there, College Music ~500. The build script keeps only tracks whose access allows streaming and skips paid ones. **YouTube** radios play through a hidden player (the same thing every lofi radio site does); live stream ids change when a channel restarts a stream, so `python3 scripts/build-catalog.py --check` asks yt-dlp which ones still play and drops the rest.
+Two kinds of source. **Audius** serves real audio with CORS headers, so those records get the live waveform, the crackle and a proper credit line (artist, label, link). Audius is the open catalog the labels publish to themselves: Chillhop Music has ~790 free-to-stream tracks there, College Music ~500. The build script keeps only tracks whose access allows streaming and skips paid ones. **YouTube** radios play through a hidden player (the same thing every lofi radio site does); live stream ids change when a channel restarts a stream, so `python3 scripts/build-catalog.py --check` asks yt-dlp which ones still play and drops the rest.
 
 ## Your own music
 
@@ -92,13 +92,13 @@ python3 -m http.server 8765
 # open http://127.0.0.1:8765/
 ```
 
-`data/catalog.json` is generated from archive.org metadata and the YouTube list in `scripts/build-catalog.py`:
+`data/catalog.json` is generated from the Audius label accounts and the YouTube list in `scripts/build-catalog.py`:
 
 ```sh
 python3 scripts/build-catalog.py
 ```
 
-Edit the `CATEGORIES` map there to add or swap albums per mood. Note that YouTube refuses to play inside embeds served from `127.0.0.1` / `localhost` (error 150), so the Sunset crate and YouTube links only work on a real domain.
+Edit the `AUDIUS`, `YT` and `CATEGORIES` maps there to add or swap sources per mood. Note that YouTube refuses to play inside embeds served from `127.0.0.1` / `localhost` (error 150), so the YouTube radios only work on a real domain.
 
 ## Files
 
@@ -109,6 +109,6 @@ Edit the `CATEGORIES` map there to add or swap albums per mood. Note that YouTub
 
 ## License
 
-Code is MIT. The music is not part of this repository: every Internet Archive track streams under its own Creative Commons license (mostly CC BY-NC-ND), shown next to the player; YouTube content belongs to its owners. If you fork this for anything commercial, swap the catalog for music you have the rights to.
+Code is MIT. The music is not part of this repository: Audius tracks stream from the labels' own accounts under Audius's terms and are credited next to the player; YouTube content belongs to its owners; archive.org albums you paste in carry their own Creative Commons licenses. If you fork this for anything commercial, check each source's terms first.
 
 Made by [Viggo](https://x.com/decohack) · more at [uiboy.com](https://uiboy.com/)
