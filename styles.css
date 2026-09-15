@@ -644,6 +644,32 @@ body.zen.idle { cursor: none; }
   body.zen .stage { grid-template-columns: 1fr; padding: 24px; }
   body.zen .turntable { max-width: 520px; }
 }
+@media (max-width: 520px) {
+  body { --band: 72px; }
+  .sleeve { margin: 16px 0 0 16px; } .logo svg { height: 40px; }
+  .topnav { right: 10px; top: 16px; }
+  .stage { padding: 4px 16px 0; gap: 22px; }
+  .turntable, body.zen .turntable { max-width: 100%; }
+  /* the panel sits under the deck and reads centred, like the deck above it */
+  .panel { max-width: none; text-align: center; }
+  .modes-wrap { margin-bottom: 22px; }
+  .modes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .mode { min-width: 0; padding: 9px 2px 7px; gap: 5px; font-size: 10px; }
+  .mode svg { width: 18px; height: 18px; }
+  .crate { width: calc(100vw - 32px); text-align: left; }
+  .wave { width: 100%; height: auto; aspect-ratio: 7 / 1; }
+  .time { margin-top: 10px; }
+  .title { font-size: 18px; margin-top: 8px; }
+  .artist { margin-top: 6px; }
+  .controls { justify-content: center; margin-top: 22px; }
+  .credit { margin-top: 20px; }
+  .foot { align-items: center; text-align: center; gap: 4px; padding: 24px 16px calc(20px + env(safe-area-inset-bottom)); }
+  .liner { width: calc(100vw - 32px); }
+  .amb { left: 12px; right: 12px; width: auto; top: 60px; max-height: calc(100dvh - 76px); overflow: auto; }
+  .amb-tiles { grid-template-columns: repeat(4, 1fr); }
+  .hint, .toast { bottom: 20px; max-width: calc(100vw - 32px); text-align: center; }
+  body.zen .stage { padding: 16px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .arm { transition-duration: .01s; }
 }
