@@ -158,7 +158,7 @@ a { color: inherit; }
 /* ---------- header ---------- */
 .sleeve { position: relative; display: flex; align-items: center; justify-self: start; width: max-content; margin-left: 80px; z-index: 6; }
 .logo { display: inline-flex; align-items: center; line-height: 0; padding: 0; }
-.logo svg { height: 60px; width: auto; font-family: var(--font-logo); overflow: visible; }
+.logo svg { height: 48px; width: auto; font-family: var(--font-logo); overflow: visible; }
 /* the record slides out of the sleeve on hover, all the way when the liner notes are open */
 .sleeve-disc { transform-box: view-box; transform-origin: 208px 155px; transition: transform .45s cubic-bezier(.3, 1.3, .5, 1); }
 .logo:hover .sleeve-disc, .logo:focus-visible .sleeve-disc { transform: translateY(-14px) rotate(-20deg); }
