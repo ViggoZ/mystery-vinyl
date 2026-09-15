@@ -1092,13 +1092,17 @@
 
   // ---------- zen / full screen ----------
   let idleTimer;
+  const TOUCH = matchMedia("(hover: none)").matches;   // no mouse to wake faded controls with: keep them visible
+  function armIdle() {
+    document.body.classList.remove("idle");
+    clearTimeout(idleTimer);
+    if (!TOUCH && document.body.classList.contains("zen")) idleTimer = setTimeout(() => document.body.classList.add("idle"), 3000);
+  }
   function setZen(on) {
     const was = document.body.classList.contains("zen");
     document.body.classList.toggle("zen", on);
-    if (on && !was) toast("Full screen · move the mouse to show controls, Esc to exit");
-    document.body.classList.remove("idle");
-    clearTimeout(idleTimer);
-    if (on) idleTimer = setTimeout(() => document.body.classList.add("idle"), 3000);
+    if (on && !was) toast(TOUCH ? "Full screen · tap the corner button to leave" : "Full screen · move the mouse to show controls, Esc to exit");
+    armIdle();
   }
   function toggleZen() {
     const on = !document.body.classList.contains("zen");
@@ -1108,12 +1112,7 @@
   }
   document.addEventListener("fullscreenchange", () => setZen(!!document.fullscreenElement));
   els.zen.addEventListener("click", toggleZen);
-  document.addEventListener("pointermove", () => {
-    if (!document.body.classList.contains("zen")) return;
-    document.body.classList.remove("idle");
-    clearTimeout(idleTimer);
-    idleTimer = setTimeout(() => document.body.classList.add("idle"), 3000);
-  });
+  for (const ev of ["pointermove", "pointerdown"]) document.addEventListener(ev, () => { if (document.body.classList.contains("zen")) armIdle(); });
   if ("mediaSession" in navigator) {
     navigator.mediaSession.setActionHandler("play", () => resume());
     navigator.mediaSession.setActionHandler("pause", () => pause());

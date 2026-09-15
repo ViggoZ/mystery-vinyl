@@ -641,7 +641,7 @@ body.zen.idle { cursor: none; }
   .topnav { right: 16px; top: 22px; }
   .foot { align-items: flex-start; }
   .foot { flex-direction: column; gap: 6px; padding: 32px 24px 24px; }
-  body.zen .stage { grid-template-columns: 1fr; padding: 24px; }
+  body.zen .stage { grid-template-columns: 1fr; padding: 24px; min-height: 100dvh; align-content: center; }
   body.zen .turntable { max-width: 520px; }
 }
 @media (max-width: 520px) {
@@ -668,7 +668,13 @@ body.zen.idle { cursor: none; }
   .amb { left: 12px; right: 12px; width: auto; top: 60px; max-height: calc(100dvh - 76px); overflow: auto; }
   .amb-tiles { grid-template-columns: repeat(4, 1fr); }
   .hint, .toast { bottom: 20px; max-width: calc(100vw - 32px); text-align: center; }
-  body.zen .stage { padding: 16px; }
+  body.zen .stage { padding: 16px; gap: 20px; min-height: 100dvh; align-content: center; }
+  body.zen .topnav { top: 12px; right: 10px; }
+  body.zen .turntable { max-width: min(100%, calc((100dvh - 260px) * 840 / 680)); }
+}
+@media (hover: none) {
+  body.zen.idle .topnav, body.zen.idle .controls, body.zen.idle .time { opacity: 1; }
+  body.zen.idle { cursor: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   .arm { transition-duration: .01s; }
