@@ -212,15 +212,15 @@
   </footer>
 
   <div class="amb" id="amb" hidden>
-    <div class="amb-row amb-crackle">
-      <button class="amb-toggle" id="crackle" aria-pressed="true" title="Vinyl crackle (N)">
-        <span class="amb-dot"></span><span class="amb-name">Vinyl crackle</span>
-      </button>
-      <input class="amb-level" id="crackle-level" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="Vinyl crackle level" />
+    <div class="amb-head">
+      <span class="amb-title">Ambience</span>
+      <span class="amb-count" id="amb-count"></span>
+      <button class="amb-mute" id="amb-mute" type="button">Mute all</button>
     </div>
-    <div class="amb-sep"></div>
-    <div class="amb-grid" id="amb-grid"></div>
-    <p class="amb-note">Room sounds keep going when the record stops.</p>
+    <div class="amb-mixer" id="amb-mixer"></div>
+    <div class="amb-tabs" id="amb-tabs" role="tablist"></div>
+    <div class="amb-tiles" id="amb-tiles"></div>
+    <p class="amb-note">Room sounds keep going when the record stops. Binaural needs headphones.</p>
   </div>
 
   <p class="hint" id="hint" hidden>Click anywhere to drop the needle</p>

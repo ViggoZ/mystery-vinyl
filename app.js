@@ -6,7 +6,7 @@
     modes: $("#modes"), wave: $("#wave"), cur: $("#cur"), dur: $("#dur"),
     title: $("#title"), artist: $("#artist"), credit: $("#credit"),
     play: $("#play"), prev: $("#prev"), next: $("#next"), power: $("#power"),
-    theme: $("#theme"), zen: $("#zen"), crackle: $("#crackle"), crackleLevel: $("#crackle-level"), ambience: $("#ambience"), amb: $("#amb"), ambGrid: $("#amb-grid"), toast: $("#toast"),
+    theme: $("#theme"), zen: $("#zen"), ambience: $("#ambience"), amb: $("#amb"), ambMixer: $("#amb-mixer"), ambTabs: $("#amb-tabs"), ambTiles: $("#amb-tiles"), ambCount: $("#amb-count"), ambMute: $("#amb-mute"), toast: $("#toast"),
     arm: $("#arm"), armWobble: $("#armWobble"), record: $("#record"), carrier: $("#carrier"), label: $("#label"), platter: $("#platter"),
     hint: $("#hint"), turntable: $("#turntable"), armTip: $("#arm-tip"),
     crate: $("#crate"), crateForm: $("#crate-form"), crateInput: $("#crate-input"), crateList: $("#crate-list"), ytShell: $("#yt-shell"), spShell: $("#sp-shell"),
@@ -109,8 +109,8 @@
     els.arm.classList.toggle("lifted", lifted);
     els.arm.style.transform = `rotate(${deg}deg)`;
     if (lifted !== wasLifted) {
-      if (lifted) { needleLift(); setCrackle(false); }
-      else setTimeout(() => { needleDrop(); setCrackle(true); }, 220);   // after the drop animation
+      if (lifted) needleLift();
+      else setTimeout(needleDrop, 220);   // after the drop animation
     }
   }
   function grooveAngle() {
@@ -137,7 +137,7 @@
       src.connect(analyser); analyser.connect(ctx.destination);
       data = new Uint8Array(analyser.frequencyBinCount);
       buildCrackle();
-      setCrackle(!els.arm.classList.contains("lifted"));
+      setCrackle(true);
     } catch (e) { console.warn("Web Audio unavailable", e); }
   }
 
@@ -188,11 +188,11 @@
     }
     crackle.timer = setTimeout(schedulePops, 700);
   }
-  // Fade the surface noise in when the needle sits in the groove, out when it lifts.
-  function setCrackle(onRecord) {
+  // The crackle is a room sound too: when it's on, it's on (the audio context permitting).
+  function setCrackle() {
     if (!crackle.gain) return;
     const g = crackle.gain.gain, t = ctx.currentTime;
-    g.cancelScheduledValues(t); g.setTargetAtTime(onRecord && crackle.on ? CRACKLE_LEVEL() : 0, t, 0.12);
+    g.cancelScheduledValues(t); g.setTargetAtTime(crackle.on ? CRACKLE_LEVEL() : 0, t, 0.12);
   }
   function needleDrop() {
     if (!ctx || !crackle.on) return;
@@ -210,30 +210,36 @@
     const p = ctx.createBufferSource(); p.buffer = crackle.popBuf; p.playbackRate.value = 1.2;
     const g = ctx.createGain(); g.gain.value = 0.08; p.connect(g).connect(ctx.destination); p.start();
   }
-  function toggleCrackle() {
-    crackle.on = !crackle.on;
+  function toggleCrackle(force) {
+    crackle.on = force ?? !crackle.on;
     store.set("mv.crackle", crackle.on ? "on" : "off");
-    els.crackle.setAttribute("aria-pressed", String(crackle.on));
-    setCrackle(!els.arm.classList.contains("lifted"));
+    if (crackle.on) ambMaster();          // make sure the context exists and is running
+    setCrackle();
+    if (!els.amb.hidden) renderAmbience();
     toast(crackle.on ? "Vinyl crackle on" : "Vinyl crackle off");
   }
 
   // ---------- room sounds (ambience) ----------
-  // Loops from Moodist (Pixabay / CC0), decoded once and looped gaplessly. They are part of the
+  // 88 loops from Moodist (Pixabay / CC0), decoded once and looped gaplessly. They are part of the
   // room, not the record: they keep playing while the needle is up. Not routed through the
-  // analyser, so the waveform stays the music's.
+  // analyser, so the waveform stays the music's. Icons: Pixelarticons (MIT).
   const AMBIENCE = [
-    { group: "Rain", items: [["light-rain", "Light rain"], ["heavy-rain", "Heavy rain"], ["rain-on-window", "Window"], ["rain-on-tent", "Tent"], ["rain-on-leaves", "Leaves"], ["thunder", "Thunder"]] },
-    { group: "Nature", items: [["campfire", "Campfire"], ["waves", "Waves"], ["river", "River"], ["waterfall", "Waterfall"], ["wind", "Wind"], ["wind-in-trees", "Trees"], ["droplets", "Droplets"], ["jungle", "Jungle"]] },
-    { group: "Places", items: [["cafe", "Café"], ["library", "Library"], ["night-village", "Village"], ["restaurant", "Restaurant"], ["office", "Office"], ["crowded-bar", "Bar"], ["church", "Church"], ["temple", "Temple"]] },
-    { group: "Things", items: [["keyboard", "Keyboard"], ["typewriter", "Typewriter"], ["clock", "Clock"], ["ceiling-fan", "Fan"], ["wind-chimes", "Chimes"], ["singing-bowl", "Bowl"], ["tuning-radio", "Radio"], ["boiling-water", "Kettle"]] },
-    { group: "Animals", items: [["birds", "Birds"], ["crickets", "Crickets"], ["cat-purring", "Cat"], ["owl", "Owl"], ["frog", "Frogs"], ["seagulls", "Seagulls"]] },
-    { group: "Noise", items: [["brown-noise", "Brown"], ["pink-noise", "Pink"], ["white-noise", "White"]] },
-  ].map((g) => ({ group: g.group, items: g.items.map(([id, label]) => ({ id, label })) }));
+    { group: "Rain", items: [["light-rain", "Light rain", "cloud"], ["heavy-rain", "Heavy rain", "cloud-moon"], ["rain-on-window", "Window", "home"], ["rain-on-car-roof", "Car roof", "car"], ["rain-on-umbrella", "Umbrella", "shield"], ["rain-on-tent", "Tent", "tent"], ["rain-on-leaves", "Leaves", "leaf"], ["thunder", "Thunder", "power"]] },
+    { group: "Nature", items: [["campfire", "Campfire", "fire"], ["waves", "Waves", "spray-wave"], ["river", "River", "map"], ["waterfall", "Waterfall", "download"], ["droplets", "Droplets", "circle-pile"], ["wind", "Wind", "feather"], ["howling-wind", "Howling", "signal"], ["wind-in-trees", "Trees", "tree-pine"], ["jungle", "Jungle", "tree"], ["walk-in-snow", "Snow walk", "snowflake"], ["walk-on-gravel", "Gravel", "human-arms-down"], ["walk-on-leaves", "Leaf walk", "human"]] },
+    { group: "Places", items: [["cafe", "Café", "coffee"], ["library", "Library", "book-open"], ["office", "Office", "briefcase"], ["restaurant", "Restaurant", "tea"], ["crowded-bar", "Bar", "users"], ["night-village", "Village", "moon"], ["church", "Church", "castle"], ["temple", "Temple", "building-community"], ["laboratory", "Lab", "potion"], ["laundry-room", "Laundry", "loader"], ["supermarket", "Market", "store"], ["subway-station", "Subway", "bus"], ["airport", "Airport", "suitcase"], ["carousel", "Carousel", "reload"], ["construction-site", "Site", "truck"], ["underwater", "Underwater", "fish"]] },
+    { group: "Things", items: [["keyboard", "Keyboard", "keyboard"], ["typewriter", "Typewriter", "notebook"], ["paper", "Paper", "notes"], ["clock", "Clock", "clock"], ["ceiling-fan", "Fan", "loader"], ["dryer", "Dryer", "reload"], ["washing-machine", "Washer", "circle-power"], ["boiling-water", "Kettle", "tea"], ["bubbles", "Bubbles", "circle-pile"], ["wind-chimes", "Chimes", "bell-ring"], ["singing-bowl", "Bowl", "bell"], ["tuning-radio", "Radio", "radio"], ["slide-projector", "Projector", "projector"], ["morse-code", "Morse", "more-horizontal"], ["windshield-wipers", "Wipers", "car"]] },
+    { group: "City", items: [["busy-street", "Street", "map-pin"], ["crowd", "Crowd", "users"], ["traffic", "Traffic", "signal"], ["road", "Road", "road-sign"], ["highway", "Highway", "trending-up"], ["fireworks", "Fireworks", "star"], ["ambulance-siren", "Siren", "siren"]] },
+    { group: "Travel", items: [["train", "Train", "truck"], ["inside-a-train", "In a train", "sort-horizontal"], ["airplane", "Airplane", "trending-up"], ["sailboat", "Sailboat", "ship"], ["rowing-boat", "Rowing", "anchor"], ["submarine", "Submarine", "target"]] },
+    { group: "Animals", items: [["birds", "Birds", "feather"], ["crickets", "Crickets", "bug"], ["cat-purring", "Cat", "heart"], ["dog-barking", "Dog", "dog"], ["owl", "Owl", "eye"], ["frog", "Frogs", "leaf"], ["seagulls", "Seagulls", "sun"], ["crows", "Crows", "twitter-bird"], ["woodpecker", "Woodpecker", "tree"], ["beehive", "Beehive", "circle-pile"], ["chickens", "Chickens", "sun-solid"], ["cows", "Cows", "label"], ["sheep", "Sheep", "cloud-sun"], ["horse-gallop", "Horse", "trophy"], ["whale", "Whale", "fish"], ["wolf", "Wolf", "moon"]] },
+    { group: "Noise", items: [["brown-noise", "Brown", "audio-waveform"], ["pink-noise", "Pink", "audio-waveform"], ["white-noise", "White", "audio-waveform"]] },
+    { group: "Binaural", items: [["binaural-delta", "Delta", "headphone"], ["binaural-theta", "Theta", "headphone"], ["binaural-alpha", "Alpha", "headphone"], ["binaural-beta", "Beta", "headphone"], ["binaural-gamma", "Gamma", "headphone"]] },
+  ].map((g) => ({ group: g.group, items: g.items.map(([id, label, icon]) => ({ id, label, icon })) }));
   const AMB_ALL = AMBIENCE.flatMap((g) => g.items);
-  const amb = { levels: {}, on: {}, nodes: {}, buffers: {}, master: null };
-  try { const saved = JSON.parse(store.get("mv.ambience") || "{}"); amb.levels = saved.levels || {}; amb.on = saved.on || {}; } catch {}
-  function saveAmbience() { store.set("mv.ambience", JSON.stringify({ levels: amb.levels, on: amb.on })); }
+  const AMB_BY_ID = Object.fromEntries(AMB_ALL.map((s) => [s.id, s]));
+  const ICON = (name) => `<svg aria-hidden="true"><use href="assets/pixelarticons.svg#${name}"></use></svg>`;
+  const amb = { levels: {}, on: {}, nodes: {}, buffers: {}, master: null, tab: "Rain" };
+  try { const saved = JSON.parse(store.get("mv.ambience") || "{}"); amb.levels = saved.levels || {}; amb.on = saved.on || {}; amb.tab = saved.tab || "Rain"; } catch {}
+  function saveAmbience() { store.set("mv.ambience", JSON.stringify({ levels: amb.levels, on: amb.on, tab: amb.tab })); }
   function ambMaster() {
     if (!ctx) ensureAudioGraph();
     if (!ctx) return null;
@@ -272,15 +278,26 @@
     if (amb.on[id]) { if (amb.nodes[id] && amb.nodes[id].src) amb.nodes[id].gain.gain.setTargetAtTime(amb.levels[id] ?? 0.5, ctx.currentTime, 0.1); else ambStart(id); }
     else ambStop(id);
   }
+  function ambActive() { return AMB_ALL.filter((s) => amb.on[s.id]); }
   function renderAmbience() {
-    els.ambGrid.innerHTML = AMBIENCE.map((g) => `
-      <div class="amb-group"><div class="amb-group-name">${g.group}</div><div class="amb-group-grid">${g.items.map((s) => `
-        <div class="amb-row">
-          <button class="amb-toggle" data-id="${s.id}" aria-pressed="${amb.on[s.id] ? "true" : "false"}"><span class="amb-dot"></span><span class="amb-name">${s.label}</span></button>
-          <input class="amb-level" type="range" min="0" max="1" step="0.01" value="${amb.levels[s.id] ?? 0.5}" data-id="${s.id}" aria-label="${s.label} level" />
-        </div>`).join("")}</div></div>`).join("");
-    els.crackle.setAttribute("aria-pressed", String(crackle.on));
-    els.crackleLevel.value = crackle.level;
+    const active = ambActive();
+    // mixer: crackle first, then every room sound that's on
+    els.ambMixer.innerHTML = `
+      <div class="amb-row is-crackle">
+        ${ICON("music")}<span class="amb-name">Vinyl crackle</span>
+        <input class="amb-level" type="range" min="0" max="1" step="0.01" value="${crackle.on ? crackle.level : 0}" data-id="crackle" aria-label="Vinyl crackle level" />
+        <button class="amb-off" data-id="crackle" title="${crackle.on ? "Turn off" : "Turn on"}" aria-pressed="${crackle.on}">${crackle.on ? "×" : "+"}</button>
+      </div>` + active.map((s) => `
+      <div class="amb-row">
+        ${ICON(s.icon)}<span class="amb-name">${s.label}</span>
+        <input class="amb-level" type="range" min="0" max="1" step="0.01" value="${amb.levels[s.id] ?? 0.5}" data-id="${s.id}" aria-label="${s.label} level" />
+        <button class="amb-off" data-id="${s.id}" title="Turn off">×</button>
+      </div>`).join("");
+    els.ambCount.textContent = active.length ? `${active.length} on` : "";
+    els.ambMute.hidden = !active.length && !crackle.on;
+    els.ambTabs.innerHTML = AMBIENCE.map((g) => { const n = g.items.filter((s) => amb.on[s.id]).length; return `<button class="amb-tab" role="tab" data-tab="${g.group}" aria-selected="${g.group === amb.tab}">${g.group}${n ? `<span class="n">${n}</span>` : ""}</button>`; }).join("");
+    const g = AMBIENCE.find((x) => x.group === amb.tab) || AMBIENCE[0];
+    els.ambTiles.innerHTML = g.items.map((s) => `<button class="amb-tile" data-id="${s.id}" aria-pressed="${amb.on[s.id] ? "true" : "false"}" title="${s.label}">${ICON(s.icon)}<span>${s.label}</span></button>`).join("");
   }
   function toggleAmbience(force) {
     const open = force ?? els.amb.hidden;
@@ -288,15 +305,25 @@
     if (open) renderAmbience();
   }
   els.ambience.addEventListener("click", (e) => { e.stopPropagation(); toggleAmbience(); });
-  els.ambGrid.addEventListener("click", (e) => {
-    const b = e.target.closest(".amb-toggle"); if (!b) return;
-    const on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", String(on)); ambSet(b.dataset.id, on, null);
+  els.ambTabs.addEventListener("click", (e) => { const t = e.target.closest(".amb-tab"); if (!t) return; amb.tab = t.dataset.tab; saveAmbience(); renderAmbience(); });
+  els.ambTiles.addEventListener("click", (e) => {
+    const b = e.target.closest(".amb-tile"); if (!b) return;
+    ambSet(b.dataset.id, !amb.on[b.dataset.id], null); renderAmbience();
   });
-  els.ambGrid.addEventListener("input", (e) => { const r = e.target.closest(".amb-level"); if (r) ambSet(r.dataset.id, null, parseFloat(r.value)); });
-  els.crackleLevel.addEventListener("input", () => { crackle.level = parseFloat(els.crackleLevel.value); store.set("mv.crackle.level", String(crackle.level)); setCrackle(!els.arm.classList.contains("lifted")); });
+  els.ambMixer.addEventListener("input", (e) => {
+    const r = e.target.closest(".amb-level"); if (!r) return;
+    if (r.dataset.id === "crackle") { crackle.level = parseFloat(r.value); store.set("mv.crackle.level", String(crackle.level)); if (!crackle.on && crackle.level > 0) toggleCrackle(true); else setCrackle(); return; }
+    ambSet(r.dataset.id, null, parseFloat(r.value));
+  });
+  els.ambMixer.addEventListener("click", (e) => {
+    const b = e.target.closest(".amb-off"); if (!b) return;
+    if (b.dataset.id === "crackle") { toggleCrackle(); return; }
+    ambSet(b.dataset.id, false, null); renderAmbience();
+  });
+  els.ambMute.addEventListener("click", () => { for (const s of ambActive()) ambSet(s.id, false, null); if (crackle.on) toggleCrackle(false); renderAmbience(); });
   document.addEventListener("pointerdown", (e) => { if (!els.amb.hidden && !e.target.closest("#amb, #ambience")) toggleAmbience(false); });
   // sounds left on last time come back on the first gesture (the audio context needs one)
-  function ambResumeSaved() { for (const s of AMB_ALL) if (amb.on[s.id]) ambStart(s.id); }
+  function ambResumeSaved() { if (crackle.on) { ambMaster(); setCrackle(); } for (const s of AMB_ALL) if (amb.on[s.id]) ambStart(s.id); }
   document.addEventListener("pointerdown", function once() { document.removeEventListener("pointerdown", once, true); setTimeout(ambResumeSaved, 300); }, true);
 
   const wctx = els.wave.getContext("2d");
@@ -1039,8 +1066,6 @@
     toast(light ? "Light theme" : "Dark theme");
   }
   els.theme.addEventListener("click", toggleTheme);
-  els.crackle.addEventListener("click", toggleCrackle);
-  els.crackle.setAttribute("aria-pressed", String(crackle.on));
   if (document.documentElement.dataset.theme === "light") document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#FBF7F1");
 
   // ---------- zen / full screen ----------

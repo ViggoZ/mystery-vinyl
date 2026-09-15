@@ -12,3 +12,7 @@ Noise: brown-noise, pink-noise, white-noise
 
 Pixabay Content License: https://pixabay.com/service/license-summary/
 CC0: https://creativecommons.org/publicdomain/zero/1.0/
+
+# Icons
+
+`assets/pixelarticons.svg` is a subset of [Pixelarticons](https://github.com/halfmage/pixelarticons) by Gerrit Halfmann, MIT.
