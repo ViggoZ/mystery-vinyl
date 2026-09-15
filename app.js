@@ -223,11 +223,14 @@
   // room, not the record: they keep playing while the needle is up. Not routed through the
   // analyser, so the waveform stays the music's.
   const AMBIENCE = [
-    { id: "light-rain", label: "Light rain" }, { id: "rain-on-window", label: "Rainy window" },
-    { id: "thunder", label: "Thunder" }, { id: "cafe", label: "Café" },
-    { id: "campfire", label: "Campfire" }, { id: "waves", label: "Waves" },
-    { id: "wind-in-trees", label: "Wind" }, { id: "night-village", label: "Night" },
-  ];
+    { group: "Rain", items: [["light-rain", "Light rain"], ["heavy-rain", "Heavy rain"], ["rain-on-window", "Window"], ["rain-on-tent", "Tent"], ["rain-on-leaves", "Leaves"], ["thunder", "Thunder"]] },
+    { group: "Nature", items: [["campfire", "Campfire"], ["waves", "Waves"], ["river", "River"], ["waterfall", "Waterfall"], ["wind", "Wind"], ["wind-in-trees", "Trees"], ["droplets", "Droplets"], ["jungle", "Jungle"]] },
+    { group: "Places", items: [["cafe", "Café"], ["library", "Library"], ["night-village", "Village"], ["restaurant", "Restaurant"], ["office", "Office"], ["crowded-bar", "Bar"], ["church", "Church"], ["temple", "Temple"]] },
+    { group: "Things", items: [["keyboard", "Keyboard"], ["typewriter", "Typewriter"], ["clock", "Clock"], ["ceiling-fan", "Fan"], ["wind-chimes", "Chimes"], ["singing-bowl", "Bowl"], ["tuning-radio", "Radio"], ["boiling-water", "Kettle"]] },
+    { group: "Animals", items: [["birds", "Birds"], ["crickets", "Crickets"], ["cat-purring", "Cat"], ["owl", "Owl"], ["frog", "Frogs"], ["seagulls", "Seagulls"]] },
+    { group: "Noise", items: [["brown-noise", "Brown"], ["pink-noise", "Pink"], ["white-noise", "White"]] },
+  ].map((g) => ({ group: g.group, items: g.items.map(([id, label]) => ({ id, label })) }));
+  const AMB_ALL = AMBIENCE.flatMap((g) => g.items);
   const amb = { levels: {}, on: {}, nodes: {}, buffers: {}, master: null };
   try { const saved = JSON.parse(store.get("mv.ambience") || "{}"); amb.levels = saved.levels || {}; amb.on = saved.on || {}; } catch {}
   function saveAmbience() { store.set("mv.ambience", JSON.stringify({ levels: amb.levels, on: amb.on })); }
@@ -270,11 +273,12 @@
     else ambStop(id);
   }
   function renderAmbience() {
-    els.ambGrid.innerHTML = AMBIENCE.map((s) => `
-      <div class="amb-row">
-        <button class="amb-toggle" data-id="${s.id}" aria-pressed="${amb.on[s.id] ? "true" : "false"}"><span class="amb-dot"></span><span class="amb-name">${s.label}</span></button>
-        <input class="amb-level" type="range" min="0" max="1" step="0.01" value="${amb.levels[s.id] ?? 0.5}" data-id="${s.id}" aria-label="${s.label} level" />
-      </div>`).join("");
+    els.ambGrid.innerHTML = AMBIENCE.map((g) => `
+      <div class="amb-group"><div class="amb-group-name">${g.group}</div><div class="amb-group-grid">${g.items.map((s) => `
+        <div class="amb-row">
+          <button class="amb-toggle" data-id="${s.id}" aria-pressed="${amb.on[s.id] ? "true" : "false"}"><span class="amb-dot"></span><span class="amb-name">${s.label}</span></button>
+          <input class="amb-level" type="range" min="0" max="1" step="0.01" value="${amb.levels[s.id] ?? 0.5}" data-id="${s.id}" aria-label="${s.label} level" />
+        </div>`).join("")}</div></div>`).join("");
     els.crackle.setAttribute("aria-pressed", String(crackle.on));
     els.crackleLevel.value = crackle.level;
   }
@@ -292,7 +296,7 @@
   els.crackleLevel.addEventListener("input", () => { crackle.level = parseFloat(els.crackleLevel.value); store.set("mv.crackle.level", String(crackle.level)); setCrackle(!els.arm.classList.contains("lifted")); });
   document.addEventListener("pointerdown", (e) => { if (!els.amb.hidden && !e.target.closest("#amb, #ambience")) toggleAmbience(false); });
   // sounds left on last time come back on the first gesture (the audio context needs one)
-  function ambResumeSaved() { for (const s of AMBIENCE) if (amb.on[s.id]) ambStart(s.id); }
+  function ambResumeSaved() { for (const s of AMB_ALL) if (amb.on[s.id]) ambStart(s.id); }
   document.addEventListener("pointerdown", function once() { document.removeEventListener("pointerdown", once, true); setTimeout(ambResumeSaved, 300); }, true);
 
   const wctx = els.wave.getContext("2d");

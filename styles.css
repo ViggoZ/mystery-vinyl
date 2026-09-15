@@ -205,13 +205,16 @@ body.zen .ic-collapse { display: block; }
 .amb-level { width: 96px; accent-color: var(--accent); opacity: .35; transition: opacity .2s; }
 .amb-row:has(.amb-toggle[aria-pressed="true"]) .amb-level { opacity: 1; }
 .amb-sep { height: 1px; background: var(--line); margin: 6px 0; }
-.amb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
-.amb-grid .amb-row { grid-template-columns: 1fr 70px; }
-.amb-grid .amb-level { width: 70px; }
+.amb-grid { max-height: min(60vh, 520px); overflow-y: auto; margin: 0 -6px; padding: 0 6px; }
+.amb-group { padding: 6px 0 2px; }
+.amb-group-name { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); padding: 4px 2px 2px; }
+.amb-group-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+.amb-group-grid .amb-row { grid-template-columns: 1fr 70px; }
+.amb-group-grid .amb-level { width: 70px; }
 .amb-note { margin: 8px 2px 0; font-size: 11px; color: var(--faint); }
 body.zen .amb { display: none; }
 @media (max-width: 1100px) { .amb { right: 40px; } }
-@media (max-width: 860px) { .amb { right: 16px; top: 64px; } .amb-grid { grid-template-columns: 1fr; } }
+@media (max-width: 860px) { .amb { right: 16px; top: 64px; } .amb-group-grid { grid-template-columns: 1fr; } }
 
 /* hidden YouTube player: present in the viewport but invisible */
 #yt-shell, #sp-shell { position: fixed; right: 0; bottom: 0; width: 300px; height: 200px; opacity: 0.001; pointer-events: none; overflow: hidden; z-index: -1; }
