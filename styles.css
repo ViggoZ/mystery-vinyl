@@ -61,8 +61,6 @@
     calc(1 * var(--pxu)) calc(100% - 3 * var(--pxu)),
     calc(1 * var(--pxu)) calc(100% - 5 * var(--pxu)),
     0 calc(100% - 5 * var(--pxu)));
-  --px-circle-22: polygon(63.636% 0, 63.636% 4.545%, 77.273% 4.545%, 77.273% 9.091%, 81.818% 9.091%, 81.818% 13.636%, 86.364% 13.636%, 86.364% 18.182%, 90.909% 18.182%, 90.909% 22.727%, 95.455% 22.727%, 95.455% 36.364%, 100% 36.364%, 100% 63.636%, 95.455% 63.636%, 95.455% 77.273%, 90.909% 77.273%, 90.909% 81.818%, 86.364% 81.818%, 86.364% 86.364%, 81.818% 86.364%, 81.818% 90.909%, 77.273% 90.909%, 77.273% 95.455%, 63.636% 95.455%, 63.636% 100%, 36.364% 100%, 36.364% 95.455%, 22.727% 95.455%, 22.727% 90.909%, 18.182% 90.909%, 18.182% 86.364%, 13.636% 86.364%, 13.636% 81.818%, 9.091% 81.818%, 9.091% 77.273%, 4.545% 77.273%, 4.545% 63.636%, 0 63.636%, 0 36.364%, 4.545% 36.364%, 4.545% 22.727%, 9.091% 22.727%, 9.091% 18.182%, 13.636% 18.182%, 13.636% 13.636%, 18.182% 13.636%, 18.182% 9.091%, 22.727% 9.091%, 22.727% 4.545%, 36.364% 4.545%, 36.364% 0);
-  --px-circle-28: polygon(64.286% 0, 64.286% 3.571%, 71.429% 3.571%, 71.429% 7.143%, 78.571% 7.143%, 78.571% 10.714%, 82.143% 10.714%, 82.143% 14.286%, 85.714% 14.286%, 85.714% 17.857%, 89.286% 17.857%, 89.286% 21.429%, 92.857% 21.429%, 92.857% 28.571%, 96.429% 28.571%, 96.429% 35.714%, 100% 35.714%, 100% 64.286%, 96.429% 64.286%, 96.429% 71.429%, 92.857% 71.429%, 92.857% 78.571%, 89.286% 78.571%, 89.286% 82.143%, 85.714% 82.143%, 85.714% 85.714%, 82.143% 85.714%, 82.143% 89.286%, 78.571% 89.286%, 78.571% 92.857%, 71.429% 92.857%, 71.429% 96.429%, 64.286% 96.429%, 64.286% 100%, 35.714% 100%, 35.714% 96.429%, 28.571% 96.429%, 28.571% 92.857%, 21.429% 92.857%, 21.429% 89.286%, 17.857% 89.286%, 17.857% 85.714%, 14.286% 85.714%, 14.286% 82.143%, 10.714% 82.143%, 10.714% 78.571%, 7.143% 78.571%, 7.143% 71.429%, 3.571% 71.429%, 3.571% 64.286%, 0 64.286%, 0 35.714%, 3.571% 35.714%, 3.571% 28.571%, 7.143% 28.571%, 7.143% 21.429%, 10.714% 21.429%, 10.714% 17.857%, 14.286% 17.857%, 14.286% 14.286%, 17.857% 14.286%, 17.857% 10.714%, 21.429% 10.714%, 21.429% 7.143%, 28.571% 7.143%, 28.571% 3.571%, 35.714% 3.571%, 35.714% 0);
   --px-corner-sm: polygon(
     0 calc(3 * var(--pxu)),
     0 calc(2 * var(--pxu)),
@@ -374,17 +372,17 @@ body.zen .amb { display: none; }
 
 .controls { display: flex; align-items: center; gap: 10px; margin-top: 40px; }
 .btn {
-  width: 44px; height: 44px; border-radius: 0; --px-corner: var(--px-circle-22);
+  width: 44px; height: 44px; border-radius: 50%;
   display: grid; place-items: center;
   color: var(--ink);
   border: 1px solid var(--line);
-  transition: transform .15s;
+  transition: border-color .2s, background .2s, transform .15s;
 }
 .btn svg { width: 20px; height: 20px; fill: currentColor; }
-.btn:hover { --px-line: var(--line-hover); --px-fill: var(--btn-hover); }
+.btn:hover { border-color: var(--line-hover); background: var(--btn-hover); }
 .btn:active { transform: scale(.94); }
-.btn-main { width: 56px; height: 56px; color: var(--on-accent); --px-corner: var(--px-circle-28); --px-line: var(--accent); --px-fill: var(--accent); }
-.btn-main:hover { --px-line: var(--accent-hover); --px-fill: var(--accent-hover); }
+.btn-main { width: 56px; height: 56px; color: var(--on-accent); border-color: var(--accent); background: var(--accent); }
+.btn-main:hover { border-color: var(--accent-hover); background: var(--accent-hover); }
 .btn-main .ic-pause { display: none; }
 body.playing .btn-main .ic-play { display: none; }
 body.playing .btn-main .ic-pause { display: block; }
@@ -606,7 +604,7 @@ body.playing .power::after { background: var(--accent); box-shadow: 0 0 10px rgb
 @keyframes toast-out { to { opacity: 0; translate: -50% 6px; } }
 @keyframes hint-in { from { opacity: 0; translate: -50% 8px; } }
 body.armed .btn-main { animation: pulse-btn 1.6s ease-in-out infinite; }
-@keyframes pulse-btn { 50% { filter: drop-shadow(0 0 6px rgba(217,184,150,.7)); } }
+@keyframes pulse-btn { 50% { box-shadow: 0 0 0 10px rgba(217,184,150,.18); } }
 
 /* ---------- zen / full screen ---------- */
 body.zen { grid-template-rows: 1fr; }
