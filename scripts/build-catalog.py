@@ -13,17 +13,11 @@ MAX_PER_ITEM = 16
 # stream, so run with --check to drop dead ones (needs yt-dlp) and replace them.
 # (id, title, channel)
 YT = {
-    "coding": [
+    "lofi": [
         ("rFZHOHl-L8A", "lofi hip hop radio · beats to relax/study to", "Lofi Girl"),
         ("7NOSDKb0HlU", "lofi hip hop radio · beats to study/relax to", "Chillhop Music"),
         ("blAFxjhg62k", "Coffee Shop Radio · chill lo-fi & jazzy beats", "STEEZYASFUCK"),
         ("jiua2V9q9V0", "Essentials Radio · chill beats", "Chillhop Music"),
-        ("lP26UCnoH9s", "coffee shop radio · 24/7 lofi hip-hop beats", "STEEZYASFUCK"),
-        ("4xDzrJKXOOY", "synthwave radio · beats to chill/game to", "Lofi Girl"),
-        ("UjlMEqTu2KI", "Nightride FM · 24/7 synthwave radio", "Nightride FM"),
-        ("YOF0AEY1G1U", "Hyperfocus Music 24/7 · deep work radio", "Hyperfocus Night Office"),
-    ],
-    "lofi": [
         ("1Tl2FtV06qo", "asian lofi radio · beats to relax/study to", "Lofi Girl"),
         ("0muHFBSiybw", "summer lofi radio · music to put you in a better mood", "Lofi Girl"),
         ("CwPCy1GLS38", "sad lofi radio · beats for rainy days", "Lofi Girl"),
@@ -75,22 +69,28 @@ YT = {
 # officially; we keep only free-to-stream tracks. (user_id, label, allowed genres, max tracks)
 AUDIUS_KEY = "0x075d48b8a8a4dd6c17211fd3211f1994cf1e15c6"
 AUDIUS = {
-    "coding": [
-        ("eAE0q", "Chillhop Music", {"Lo-Fi", "Jazz"}, 140),
-        ("D2P6Z", "College Music", {"Lo-Fi", "Hip-Hop/Rap"}, 60),
+    # (user_id, label, allowed genres, max tracks, max duration in seconds)
+    "lofi": [
+        ("eAE0q", "Chillhop Music", {"Lo-Fi", "Jazz"}, 160, 900),
+        ("n1vm5", "Dreamhop Music", {"Hip-Hop/Rap", "Lo-Fi"}, 80, 900),
+        ("no05J", "Lofi Hip-Hop Radio", {"Hip-Hop/Rap", "Lo-Fi"}, 26, 900),
+        ("D2P6Z", "College Music", {"Lo-Fi", "Hip-Hop/Rap"}, 60, 900),
     ],
     "focus": [
-        ("D2P6Z", "College Music", {"Jazz", "Lo-Fi"}, 80),
-        ("n3YPZ", "Radio Juicy", {"Jazz", "Lo-Fi", "R&B/Soul"}, 60),
+        ("D2P6Z", "College Music", {"Jazz", "Lo-Fi"}, 80, 900),
+        ("n3YPZ", "Radio Juicy", {"Jazz", "Lo-Fi", "R&B/Soul"}, 60, 900),
+    ],
+    "chill": [
+        ("jNmj4", "Anjunadeep", {"Deep House", "House", "Electronic"}, 40, 600),
     ],
     "night": [
-        ("D2P6Z", "College Music", {"Ambient"}, 68),
-        ("DNNg0", "Inner Ocean Records", {"Ambient", "Electronic"}, 19),
-        ("L52N6", "Stereofox", {"Ambient", "Downtempo"}, 20),
+        ("D2P6Z", "College Music", {"Ambient"}, 68, 1200),
+        ("DNNg0", "Inner Ocean Records", {"Ambient", "Electronic"}, 19, 1200),
+        ("L52N6", "Stereofox", {"Ambient", "Downtempo"}, 20, 1500),
     ],
 }
 
-def audius_tracks(user_id, label, genres, cap):
+def audius_tracks(user_id, label, genres, cap, max_dur=900):
     """Free-to-stream tracks of an Audius user, most played first."""
     base = "https://api.audius.co/v1"
     out, offset = [], 0
@@ -100,7 +100,7 @@ def audius_tracks(user_id, label, genres, cap):
             page = json.load(r)["data"]
         if not page: break
         for t in page:
-            ok = (t.get("access") or {}).get("stream") and not t.get("stream_conditions") and (t.get("duration") or 0) >= 60
+            ok = (t.get("access") or {}).get("stream") and not t.get("stream_conditions") and 60 <= (t.get("duration") or 0) <= max_dur
             if ok and t.get("genre") in genres:
                 art = t.get("artwork") or {}
                 # label accounts title tracks "Artist - Title"; split so the artist shows properly
@@ -122,11 +122,10 @@ def audius_tracks(user_id, label, genres, cap):
     return out[:cap]
 
 CATEGORIES = {
-    "coding": {"label": "Coding", "tag": "beats to work to",                         "youtube": YT["coding"]},
-    "lofi":   {"label": "Lo-fi",  "tag": "the lofi radios everyone leaves on",       "youtube": YT["lofi"]},
-    "focus":  {"label": "Focus",  "tag": "jazz, piano, no vocals",                   "youtube": YT["focus"]},
-    "chill":  {"label": "Chill",  "tag": "chill house, deep house, positive energy", "youtube": YT["chill"]},
-    "night":  {"label": "Night",  "tag": "sleep lofi, ambient, late-night jazz",     "youtube": YT["night"]},
+    "lofi":  {"label": "Lo-fi", "tag": "Chillhop, Dreamhop, College Music records and the lofi radios", "youtube": YT["lofi"]},
+    "focus": {"label": "Focus", "tag": "jazz, piano, no vocals",                   "youtube": YT["focus"]},
+    "chill": {"label": "Chill", "tag": "chill house, deep house, positive energy", "youtube": YT["chill"]},
+    "night": {"label": "Night", "tag": "sleep lofi, ambient, late-night jazz",     "youtube": YT["night"]},
 }
 
 def check_live(entries):
@@ -165,8 +164,8 @@ for key, cat in CATEGORIES.items():
     yt_entries = cat.get("youtube", [])
     if "--check" in sys.argv and yt_entries:
         yt_entries = check_live(yt_entries)
-    for user_id, label, genres, cap in AUDIUS.get(key, []):
-        got = audius_tracks(user_id, label, genres, cap)
+    for user_id, label, genres, cap, max_dur in AUDIUS.get(key, []):
+        got = audius_tracks(user_id, label, genres, cap, max_dur)
         for t in got: t["category"] = key
         out["tracks"].extend(got)
         print(f"{key:10} audius {label:22} {len(got)} tracks")

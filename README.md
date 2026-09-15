@@ -29,10 +29,9 @@ Pick a mood and the deck pulls a random record from that crate. The turntable on
 
 | Mood | What's in it | Source |
 | --- | --- | --- |
-| **Coding** | Chillhop Music and College Music records, plus a few 24/7 radios | Audius (official label accounts) + YouTube |
-| **Lo-fi** | The lofi radios everyone leaves on: rain, summer, Tokyo | YouTube 24/7 radios |
+| **Lo-fi** | Chillhop Music, Dreamhop, College Music records, plus the lofi radios everyone leaves on | Audius (official label accounts) + YouTube |
 | **Focus** | Jazz and lo-fi from College Music and Radio Juicy, plus piano radios | Audius + YouTube |
-| **Chill** | Positive chill / deep house, Good-Life-Radio style | YouTube 24/7 radios and long mixes |
+| **Chill** | Positive chill / deep house: Good-Life-Radio style radios, Anjunadeep singles | YouTube + Audius |
 | **Night** | Sleep lofi, ambient from College Music, Inner Ocean and Stereofox, late-night jazz radios | Audius + YouTube |
 | **Yours** | Whatever you paste in | You |
 
