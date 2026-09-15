@@ -584,7 +584,7 @@
     return cats;
   }
 
-  const MODE_ICON = { lofi: "coffee", focus: "target", chill: "cloud-sun", night: "moon", yours: "archive" };
+  const MODE_ICON = { lofi: "music", focus: "clock", chill: "coffee", night: "moon", yours: "heart" };
   function renderModes() {
     els.modes.innerHTML = "";
     for (const c of categories()) {
@@ -600,7 +600,7 @@
     const yours = document.createElement("button");
     yours.className = "mode mode-yours px"; yours.role = "tab"; yours.title = "Your own music";
     // a little record crate
-    yours.innerHTML = `${ICON("archive")}<span>Yours</span>`;
+    yours.innerHTML = `${ICON("heart")}<span>Yours</span>`;
     yours.setAttribute("aria-selected", String(state.category === "yours"));
     yours.addEventListener("click", (e) => {
       e.stopPropagation();
