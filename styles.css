@@ -372,17 +372,17 @@ body.zen .amb { display: none; }
 
 .controls { display: flex; align-items: center; gap: 10px; margin-top: 40px; }
 .btn {
-  width: 44px; height: 44px; border-radius: 50%;
+  width: 44px; height: 44px; border-radius: 0;
   display: grid; place-items: center;
   color: var(--ink);
   border: 1px solid var(--line);
   transition: border-color .2s, background .2s, transform .15s;
 }
 .btn svg { width: 20px; height: 20px; fill: currentColor; }
-.btn:hover { border-color: var(--line-hover); background: var(--btn-hover); }
+.btn:hover { --px-line: var(--line-hover); --px-fill: var(--btn-hover); }
 .btn:active { transform: scale(.94); }
-.btn-main { width: 56px; height: 56px; color: var(--on-accent); border-color: var(--accent); background: var(--accent); }
-.btn-main:hover { border-color: var(--accent-hover); background: var(--accent-hover); }
+.btn-main { width: 56px; height: 56px; color: var(--on-accent); --px-line: var(--accent); --px-fill: var(--accent); }
+.btn-main:hover { --px-line: var(--accent-hover); --px-fill: var(--accent-hover); }
 .btn-main .ic-pause { display: none; }
 body.playing .btn-main .ic-play { display: none; }
 body.playing .btn-main .ic-pause { display: block; }
@@ -604,7 +604,7 @@ body.playing .power::after { background: var(--accent); box-shadow: 0 0 10px rgb
 @keyframes toast-out { to { opacity: 0; translate: -50% 6px; } }
 @keyframes hint-in { from { opacity: 0; translate: -50% 8px; } }
 body.armed .btn-main { animation: pulse-btn 1.6s ease-in-out infinite; }
-@keyframes pulse-btn { 50% { box-shadow: 0 0 0 10px rgba(217,184,150,.18); } }
+@keyframes pulse-btn { 50% { filter: drop-shadow(0 0 6px rgba(217,184,150,.7)); } }
 
 /* ---------- zen / full screen ---------- */
 body.zen { grid-template-rows: 1fr; }
