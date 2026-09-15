@@ -206,7 +206,29 @@ body.zen .ic-collapse { display: block; }
 .amb-row { display: grid; grid-template-columns: 18px 1fr 120px 22px; align-items: center; gap: 10px; padding: 4px 2px; font-size: 12px; color: var(--ink); }
 .amb-row svg { width: 16px; height: 16px; fill: currentColor; color: var(--accent); }
 .amb-row .amb-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.amb-level { width: 120px; accent-color: var(--accent); }
+/* pixel slider: a segmented bar filled up to --p, a square block for the thumb */
+.amb-level {
+  -webkit-appearance: none; appearance: none; width: 120px; height: 14px; margin: 0; background: transparent; cursor: pointer;
+  --p: 50%;
+}
+.amb-level::-webkit-slider-runnable-track {
+  height: 8px; border: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 5px, var(--bg) 5px 7px),
+    linear-gradient(90deg, var(--accent) var(--p), var(--line) var(--p));
+}
+.amb-level::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 10px; height: 14px; margin-top: -3px; border-radius: 0;
+  background: var(--accent); border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--ink);
+}
+.amb-level::-moz-range-track {
+  height: 8px; border: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 5px, var(--bg) 5px 7px),
+    linear-gradient(90deg, var(--accent) var(--p), var(--line) var(--p));
+}
+.amb-level::-moz-range-thumb { width: 10px; height: 14px; border-radius: 0; background: var(--accent); border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--ink); }
+.amb-level:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .amb-off { width: 22px; height: 22px; border-radius: 50%; color: var(--muted); font-size: 14px; line-height: 1; }
 .amb-off:hover { background: var(--btn-hover); color: var(--ink); }
 .amb-row.is-crackle { padding-top: 0; }

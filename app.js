@@ -293,6 +293,7 @@
         <input class="amb-level" type="range" min="0" max="1" step="0.01" value="${amb.levels[s.id] ?? 0.5}" data-id="${s.id}" aria-label="${s.label} level" />
         <button class="amb-off" data-id="${s.id}" title="Turn off">×</button>
       </div>`).join("");
+    paintLevels(els.ambMixer);
     els.ambCount.textContent = active.length ? `${active.length} on` : "";
     els.ambMute.hidden = !active.length && !crackle.on;
     els.ambTabs.innerHTML = AMBIENCE.map((g) => { const n = g.items.filter((s) => amb.on[s.id]).length; return `<button class="amb-tab" role="tab" data-tab="${g.group}" aria-selected="${g.group === amb.tab}">${g.group}${n ? `<span class="n">${n}</span>` : ""}</button>`; }).join("");
@@ -310,8 +311,10 @@
     const b = e.target.closest(".amb-tile"); if (!b) return;
     ambSet(b.dataset.id, !amb.on[b.dataset.id], null); renderAmbience();
   });
+  function paintLevels(root) { root.querySelectorAll(".amb-level").forEach((r) => { r.style.setProperty("--p", `${Math.round(r.value * 100)}%`); }); }
   els.ambMixer.addEventListener("input", (e) => {
     const r = e.target.closest(".amb-level"); if (!r) return;
+    r.style.setProperty("--p", `${Math.round(r.value * 100)}%`);
     if (r.dataset.id === "crackle") { crackle.level = parseFloat(r.value); store.set("mv.crackle.level", String(crackle.level)); if (!crackle.on && crackle.level > 0) toggleCrackle(true); else setCrackle(); return; }
     ambSet(r.dataset.id, null, parseFloat(r.value));
   });
