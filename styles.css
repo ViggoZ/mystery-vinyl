@@ -525,7 +525,7 @@ body.playing .btn-main .ic-pause { display: block; }
           mask: radial-gradient(circle, transparent 0 20%, #000 22% 97%, transparent 98%);
 }
 
-/* ---------- easter eggs: the night cat, dust ---------- */
+/* ---------- easter egg: the night cat ---------- */
 .cat {
   left: calc(722 / 840 * 100%); top: calc(606 / 680 * 100%);
   width: calc(76 / 840 * 100%); height: auto; overflow: visible;
@@ -546,11 +546,6 @@ body.playing .cat-tail { animation-duration: 1.1s; }
 body.playing .cat-tail-b { animation-delay: -.55s; }
 @keyframes cat-tail { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 @keyframes cat-breathe { 50% { transform: scaleY(1.035); } }
-.dust {
-  position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%;
-  pointer-events: none; opacity: 0; transition: opacity 2s ease;
-}
-.record.dusty .dust { opacity: 1; pointer-events: auto; cursor: grab; }
 
 .knob {
   left: calc(612 / 840 * 100%); top: calc(58 / 680 * 100%);

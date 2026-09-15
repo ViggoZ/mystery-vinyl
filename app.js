@@ -660,7 +660,7 @@
       state.brake = true; state.targetOmega = 0;
       setArm(ANGLE_REST, { lifted: true, ms: wasPlaying ? 900 : 300 });
       // 2. swap the record while the arm travels
-      if (swapRecord) { els.carrier.classList.add("out"); await wait(620); dustClear(); }
+      if (swapRecord) { els.carrier.classList.add("out"); await wait(620); }
       // stop whichever backend was sounding
       if (isYT(state.cur) && !isYT(t)) ytStop();
       if (isSP(state.cur) && !isSP(t)) spStop();
@@ -1124,70 +1124,6 @@
   const cat = $("#cat"), CAT_FORCED = /[?&]cat\b/.test(location.search);
   function catCheck() { const h = new Date().getHours(); cat.toggleAttribute("hidden", !(CAT_FORCED || h < 5)); }
   catCheck(); setInterval(catCheck, 60000);
-
-  // ---------- easter egg: dust ----------
-  // Leave the page alone for half an hour and the record starts to collect dust. Wipe it with the pointer.
-  const dust = { canvas: $("#dust"), ctx: null, specks: 0, lastActive: performance.now(), lastSwish: 0, noise: null };
-  const DUST_AFTER = /[?&]dust\b/.test(location.search) ? 0 : 30 * 60 * 1000, DUST_MAX = 1400;
-  dust.ctx = dust.canvas.getContext("2d");
-  function dustAdd(n) {
-    const c = dust.ctx, W = dust.canvas.width, R = W / 2;
-    for (let i = 0; i < n; i++) {
-      // uniform over the disc, but not on the label
-      const a = Math.random() * Math.PI * 2, r = R * (0.36 + 0.62 * Math.sqrt(Math.random()));
-      const x = R + r * Math.cos(a), y = R + r * Math.sin(a), s = 1 + Math.random() * 2.2;
-      c.fillStyle = `rgba(232,215,192,${0.18 + Math.random() * 0.5})`;
-      c.fillRect(x, y, s, s * (0.6 + Math.random() * 0.8));
-    }
-    dust.specks = Math.min(DUST_MAX, dust.specks + n);
-    els.record.classList.add("dusty");
-  }
-  function dustClear() {
-    dust.ctx.clearRect(0, 0, dust.canvas.width, dust.canvas.height);
-    dust.specks = 0; els.record.classList.remove("dusty");
-  }
-  function dustTick() {
-    if (!els.record.classList.contains("dusty") && performance.now() - dust.lastActive < DUST_AFTER) return;
-    if (performance.now() - dust.lastActive >= DUST_AFTER && dust.specks < DUST_MAX) dustAdd(DUST_AFTER ? 45 : 900);
-  }
-  setInterval(dustTick, DUST_AFTER ? 30000 : 500);
-  for (const ev of ["pointermove", "pointerdown", "keydown", "wheel"]) document.addEventListener(ev, () => { dust.lastActive = performance.now(); }, { passive: true });
-  function dustLocal(e) {
-    // pointer → canvas space, undoing the record's rotation
-    const r = els.record.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-    const k = dust.canvas.width / els.record.offsetWidth, ang = -state.recAngle * Math.PI / 180;
-    const dx = (e.clientX - cx) * k, dy = (e.clientY - cy) * k;
-    return { x: dust.canvas.width / 2 + dx * Math.cos(ang) - dy * Math.sin(ang), y: dust.canvas.height / 2 + dx * Math.sin(ang) + dy * Math.cos(ang) };
-  }
-  function swish() {
-    if (!ctx) return;
-    const now = performance.now(); if (now - dust.lastSwish < 220) return; dust.lastSwish = now;
-    if (!dust.noise) { const n = Math.floor(ctx.sampleRate * 0.3), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; dust.noise = b; }
-    const src = ctx.createBufferSource(); src.buffer = dust.noise;
-    const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 2600 + Math.random() * 800; bp.Q.value = 0.9;
-    const g = ctx.createGain(); const t0 = ctx.currentTime;
-    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.07, t0 + 0.04); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22);
-    src.connect(bp).connect(g).connect(ctx.destination); src.start(t0); src.stop(t0 + 0.25);
-  }
-  let dustWiping = false;
-  dust.canvas.addEventListener("pointerdown", (e) => { dustWiping = true; dust.canvas.setPointerCapture(e.pointerId); wipe(e); });
-  dust.canvas.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" || dustWiping) wipe(e); });
-  for (const ev of ["pointerup", "pointercancel", "pointerleave"]) dust.canvas.addEventListener(ev, () => { dustWiping = false; dustSettle(); });
-  function wipe(e) {
-    const p = dustLocal(e), c = dust.ctx, r = 46;
-    c.save(); c.globalCompositeOperation = "destination-out";
-    const g = c.createRadialGradient(p.x, p.y, r * 0.3, p.x, p.y, r); g.addColorStop(0, "rgba(0,0,0,1)"); g.addColorStop(1, "rgba(0,0,0,0)");
-    c.fillStyle = g; c.beginPath(); c.arc(p.x, p.y, r, 0, Math.PI * 2); c.fill(); c.restore();
-    swish();
-  }
-  function dustSettle() {
-    // how much is left? sample the canvas at low resolution
-    const s = 48, off = document.createElement("canvas"); off.width = off.height = s; const oc = off.getContext("2d");
-    oc.drawImage(dust.canvas, 0, 0, s, s);
-    const px = oc.getImageData(0, 0, s, s).data; let sum = 0;
-    for (let i = 3; i < px.length; i += 4) sum += px[i];
-    if (sum / (s * s) < 2.5) { dustClear(); toast("Clean."); }
-  }
 
   window.__mv = { state, audio, crackle, yt, amb, addSource, parseSource, get ctx() { return ctx; }, get analyser() { return analyser; }, get data() { return data; } };
 
