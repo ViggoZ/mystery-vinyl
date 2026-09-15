@@ -84,6 +84,12 @@ Click a source in the list to play it. Sources live in `localStorage` only.
 | `A` | Ambience panel |
 | `Esc` | Close the crate or panel, leave full screen |
 
+## Small things
+
+- Hover the logo and the record slides out of its sleeve. Click it for the liner notes.
+- Leave the page alone for half an hour and the record starts to collect dust. Wipe it off with the pointer.
+- Between midnight and five in the morning there is a cat asleep on the deck. Its tail keeps time.
+
 ## How the turntable is built
 
 - **Record.** `repeating-radial-gradient` for the grooves, a second radial gradient for the wide bands between tracks, the album cover as the label. A `conic-gradient` sheen sits in a separate layer that does *not* rotate, so the reflection stays put while the grooves turn under it.

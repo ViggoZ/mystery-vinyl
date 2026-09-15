@@ -525,6 +525,30 @@ body.playing .btn-main .ic-pause { display: block; }
           mask: radial-gradient(circle, transparent 0 20%, #000 22% 97%, transparent 98%);
 }
 
+/* ---------- easter eggs: the night cat, dust ---------- */
+.cat {
+  left: calc(690 / 840 * 100%); top: calc(583 / 680 * 100%);
+  width: calc(120 / 840 * 100%); height: auto; overflow: visible;
+  shape-rendering: crispEdges; pointer-events: none;
+  transform-origin: 50% 100%;
+  animation: cat-breathe 4s ease-in-out infinite;
+}
+.cat[hidden] { display: none; }
+.cat-body { fill: #E8D7C0; }
+.cat-stripe { fill: #cdbba2; }
+.cat-eye { fill: #1c1a17; }
+.cat-tail { animation: cat-tail 3.2s steps(1) infinite; }
+.cat-tail-b { animation-delay: -1.6s; }
+body.playing .cat-tail { animation-duration: 1.1s; }
+body.playing .cat-tail-b { animation-delay: -.55s; }
+@keyframes cat-tail { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes cat-breathe { 50% { transform: scaleY(1.035); } }
+.dust {
+  position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%;
+  pointer-events: none; opacity: 0; transition: opacity 2s ease;
+}
+.record.dusty .dust { opacity: 1; pointer-events: auto; cursor: grab; }
+
 .knob {
   left: calc(612 / 840 * 100%); top: calc(58 / 680 * 100%);
   width: calc(44 / 840 * 100%); aspect-ratio: 1; border-radius: 50%;
@@ -678,4 +702,5 @@ body.zen.idle { cursor: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .arm { transition-duration: .01s; }
+  .cat, .cat-tail { animation: none; }
 }
