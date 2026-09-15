@@ -110,6 +110,7 @@
 .px::after { inset: 1px; background: var(--px-fill, var(--bg)); }
 .px-shadow { filter: drop-shadow(5px 5px 0 var(--hard)); }
 .px-lg { --pxu: 3px; }
+.px-sm, .mode, .amb-mute, .amb-tab { --pxu: 1px; }
 html, body { height: 100%; }
 body {
   margin: 0;
