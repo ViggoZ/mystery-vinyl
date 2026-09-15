@@ -584,11 +584,14 @@
     return cats;
   }
 
+  const MODE_ICON = { lofi: "coffee", focus: "target", chill: "cloud-sun", night: "moon", yours: "archive" };
   function renderModes() {
     els.modes.innerHTML = "";
     for (const c of categories()) {
+      if (c.id === "yours") continue;
       const b = document.createElement("button");
-      b.className = "mode px"; b.role = "tab"; b.textContent = c.label; b.title = c.tag;
+      b.className = "mode px"; b.role = "tab"; b.title = c.tag;
+      b.innerHTML = `${ICON(MODE_ICON[c.id] || "music")}<span>${c.label}</span>`;
       b.setAttribute("aria-selected", String(c.id === state.category));
       b.addEventListener("click", () => selectCategory(c.id));
       els.modes.appendChild(b);
@@ -597,14 +600,13 @@
     const yours = document.createElement("button");
     yours.className = "mode mode-yours px"; yours.role = "tab"; yours.title = "Your own music";
     // a little record crate
-    yours.innerHTML = '<svg aria-hidden="true"><use href="assets/pixelarticons.svg#archive"></use></svg>Yours';
+    yours.innerHTML = `${ICON("archive")}<span>Yours</span>`;
     yours.setAttribute("aria-selected", String(state.category === "yours"));
     yours.addEventListener("click", (e) => {
       e.stopPropagation();
       if (state.yoursTracks.length && state.category !== "yours" && !state.busy) selectCategory("yours");
       toggleCrate(true);
     });
-    const old = Array.from(els.modes.children).find((b) => b.textContent === "Yours"); if (old) old.remove();
     els.modes.appendChild(yours);
   }
   // Record label art: try each candidate in order, fall back to the Mystery Vinyl label.

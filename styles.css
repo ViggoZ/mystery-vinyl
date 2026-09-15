@@ -137,7 +137,7 @@
 .px::after { inset: 1px; background: var(--px-fill, var(--bg)); }
 .px-shadow { filter: drop-shadow(0 16px 24px rgba(0,0,0,.28)); }
 .px-lg { --pxu: 2px; }
-.px-sm, .mode, .amb-mute, .amb-tab { --pxu: 1px; --px-corner: var(--px-corner-sm); }
+.px-sm, .amb-mute, .amb-tab { --pxu: 1px; --px-corner: var(--px-corner-sm); }
 html, body { height: 100%; }
 body {
   margin: 0;
@@ -228,8 +228,6 @@ body.zen .ic-collapse { display: block; }
 
 .modes-wrap { position: relative; margin-bottom: 44px; }
 .modes { display: flex; flex-wrap: wrap; gap: 8px; }
-.mode-yours { display: inline-flex; align-items: center; gap: 6px; padding-left: 11px; }
-.mode-yours svg { width: 13px; height: 13px; fill: currentColor; }
 
 /* ---------- "Yours" crate popover ---------- */
 .crate {
@@ -342,14 +340,16 @@ body.zen .amb { display: none; }
 #yt-shell iframe { width: 200px; height: 200px; border: 0; }
 #sp-shell iframe { width: 300px; height: 80px; border: 0; }
 .mode {
-  padding: 7px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  min-width: 64px; padding: 10px 12px 8px;
   border-radius: 0;
   border: 1px solid var(--line);
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0;
-  transition: color .2s, border-color .2s, background .2s, transform .2s;
+  transition: color .2s, transform .2s;
 }
+.mode svg { width: 20px; height: 20px; fill: currentColor; }
 .mode:hover { color: var(--ink); --px-line: var(--line-hover); }
 .mode[aria-selected="true"] { color: var(--on-accent); --px-line: var(--accent); --px-fill: var(--accent); }
 .mode:active { transform: scale(.97); }
