@@ -29,14 +29,14 @@ Pick a mood and the deck pulls a random record from that crate. The turntable on
 
 | Mood | What's in it | Source |
 | --- | --- | --- |
-| **Coding** | Beats to work to: Lofi Girl, Chillhop, STEEZYASFUCK, Nightride FM | YouTube 24/7 radios |
+| **Coding** | Chillhop Music and College Music records, plus a few 24/7 radios | Audius (official label accounts) + YouTube |
 | **Lo-fi** | The lofi radios everyone leaves on: sleep, rain, summer, Tokyo | YouTube 24/7 radios |
-| **Focus** | Piano, jazz, ambient | YouTube 24/7 radios |
+| **Focus** | Ambient and jazz from College Music, Inner Ocean, Radio Juicy, plus piano radios | Audius + YouTube |
 | **Sunset** | Positive chill / deep house, Good-Life-Radio style | YouTube 24/7 radios and long mixes |
-| **Records** | Actual records: lo-fi, jazz-hop, ambient from netlabels | Creative Commons MP3s from the Internet Archive |
+| **Records** | Netlabel vinyl: lo-fi, jazz-hop, ambient | Creative Commons MP3s from the Internet Archive |
 | **Yours** | Whatever you paste in | You |
 
-The four radio crates use the same sources every lofi radio site does (lofi.cafe, lofi-fm and friends all embed the same streams), played through a hidden YouTube player. Live stream ids change when a channel restarts a stream; `python3 scripts/build-catalog.py --check` asks yt-dlp which ones still play and drops the rest. **Records** is the crate with real audio data: waveform, crackle, and the album, license and a link back shown under the player.
+Two kinds of source. **Audius** and the **Internet Archive** serve real audio with CORS headers, so those records get the live waveform, the crackle and a proper credit line (artist, label, link). Audius is the open catalog the labels publish to themselves: Chillhop Music has ~790 free-to-stream tracks there, College Music ~500. The build script keeps only tracks whose access allows streaming and skips paid ones. **YouTube** radios play through a hidden player (the same thing every lofi radio site does); live stream ids change when a channel restarts a stream, so `python3 scripts/build-catalog.py --check` asks yt-dlp which ones still play and drops the rest.
 
 ## Your own music
 

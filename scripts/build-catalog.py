@@ -64,6 +64,52 @@ YT = {
     ],
 }
 
+# Audius: open API, free key (safe to ship client-side per Audius docs). Labels publish here
+# officially; we keep only free-to-stream tracks. (user_id, label, allowed genres, max tracks)
+AUDIUS_KEY = "0x075d48b8a8a4dd6c17211fd3211f1994cf1e15c6"
+AUDIUS = {
+    "coding": [
+        ("eAE0q", "Chillhop Music", {"Lo-Fi", "Jazz"}, 140),
+        ("D2P6Z", "College Music", {"Lo-Fi", "Hip-Hop/Rap"}, 60),
+    ],
+    "focus": [
+        ("D2P6Z", "College Music", {"Ambient", "Jazz"}, 90),
+        ("DNNg0", "Inner Ocean Records", {"Ambient", "Electronic"}, 19),
+        ("n3YPZ", "Radio Juicy", {"Jazz", "Lo-Fi"}, 50),
+    ],
+}
+
+def audius_tracks(user_id, label, genres, cap):
+    """Free-to-stream tracks of an Audius user, most played first."""
+    base = "https://api.audius.co/v1"
+    out, offset = [], 0
+    while offset < 1000:
+        req = urllib.request.Request(f"{base}/users/{user_id}/tracks?api_key={AUDIUS_KEY}&limit=100&offset={offset}", headers={"User-Agent": "mystery-vinyl/1.0"})
+        with urllib.request.urlopen(req, timeout=60) as r:
+            page = json.load(r)["data"]
+        if not page: break
+        for t in page:
+            ok = (t.get("access") or {}).get("stream") and not t.get("stream_conditions") and (t.get("duration") or 0) >= 60
+            if ok and t.get("genre") in genres:
+                art = t.get("artwork") or {}
+                # label accounts title tracks "Artist - Title"; split so the artist shows properly
+                title, artist = t["title"].strip(), t["user"]["name"]
+                if " - " in title:
+                    artist, title = [x.strip() for x in title.split(" - ", 1)]
+                title = re.sub(r"\s*\[(remix contest|free download)[^\]]*\]\s*$", "", title, flags=re.I)
+                out.append({
+                    "id": f"audius/{t['id']}", "kind": "audio", "provider": "audius",
+                    "title": title, "artist": artist, "album": label,
+                    "duration": t["duration"], "plays": t.get("play_count") or 0,
+                    "url": f"{base}/tracks/{t['id']}/stream?api_key={AUDIUS_KEY}&app_name=mysteryvinyl",
+                    "cover": art.get("480x480") or art.get("150x150") or "",
+                    "source": "https://audius.co" + t.get("permalink", f"/tracks/{t['id']}"),
+                })
+        offset += 100
+    out.sort(key=lambda t: -t["plays"])
+    for t in out: t.pop("plays", None)
+    return out[:cap]
+
 CATEGORIES = {
     "coding":  {"label": "Coding",  "tag": "beats to work to, 24/7 radios",        "youtube": YT["coding"]},
     "lofi":    {"label": "Lo-fi",   "tag": "the lofi radios everyone leaves on",    "youtube": YT["lofi"]},
@@ -112,6 +158,11 @@ for key, cat in CATEGORIES.items():
     yt_entries = cat.get("youtube", [])
     if "--check" in sys.argv and yt_entries:
         yt_entries = check_live(yt_entries)
+    for user_id, label, genres, cap in AUDIUS.get(key, []):
+        got = audius_tracks(user_id, label, genres, cap)
+        for t in got: t["category"] = key
+        out["tracks"].extend(got)
+        print(f"{key:10} audius {label:22} {len(got)} tracks")
     for vid, title, channel in yt_entries:
         out["tracks"].append({
             "id": f"yt/{vid}", "kind": "yt", "category": key, "videoId": vid,
