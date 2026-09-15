@@ -578,6 +578,8 @@ body.playing .power::after { background: var(--accent); box-shadow: 0 0 10px rgb
 }
 .foot a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
 .foot a:hover { color: var(--accent); border-color: var(--accent); }
+.foot-gh { display: inline-flex; align-items: center; gap: 5px; }
+.foot-gh svg { width: 13px; height: 13px; fill: currentColor; }
 
 .hint {
   position: fixed; left: 50%; bottom: 84px; translate: -50% 0;
