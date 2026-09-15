@@ -19,7 +19,6 @@
   --wave-off: #4a4a4a;
   --hint-bg: #2a2a2a;
   --hint-ink: #d9b896;
-  --hard: #000;
   --pxu: 1px;
   --px-corner: polygon(
     0 calc(5 * var(--pxu)),
@@ -118,7 +117,6 @@
   --wave-off: #ddd3c5;
   --hint-bg: #1c1a17;
   --hint-ink: #e8d7c0;
-  --hard: #1c1a17;
   /* the deck stays dark in the light theme; only its shadow softens */
   --plinth-1: #2e2e2e;
   --plinth-2: #262626;
@@ -137,7 +135,7 @@
 .px::before, .px::after { content: ""; position: absolute; z-index: -1; clip-path: var(--px-corner); pointer-events: none; }
 .px::before { inset: 0; background: var(--px-line, var(--line)); }
 .px::after { inset: 1px; background: var(--px-fill, var(--bg)); }
-.px-shadow { filter: drop-shadow(5px 5px 0 var(--hard)); }
+.px-shadow { filter: drop-shadow(0 16px 24px rgba(0,0,0,.28)); }
 .px-lg { --pxu: 2px; }
 .px-sm, .mode, .amb-mute, .amb-tab { --pxu: 1px; --px-corner: var(--px-corner-sm); }
 html, body { height: 100%; }
