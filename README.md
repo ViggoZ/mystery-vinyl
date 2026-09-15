@@ -29,13 +29,14 @@ Pick a mood and the deck pulls a random record from that crate. The turntable on
 
 | Mood | What's in it | Source |
 | --- | --- | --- |
-| **Coding** | Steady instrumental beats, a little swing | Dusted Wax Kingdom releases (CC BY-NC-ND) |
-| **Lo-fi** | Dusty, sampled, warm | Dusted Wax Kingdom releases (CC BY-NC-ND) |
-| **Focus** | Long ambient pieces and late-night jazz | Calm Pills (CC0), Candlegravity, Jenova 7, Clinical Jazz |
-| **Sunset** | Positive chill / deep house, Good-Life-Radio style | Curated YouTube 24/7 radios and long mixes |
+| **Coding** | Beats to work to: Lofi Girl, Chillhop, STEEZYASFUCK, Nightride FM | YouTube 24/7 radios |
+| **Lo-fi** | The lofi radios everyone leaves on: sleep, rain, summer, Tokyo | YouTube 24/7 radios |
+| **Focus** | Piano, jazz, ambient | YouTube 24/7 radios |
+| **Sunset** | Positive chill / deep house, Good-Life-Radio style | YouTube 24/7 radios and long mixes |
+| **Records** | Actual records: lo-fi, jazz-hop, ambient from netlabels | Creative Commons MP3s from the Internet Archive |
 | **Yours** | Whatever you paste in | You |
 
-Sunset is the odd one out: that sound has no free-licensed equivalent, so the crate is a list of YouTube radios played through a hidden player. Everything else streams Creative Commons MP3s straight from the Internet Archive, with the album, license and a link back shown under the player.
+The four radio crates use the same sources every lofi radio site does (lofi.cafe, lofi-fm and friends all embed the same streams), played through a hidden YouTube player. Live stream ids change when a channel restarts a stream; `python3 scripts/build-catalog.py --check` asks yt-dlp which ones still play and drops the rest. **Records** is the crate with real audio data: waveform, crackle, and the album, license and a link back shown under the player.
 
 ## Your own music
 

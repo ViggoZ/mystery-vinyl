@@ -4,21 +4,51 @@
 Each category maps to a list of archive.org item identifiers. Run:
     python3 scripts/build-catalog.py
 """
-import json, re, urllib.request, urllib.parse, pathlib
+import json, re, sys, urllib.request, urllib.parse, pathlib
 
 MAX_PER_ITEM = 16
 
-CATEGORIES = {
-    "coding": {"label": "Coding", "tag": "steady beats, swing, no vocals",
-               "items": ["DWK031", "DWK155", "DWK127", "DWK217", "DWK149"]},
-    "lofi":   {"label": "Lo-fi",  "tag": "dusty, warm, sampled",
-               "items": ["DWK312", "DWK044", "DWK163", "DWK123"]},
-    "focus":  {"label": "Focus",  "tag": "ambient and late-night jazz",
-               "items": ["CalmPills", "Vkrsnl037CandlegravityAMomentForMyself", "DWK119", "ca200_cjazz", "DWK138"]},
-    # Sunset is chill / deep house of the "Good Life Radio" kind. Nothing like it exists
-    # under a free license, so this crate is YouTube 24/7 radios and long mixes, played
-    # through the hidden player. (id, title, channel) — titles are just initial labels.
-    "sunset": {"label": "Sunset", "tag": "chill house, deep house, positive energy", "youtube": [
+# YouTube 24/7 radios, the same sources the lofi radio sites use (Lofi Girl, Chillhop,
+# STEEZYASFUCK, Nightride FM, ...). Live stream ids change when a channel restarts a
+# stream, so run with --check to drop dead ones (needs yt-dlp) and replace them.
+# (id, title, channel)
+YT = {
+    "coding": [
+        ("rFZHOHl-L8A", "lofi hip hop radio · beats to relax/study to", "Lofi Girl"),
+        ("7NOSDKb0HlU", "lofi hip hop radio · beats to study/relax to", "Chillhop Music"),
+        ("blAFxjhg62k", "Coffee Shop Radio · chill lo-fi & jazzy beats", "STEEZYASFUCK"),
+        ("jiua2V9q9V0", "Essentials Radio · chill beats", "Chillhop Music"),
+        ("lP26UCnoH9s", "coffee shop radio · 24/7 lofi hip-hop beats", "STEEZYASFUCK"),
+        ("4xDzrJKXOOY", "synthwave radio · beats to chill/game to", "Lofi Girl"),
+        ("UjlMEqTu2KI", "Nightride FM · 24/7 synthwave radio", "Nightride FM"),
+        ("YOF0AEY1G1U", "Hyperfocus Music 24/7 · deep work radio", "Hyperfocus Night Office"),
+    ],
+    "lofi": [
+        ("JD-kMIpDfnY", "lofi hip hop radio · beats to sleep/chill to", "Lofi Girl"),
+        ("1Tl2FtV06qo", "asian lofi radio · beats to relax/study to", "Lofi Girl"),
+        ("0muHFBSiybw", "summer lofi radio · music to put you in a better mood", "Lofi Girl"),
+        ("CwPCy1GLS38", "sad lofi radio · beats for rainy days", "Lofi Girl"),
+        ("5yx6BWlEVcY", "Chillhop Radio · jazzy & lofi hip hop beats", "Chillhop Music"),
+        ("i6WzngxTnBA", "late night vibes radio · calm lofi / dreamy beats", "Chillhop Music"),
+        ("rPjez8z61rI", "lofi hip hop radio · beats to sleep/study/relax to", "STEEZYASFUCK"),
+        ("OFsJen4j9VY", "Purrple Cat · lofi radio", "Purrple Cat"),
+        ("vrB9wC6quaU", "Chill out lofi · rain on the rooftop", "Lofi on the Rooftop"),
+        ("4Q9jq-tdOoE", "Peaceful Lofi Coffee in 90's Tokyo Street", "Lofi on the Rooftop"),
+        ("1wckb-eWOxw", "jazz/lofi hip hop radio · chill beats to relax/study to", "lofi.cafe pick"),
+        ("apCom1TeTiA", "24/7 lofi hip hop radio · beats to study/chill/relax", "lofi.cafe pick"),
+        ("qH3fETPsqXU", "24/7 chill lofi hip hop radio", "lofi.cafe pick"),
+    ],
+    "focus": [
+        ("N0snMcR6aaA", "relaxing piano radio · calm music to focus to", "Lofi Girl"),
+        ("E2vONfzoyRI", "jazz lofi radio · beats to chill/study to", "Lofi Girl"),
+        ("A8jDx9TLMQc", "relaxing jazz music · cozy radio to study/chill to", "Lofi Girl"),
+        ("Dx5qFachd3A", "Relaxing Jazz Piano Radio · slow jazz 24/7", "Cafe Music BGM channel"),
+        ("w9S5ID3nfOc", "Beautiful Piano Radio · relaxing music", "Soothing Relaxation"),
+        ("RAK1ka_M98g", "Deep Focus Music 24/7 · rainy forest ambience", "FOCUS 365 studio"),
+        ("tNkZsRW7h2c", "Space Ambient Music · 24/7", "lofi.cafe pick"),
+        ("UedTcufyrHc", "ChillSynth FM · lofi synthwave for retro dreaming", "Nightride FM"),
+    ],
+    "sunset": [
         ("pRyS8QREMEs", "The Good Life Radio · 24/7 Live Radio", "Summerchillout"),
         ("UcrtmnGBUjM", "ChillYourMind Radio · 24/7 Chill House", "ChillYourMind"),
         ("8EuP8FKvNIY", "Morning Coffee · Chillout House 24/7", "Chilluxe"),
@@ -31,8 +61,38 @@ CATEGORIES = {
         ("Ca5EtR-TAco", "Chill Deep House Mix · Relaxing Sunset Vibes", "Inner Deep Radio"),
         ("QhMs-t7EhXY", "Best Deep House Songs Of All Time · Deep House Vibes", "Inner Deep Radio"),
         ("ApWnwX1FPmY", "Best Tropical House Mix · Relaxing Summer Vibes", "TheHugProject"),
-    ]},
+    ],
 }
+
+CATEGORIES = {
+    "coding":  {"label": "Coding",  "tag": "beats to work to, 24/7 radios",        "youtube": YT["coding"]},
+    "lofi":    {"label": "Lo-fi",   "tag": "the lofi radios everyone leaves on",    "youtube": YT["lofi"]},
+    "focus":   {"label": "Focus",   "tag": "piano, jazz, ambient",                  "youtube": YT["focus"]},
+    "sunset":  {"label": "Sunset",  "tag": "chill house, deep house, positive energy", "youtube": YT["sunset"]},
+    # Creative Commons records from the Internet Archive: the only crate with real audio data
+    # (waveform, crackle) and proper attribution.
+    "records": {"label": "Records", "tag": "Creative Commons vinyl from the Internet Archive",
+                "items": ["DWK031", "DWK155", "DWK127", "DWK217", "DWK149", "DWK312", "DWK044", "DWK163", "DWK123",
+                          "CalmPills", "Vkrsnl037CandlegravityAMomentForMyself", "DWK119", "DWK138"]},
+}
+
+def check_live(entries):
+    """With --check: ask yt-dlp which ids still play; drop the rest (prints what it dropped)."""
+    import subprocess
+    keep = []
+    for vid, title, channel in entries:
+        r = subprocess.run(["yt-dlp", "--ignore-config", "--no-warnings", "--skip-download",
+                            "--print", "%(live_status)s|%(title)s", f"https://www.youtube.com/watch?v={vid}"],
+                           capture_output=True, text=True)
+        err = (r.stderr or "").lower()
+        gone = any(k in err for k in ("video unavailable", "private video", "has been removed", "no longer available", "this video is not available", "account associated with this video has been terminated",
+                                          "live stream recording is not available", "live event has ended"))
+        if gone:
+            print(f"  DROPPED {vid}  {title}")
+        else:
+            if r.returncode != 0: print(f"  kept (yt-dlp error, not a removal) {vid}  {title}")
+            keep.append((vid, title, channel))
+    return keep
 
 def fetch(identifier):
     with urllib.request.urlopen(f"https://archive.org/metadata/{identifier}", timeout=60) as r:
@@ -49,7 +109,10 @@ def clean_title(name, meta_title, artist):
 out = {"categories": [], "tracks": []}
 for key, cat in CATEGORIES.items():
     out["categories"].append({"id": key, "label": cat["label"], "tag": cat["tag"]})
-    for vid, title, channel in cat.get("youtube", []):
+    yt_entries = cat.get("youtube", [])
+    if "--check" in sys.argv and yt_entries:
+        yt_entries = check_live(yt_entries)
+    for vid, title, channel in yt_entries:
         out["tracks"].append({
             "id": f"yt/{vid}", "kind": "yt", "category": key, "videoId": vid,
             "title": title, "artist": channel, "album": "YouTube",
