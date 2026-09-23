@@ -76,6 +76,10 @@ Click a source in the list to play it. Sources live in `localStorage` only.
 
 The hourglass in the top right opens [fm.uiboy.com/time-machine](https://fm.uiboy.com/time-machine): one record, 126 years. Drag the timeline from 1900 to 2026 and the same song plays on a gramophone, a tube radio, a suitcase record player, a portable cassette player, a portable CD player, an MP3 player and a phone, each drawn as pixel art in a room of its era: a 200×160 buffer painted from code every frame (no image files), shaded with ordered dithering, scaled up by whole device pixels, and dissolved into the next era with a Bayer dither. The album cover is reduced to pixels for the record label, the CD print and the screens. The sound is the real track reshaped live with Web Audio: the band narrows (380 Hz–2.8 kHz for the horn), mono folds down, valves and tape saturate, a modulated delay adds wow and flutter, and crackle, tape hiss and AM static are synthesized. Between eras everything crossfades, so dragging slowly sweeps the sound through time. The cassette reels turn at the speed real tape would, and the CD skips if you tap it.
 
+## Window radio
+
+The cloud-and-sun button opens [fm.uiboy.com/window](https://fm.uiboy.com/window): a window onto any city, right now. The sun and moon sit where they really are in that sky (a compact solar-position formula, the moon trailing the sun by its phase), and the live weather from [Open-Meteo](https://open-meteo.com/) decides the rest: clouds drifting at the wind's speed, rain streaks and drops running down the glass, snow piling on the sill, fog, lightning. At night the city's windows light up and a cat sleeps on the sill; when it's cold or early the mug steams. The room sounds follow the weather and the hour (rain on the glass, a downpour, thunder, wind, birds in the morning, crickets on warm nights, a fire when it's freezing), and the little radio on the sill picks its music the same way: morning jazz, rainy-day lo-fi, late-night radio. Switching cities turns the dial through static to that city's frequency. Pick one of the chips, search any city, or press Here to look out of your own window (the location stays in the browser; only the coordinates go to Open-Meteo, and to BigDataCloud for the place name).
+
 ## Keyboard
 
 | Key | Action |
@@ -127,7 +131,10 @@ Edit the `AUDIUS`, `YT` and `CATEGORIES` maps there to add or swap sources per m
 - `assets/fonts/` — Departure Mono (MIT)
 - `scripts/build-catalog.py` — builds `data/catalog.json`
 - `time-machine.html`, `time-machine.css`, `time-machine.js` — the time machine page: timeline, info, the Web Audio era chain
-- `time-machine-art.js` — the pixel-art painter and the seven rooms
+- `time-machine-art.js` — the seven rooms of the time machine
+- `window.html`, `window.css`, `window.js` — the window radio: places, live weather, the room sounds and the radio
+- `window-art.js` — the window in pixels, and where the sun and moon are
+- `pixel.js` — the shared pixel painter: shapes, ordered dither, a 3x5 font
 
 ## License
 

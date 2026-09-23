@@ -3,28 +3,30 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Time Machine · Mystery Vinyl</title>
-  <meta name="description" content="One song, 126 years. Drag a timeline from 1900 to today and hear the same record on a gramophone, a tube radio, a record player, a cassette, a CD, an MP3 player and a phone." />
+  <title>Window Radio · Mystery Vinyl</title>
+  <meta name="description" content="A window onto any city, right now. The sky, the sun, the rain and the room sounds follow the live weather, and a little radio on the sill plays music to match." />
   <meta name="theme-color" content="#202020" />
-  <link rel="canonical" href="https://fm.uiboy.com/time-machine" />
+  <link rel="canonical" href="https://fm.uiboy.com/window" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Mystery Vinyl" />
-  <meta property="og:title" content="Time Machine · Mystery Vinyl" />
-  <meta property="og:description" content="One song, 126 years. Hear the same record on a gramophone, a tube radio, a cassette, a CD and a phone." />
-  <meta property="og:url" content="https://fm.uiboy.com/time-machine" />
+  <meta property="og:title" content="Window Radio · Mystery Vinyl" />
+  <meta property="og:description" content="Look out of a window in any city, right now. Live weather, the real sun and moon, and a radio on the sill." />
+  <meta property="og:url" content="https://fm.uiboy.com/window" />
   <meta property="og:image" content="https://fm.uiboy.com/assets/og.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23E8D7C0'/%3E%3Ccircle cx='32' cy='32' r='22' fill='%23000'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%23E8D7C0'/%3E%3Ccircle cx='32' cy='32' r='1.6' fill='%23000'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" />
+  <link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="time-machine.css" />
+  <link rel="stylesheet" href="window.css" />
   <script>
     try { var t = localStorage.getItem("mv.theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
   </script>
 </head>
-<body class="tm">
+<body class="tm wr">
   <div class="sleeve">
     <a class="logo" href="./" aria-label="Back to Mystery Vinyl">
       <svg viewBox="63 38 288 245" aria-hidden="true">
@@ -46,59 +48,53 @@
 
   <nav class="topnav" aria-label="Site">
     <a class="nav-btn" href="./" data-tip="Back to the deck" aria-label="Back to the deck"><svg aria-hidden="true"><use href="assets/pixelarticons.svg#arrow-bar-left"></use></svg></a>
-    <a class="nav-btn" href="window" data-tip="Window radio" aria-label="Window radio"><svg aria-hidden="true"><use href="assets/pixelarticons.svg#cloud-sun"></use></svg></a>
+    <a class="nav-btn" href="time-machine" data-tip="Time machine" aria-label="Time machine"><svg aria-hidden="true"><use href="assets/pixelarticons.svg#hourglass"></use></svg></a>
     <button class="nav-btn" id="theme" data-tip="Light / dark · T" aria-label="Switch theme"><svg class="ic-sun" aria-hidden="true"><use href="assets/pixelarticons.svg#sun"></use></svg><svg class="ic-moon" aria-hidden="true"><use href="assets/pixelarticons.svg#moon"></use></svg></button>
   </nav>
 
   <main class="tm-stage">
     <section class="tm-info" aria-live="polite">
-      <p class="tm-kicker">Time machine · one song, 126 years</p>
-      <div class="tm-year" id="year" aria-label="Year">1900</div>
-      <h1 class="tm-name" id="name">Gramophone</h1>
-      <p class="tm-medium" id="medium">Shellac disc · 78 rpm</p>
+      <p class="tm-kicker">Window radio · live, right now</p>
+      <div class="tm-year" id="clock" aria-label="Local time">--:--</div>
+      <h1 class="tm-name" id="city">Finding a window…</h1>
+      <p class="tm-medium" id="cond">&nbsp;</p>
       <p class="tm-blurb" id="blurb"></p>
 
       <div class="tm-hear">
-        <div class="tm-hear-head"><span>What you hear</span><span id="band">—</span></div>
-        <canvas class="tm-spec" id="spec" width="840" height="120" aria-hidden="true"></canvas>
-        <div class="tm-hear-axis"><span>bass</span><span>voices</span><span>cymbals</span></div>
-        <dl class="tm-facts">
-          <dt>Channels</dt><dd id="channels">Mono</dd>
-          <dt>Noise</dt><dd id="noise">Surface crackle</dd>
-        </dl>
+        <div class="tm-hear-head"><span>In the room</span><span id="sun">&nbsp;</span></div>
+        <ul class="wr-layers" id="layers"></ul>
+        <label class="wr-balance"><span>Radio</span><input class="amb-level" id="balance" type="range" min="0" max="1" step="0.01" value="0.5" aria-label="Radio and window balance" /><span>Window</span></label>
       </div>
-
       <p class="credit" id="credit"></p>
     </section>
 
-    <section class="tm-room" id="room" aria-label="The room">
+    <section class="tm-room" id="room" aria-label="The window">
       <canvas class="tm-scene" id="scene" width="200" height="160" aria-hidden="true"></canvas>
     </section>
   </main>
 
-  <!-- the dock: transport and the timeline, always in reach -->
-  <section class="tm-dock" aria-label="Player and timeline">
+  <section class="tm-dock" aria-label="Radio and places">
     <div class="tm-player">
       <div class="tm-transport">
         <button class="btn px" id="prev" title="Previous record" aria-label="Previous record"><svg aria-hidden="true"><use href="assets/pixelarticons.svg#arrow-bar-left"></use></svg></button>
         <button class="btn btn-main px" id="play" aria-label="Play"><svg class="ic-play" aria-hidden="true"><use href="assets/pixelarticons.svg#play"></use></svg><svg class="ic-pause" aria-hidden="true"><use href="assets/pixelarticons.svg#pause-solid"></use></svg></button>
         <button class="btn px" id="next" title="Next record" aria-label="Next record"><svg aria-hidden="true"><use href="assets/pixelarticons.svg#arrow-bar-right"></use></svg></button>
       </div>
-      <div class="tm-now"><span class="tm-now-title" id="title">Loading a record…</span><span class="tm-now-artist" id="artist">&nbsp;</span></div>
+      <div class="tm-now"><span class="tm-now-title" id="title">The radio is off</span><span class="tm-now-artist" id="artist">Press play</span></div>
     </div>
-    <div class="tm-timeline">
-      <div class="tm-track" id="track">
-        <input class="tm-range" id="range" type="range" min="1900" max="2026" step="0.1" value="1900" aria-label="Year" />
-        <div class="tm-ticks" id="ticks"></div>
-      </div>
-      <p class="tm-hint" id="hint">Press play, then drag through time →</p>
+    <div class="wr-places">
+      <div class="wr-chips" id="chips" role="list"></div>
+      <form class="wr-search" id="search" autocomplete="off">
+        <span class="crate-field px"><input id="q" type="text" placeholder="Any city…" spellcheck="false" aria-label="Look out of a window in another city" /></span>
+        <button class="crate-add px" type="submit">Go</button>
+      </form>
     </div>
   </section>
 
   <p class="toast px" id="toast" hidden></p>
   <audio id="audio" crossorigin="anonymous" preload="auto"></audio>
   <script src="pixel.js"></script>
-  <script src="time-machine-art.js"></script>
-  <script src="time-machine.js"></script>
+  <script src="window-art.js"></script>
+  <script src="window.js"></script>
 </body>
 </html>

@@ -1,0 +1,44 @@
+/* Window radio: rides on time-machine.css for the stage, the pixel canvas and the dock. */
+
+/* what's audible in the room, one row each, with a pixel level bar */
+.wr-layers { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 5px; font-size: 12px; }
+.wr-layers li { display: grid; grid-template-columns: 1fr 64px; align-items: center; gap: 12px; color: var(--ink); }
+.wr-layers li.is-radio { color: var(--accent); }
+.wr-layers li.is-quiet { color: var(--faint); }
+.wr-bar { height: 6px; background: repeating-linear-gradient(90deg, transparent 0 5px, var(--bg) 5px 7px), linear-gradient(90deg, currentColor var(--p, 0%), var(--line) var(--p, 0%)); }
+.wr-balance { display: flex; align-items: center; gap: 10px; margin-top: 14px; font-size: 11px; color: var(--faint); }
+.wr-balance .amb-level { flex: 1; width: auto; }
+
+/* places: chips and a search box */
+.wr-places { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.wr-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.wr-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 10px; font-size: 12px; color: var(--muted);
+  --px-line: var(--line); --px-fill: var(--bg);
+  transition: color .15s;
+}
+.wr-chip svg { width: 14px; height: 14px; fill: currentColor; }
+.wr-chip:hover { color: var(--ink); --px-line: var(--line-hover); }
+.wr-chip[aria-pressed="true"] { color: var(--on-accent); --px-line: var(--accent); --px-fill: var(--accent); }
+.wr-chip .t { color: inherit; opacity: .6; font-variant-numeric: tabular-nums; }
+.wr-search { display: flex; gap: 8px; max-width: 420px; }
+.wr-search .crate-field { flex: 1; min-width: 0; display: flex; --px-fill: var(--btn-hover); }
+.wr-search .crate-field:focus-within { --px-line: var(--accent); }
+.wr-search input { flex: 1; min-width: 0; padding: 9px 12px; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 13px; }
+.wr-search input:focus { outline: none; }
+
+.wr .tm-dock { align-items: center; }
+
+@media (max-width: 860px) {
+  /* chips scroll sideways so the dock stays short */
+  .wr-chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -24px; padding: 0 24px; }
+  .wr-chips::-webkit-scrollbar { display: none; }
+  .wr-chip { flex: none; }
+  .wr-search { max-width: none; }
+}
+@media (max-width: 520px) {
+  .wr-chips { margin: 0 -16px; padding: 0 16px; }
+  .wr-search { display: none; }
+  .wr-search.open { display: flex; }
+}
