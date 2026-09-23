@@ -1,0 +1,42 @@
+/* Immersive pages: the pixel room is the page. See immersive.js. */
+
+body.im { background: var(--scene-bg, #1a1a1a); transition: background .6s; }
+.im-canvas {
+  position: absolute; left: 0; top: 0; z-index: 0; display: block; pointer-events: none;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+}
+body.im-wide .im-canvas { position: fixed; }
+body.im .sleeve, body.im .tm-stage { position: relative; z-index: 1; }
+body.im .tm-dock { z-index: 3; }                                     /* stays sticky, from time-machine.css */
+body.im .topnav { z-index: 2; }
+body.im .tm-room { max-width: none; width: 100%; cursor: pointer; }
+
+/* ink: flipped per region to whatever reads against the room behind it */
+.ink-light {
+  --ink: #f6f0e6; --muted: rgba(246, 240, 230, .78); --faint: rgba(246, 240, 230, .56);
+  --line: rgba(246, 240, 230, .26); --line-hover: rgba(246, 240, 230, .55); --btn-hover: rgba(255, 255, 255, .1);
+  --bg: rgba(18, 16, 14, .38); --accent: #e6c49c; --accent-hover: #f0d4b2; --on-accent: #1c1a17; --wave-off: rgba(246, 240, 230, .22);
+  --ink-shadow: 0 1px 0 rgba(0, 0, 0, .45);
+  color: var(--ink);
+}
+.ink-dark {
+  --ink: #1c1a17; --muted: rgba(28, 26, 23, .74); --faint: rgba(28, 26, 23, .55);
+  --line: rgba(28, 26, 23, .24); --line-hover: rgba(28, 26, 23, .5); --btn-hover: rgba(0, 0, 0, .06);
+  --bg: rgba(255, 252, 246, .42); --accent: #8a5a2a; --accent-hover: #6e4620; --on-accent: #fbf7f1; --wave-off: rgba(28, 26, 23, .2);
+  --ink-shadow: 0 1px 0 rgba(255, 255, 255, .45);
+  color: var(--ink);
+}
+body.im .tm-info, body.im .tm-now, body.im .tm-tick { text-shadow: var(--ink-shadow); }
+body.im .nav-btn:hover { background: var(--btn-hover); }
+
+/* wide: text on the wall, left of the scene; the dock fades up from the floor */
+body.im-wide .tm-stage { grid-template-columns: minmax(300px, min(560px, calc(var(--free) - 140px))) 1fr; }
+body.im-wide .tm-room { align-self: stretch; min-height: 40vh; }
+body.im .tm-dock { border-top: 0; background: var(--scene-bg); transition: background .6s; }
+body.im-wide .tm-dock { background: linear-gradient(to top, color-mix(in srgb, var(--scene-bg) 90%, transparent) 50%, transparent); padding-top: 40px; }
+
+/* narrow: the room is a band across the top; the page below wears its floor */
+@media (max-width: 860px) {
+  body.im .tm-stage { padding-top: 12px; }
+  body.im .tm-dock { box-shadow: 0 -14px 24px var(--scene-bg); }
+}

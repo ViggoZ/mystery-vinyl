@@ -43,8 +43,15 @@
 
   function create(canvas) {
     const g = canvas.getContext("2d");
-    const img = g.createImageData(W, H), out = new Uint32Array(img.data.buffer);
-    const P = window.Pixel.painter(W, H), O = window.Pixel.painter(W, H);
+    // the outside is painted in the scene's own 200x160 frame; the room goes on a buffer of any size, the scene at (ox, oy)
+    const O = window.Pixel.painter(W, H);
+    let BW, BH, OX, OY, img, out, P;
+    function resize(w, h, ox = 0, oy = 0) {
+      BW = w; BH = h; OX = ox; OY = oy; canvas.width = w; canvas.height = h;
+      img = g.createImageData(w, h); out = new Uint32Array(img.data.buffer);
+      P = window.Pixel.painter(w, h); P.ox = ox; P.oy = oy;
+    }
+    resize(W, H);
 
     function render(st) {
       const dt = st.dt, t = (S.t += dt), w = st.wx;                    // wx: { cloud, wind, temp, rain, snow, fog, thunder }
@@ -135,12 +142,15 @@
 
       // ---------- the room, into P ----------
       const wall = mixC(mixC(C("#231c26"), C("#d9c9ad"), Li), C("#4a2e24"), (1 - Li) * .3);
-      P.rect(0, 0, W, H, wall);
-      for (let x = 2; x < W; x += 6) P.rect(x, 0, 1, H, shade(wall, .94));
+      const { X0, Y0, X1, Y1 } = P.bounds();
+      P.rect(X0, Y0, X1 - X0, Y1 - Y0, wall);
+      for (let x = 2 + Math.floor((X0 - 2) / 6) * 6; x < X1; x += 6) P.rect(x, Y0, 1, Y1 - Y0, shade(wall, .94));
+      // with room to spare below, a skirting board and a floor
+      if (Y1 - 160 > 14) { const fl = Y1 - 9; P.rect(X0, fl - 3, X1 - X0, 3, shade(C("#efe6d6"), .35 + .65 * Li)); P.rect(X0, fl, X1 - X0, Y1 - fl, shade(C("#8a5a36"), .35 + .6 * Li)); for (let x = X0 + ((-X0) % 23); x < X1; x += 23) P.rect(x, fl + 1, 1, Y1 - fl, shade(C("#6a4228"), .35 + .6 * Li)); }
       // lamp-warm glow at night, around the radio
       if (Li < .6) { const gc = mixC(wall, C("#b0703a"), .3), lv = (.6 - Li) * .8 * 16; P.ell(132, 100, 40, 24, (x, y) => (y < 115 && bay(x, y) < lv * (1 - Math.hypot((x - 132) / 40, (y - 100) / 24)) * 1.6 ? gc : null)); }
       // copy the outside into the glass
-      for (let y = GY0; y <= GY1; y++) for (let x = GX0; x <= GX1; x++) P.b[y * W + x] = O.b[y * W + x];
+      for (let y = GY0; y <= GY1; y++) for (let x = GX0; x <= GX1; x++) P.px(x, y, O.b[y * W + x]);
       // drops on the glass: they wait, then run
       if (w.rain > 0) {
         const dc = mixC(C("#8a9ab8"), C("#eef4fa"), L), dd = mixC(C("#1a2030"), C("#6a7a90"), L);
@@ -154,7 +164,7 @@
       // snow piling up on the outer sill
       if (w.snow > .15) for (let x = GX0; x <= GX1; x++) { const h = 1 + Math.round(w.snow * 3 + hash(x >> 2, 3) * 2); P.rect(x, GY1 - h + 1, 1, h, C("#eef2f8")); }
       // reflections on the panes
-      const refl = mixC(P.b[(GY0 + 20) * W + GX0 + 20], C("#ffffff"), .18);
+      const refl = mixC(P.get(GX0 + 20, GY0 + 20), C("#ffffff"), .18);
       for (const [x0, y0] of [[GX0 + 6, GY0 + 30], [MX + 8, GY0 + 30], [GX0 + 6, MY + 40], [MX + 8, MY + 40]]) for (let k = 0; k < 18; k++) if (bay(x0 + k, y0 - k) < 7) { P.px(x0 + k, y0 - k, refl); P.px(x0 + k + 3, y0 - k, refl); }
       // frame
       const fr = mixC(C("#3a3440"), C("#ece5d8"), Li), frD = shade(fr, .78), frL = shade(fr, 1.08);
@@ -225,11 +235,11 @@
       const nc = mixC(C("#f6e7c8"), C("#f2b134"), .4);
       for (const n of S.notes) {
         const fade = Math.min(1, n.age / .3, (n.life - n.age) / .8), x = Math.round(n.x + Math.sin(n.age * 2 + n.ph) * 3), y = Math.round(n.y);
-        NOTES[n.k].forEach((r, j) => { for (let i = 0; i < r.length; i++) if (r[i] === "1" && bay(x + i, y + j) < fade * 16) { const xx = x + i, yy = y + j; if (xx >= 0 && yy >= 0 && xx < W && yy < H) out[yy * W + xx] = nc; } });
+        NOTES[n.k].forEach((r, j) => { for (let i = 0; i < r.length; i++) if (r[i] === "1" && bay(x + i, y + j) < fade * 16) { const xx = x + i + OX, yy = y + j + OY; if (xx >= 0 && yy >= 0 && xx < BW && yy < BH) out[yy * BW + xx] = nc; } });
       }
       g.putImageData(img, 0, 0);
     }
-    return { render };
+    return { render, resize, sample(x, y) { return split(out[Math.min(BH - 1, Math.max(0, y)) * BW + Math.min(BW - 1, Math.max(0, x))]); } };
   }
 
   // ---------- where the sun and moon are (a compact NOAA-style solution, good to a fraction of a degree) ----------

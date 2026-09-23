@@ -80,6 +80,14 @@ The hourglass in the top right opens [fm.uiboy.com/time-machine](https://fm.uibo
 
 The cloud-and-sun button opens [fm.uiboy.com/window](https://fm.uiboy.com/window): a window onto any city, right now. The sun and moon sit where they really are in that sky (a compact solar-position formula, the moon trailing the sun by its phase), and the live weather from [Open-Meteo](https://open-meteo.com/) decides the rest: clouds drifting at the wind's speed, rain streaks and drops running down the glass, snow piling on the sill, fog, lightning. At night the city's windows light up and a cat sleeps on the sill; when it's cold or early the mug steams. The room sounds follow the weather and the hour (rain on the glass, a downpour, thunder, wind, birds in the morning, crickets on warm nights, a fire when it's freezing), and the little radio on the sill picks its music the same way: morning jazz, rainy-day lo-fi, late-night radio. Switching cities turns the dial through static to that city's frequency. Pick one of the chips, search any city, or press Here to look out of your own window (the location stays in the browser; only the coordinates go to Open-Meteo, and to BigDataCloud for the place name).
 
+## Rooftop cat
+
+The trophy opens [fm.uiboy.com/rooftop](https://fm.uiboy.com/rooftop): a one-button pixel runner across a city at night, built on whatever record is playing. Onsets are picked out of the low end of the live spectrum, the tempo is estimated from their spacing, and the roofs, gaps, chimneys and records are laid out on the predicted beats, so jumping on the beat clears them (and scores a PERFECT). Every layout is jumpable with a plain tap on the beat from 70 to 150 BPM: obstacles keep 0.8 s apart and clear of the edges, and each gap is sized from the jump physics and the height of the next roof. The far skyline is the song's spectrum, the moon pulses on the beat, and the sky takes its colour from the album cover. Space / tap to jump, hold for higher, N for the next record; pick Lo-fi, Chill, Night or Focus up top. `?debug` exposes the run as `window.__rt` for simulating it from the console.
+
+## Immersive pages
+
+The time machine and the window radio fill the whole page with their room (`immersive.js`): the art buffer is sized to the screen at a whole number of device pixels per art pixel, the 200x160 scene is placed on it (right of the text on wide screens, a band across the top on narrow ones), walls and floors are painted edge to edge, the page takes the colour of the room's floor, and the header, text and dock each switch between light and dark ink depending on what's behind them.
+
 ## Keyboard
 
 | Key | Action |
@@ -134,7 +142,9 @@ Edit the `AUDIUS`, `YT` and `CATEGORIES` maps there to add or swap sources per m
 - `time-machine-art.js` — the seven rooms of the time machine
 - `window.html`, `window.css`, `window.js` — the window radio: places, live weather, the room sounds and the radio
 - `window-art.js` — the window in pixels, and where the sun and moon are
-- `pixel.js` — the shared pixel painter: shapes, ordered dither, a 3x5 font
+- `pixel.js` — the shared pixel painter: shapes, ordered dither, a 3x5 font, translation onto bigger buffers
+- `immersive.js`, `immersive.css` — the full-page room for the time machine and the window
+- `rooftop.html`, `rooftop.css`, `rooftop.js` — the rooftop cat game
 
 ## License
 

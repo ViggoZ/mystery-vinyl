@@ -280,17 +280,6 @@
     toast("Skip! That's what anti-skip memory was for");
   });
 
-  // the scene is 200x160 art pixels, shown at a whole number of device pixels per art pixel so every pixel stays square
-  const scene = $("#scene");
-  function fitScene() {
-    const dpr = window.devicePixelRatio || 1, w = els.room.clientWidth;
-    const k = Math.max(1, Math.floor(w * dpr / TMArt.W));
-    let cssW = k * TMArt.W / dpr;
-    if (cssW < w * .8) cssW = w;                                      // low-density screen: fill the column, pixels a hair uneven
-    const cssH = cssW * TMArt.H / TMArt.W;
-    scene.style.width = `${cssW}px`; scene.style.height = `${cssH}px`;
-    scene.style.setProperty("--pxu", `${k / dpr * 2}px`);          // the stepped corners land on art pixels
-  }
 
   // ---------- the animation loop ----------
   let last = performance.now();
@@ -311,13 +300,14 @@
       title: t.title || "", artist: t.artist || "",
     });
     drawSpec(playing);
+    imm.tick();
     requestAnimationFrame(frame);
   }
 
   // ---------- "what you hear": the era's band as a ghost, the music live inside it ----------
   const sc = els.spec.getContext("2d");
   let colors;
-  function readColors() { const cs = getComputedStyle(document.documentElement); colors = { on: cs.getPropertyValue("--accent").trim(), ghost: cs.getPropertyValue("--line").trim(), faint: cs.getPropertyValue("--faint").trim() }; }
+  function readColors() { const cs = getComputedStyle(els.spec); colors = { on: cs.getPropertyValue("--accent").trim(), ghost: cs.getPropertyValue("--line").trim(), faint: cs.getPropertyValue("--faint").trim() }; }
   const SPEC_BARS = 56, F0 = 20, F1 = 20000;
   const specLive = new Float32Array(SPEC_BARS);
   // magnitude of two stacked 2nd-order Butterworth sections per side
@@ -347,15 +337,6 @@
   }
 
   // ---------- theme, keys, toast ----------
-  function toggleTheme() {
-    const light = document.documentElement.dataset.theme !== "light";
-    document.documentElement.dataset.theme = light ? "light" : "dark";
-    store.set("mv.theme", light ? "light" : "dark");
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", light ? "#FBF7F1" : "#202020");
-    readColors();
-  }
-  els.theme.addEventListener("click", toggleTheme);
-  if (document.documentElement.dataset.theme === "light") document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#FBF7F1");
   let toastTimer;
   function toast(msg) {
     els.toast.textContent = msg; els.toast.hidden = false; els.toast.classList.remove("leaving");
@@ -369,12 +350,11 @@
       e.preventDefault(); dragged();
       glideTo(ERAS[clamp(state.era + (e.code === "ArrowRight" ? 1 : -1), 0, ERAS.length - 1)].year);
     }
-    else if (e.key === "t" || e.key === "T") toggleTheme();
   });
 
   // ---------- go ----------
+  const imm = Immersive($("#scene"), art, { anchor: "floor", onInk: readColors });
   readColors();
-  fitScene(); addEventListener("resize", fitScene);
   const fromHash = parseInt(location.hash.slice(1), 10);
   setYear(ERAS.some((e) => e.year === fromHash) ? fromHash : Y0);
   document.body.classList.add("armed");

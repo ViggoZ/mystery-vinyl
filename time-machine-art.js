@@ -3,7 +3,8 @@
 (() => {
   const W = 200, H = 160, FY = 138;                                 // FY: where the floor / table starts
   const { B8, bay, C, RGB, split, shade, hash, inEll, inPoly, inRound, NOTES, textW, clipText } = window.Pixel;
-  const painter = () => window.Pixel.painter(W, H);
+  // first(start, step, from): the first value of start + k*step at or before from, so patterns line up however far the wall runs
+  const first = (start, step, from) => start + Math.floor((from - start) / step) * step;
 
   // ---------- the album cover, reduced to pixels ----------
   const cover = { ok: false, c32: null, c26: null, c10: null, avg: C("#b23a2a"), top: C("#3a2a4a"), bot: C("#1a1a2a") };
@@ -60,9 +61,10 @@
 
   // ---------- shared bits ----------
   function floor(P, c, hi, lo, seed) {
-    P.rect(0, FY, W, H - FY, c); P.rect(0, FY, W, 1, hi);
-    for (let y = FY + 7; y < H; y += 8) P.rect(0, y, W, 1, lo);
-    for (let y = FY + 1; y < H; y += 8) for (let x = ((y * 7 + seed) % 23); x < W; x += 31 + ((y + seed) % 17)) P.rect(x, y, 1, 7, lo);
+    const { X0, X1, Y1 } = P.bounds();
+    P.rect(X0, FY, X1 - X0, Y1 - FY, c); P.rect(X0, FY, X1 - X0, 1, hi);
+    for (let y = FY + 7; y < Y1; y += 8) P.rect(X0, y, X1 - X0, 1, lo);
+    for (let y = FY + 1; y < Y1; y += 8) { const step = 31 + ((y + seed) % 17); for (let x = first((y * 7 + seed) % 23, step, X0); x < X1; x += step) P.rect(x, y, 1, 7, lo); }
   }
   function shadow(P, cx, w) { P.ell(cx, FY + 1, w, 1.2, (x, y) => (bay(x, y) < 9 ? C("#000000") : null)); }
   function clock(P, cx, cy, r, face, rim, hand) {
@@ -86,13 +88,14 @@
   // ---------- 1900 · the parlour ----------
   function parlour(P, st) {
     const wall = C("#2b3a29"), dam = C("#3b4d36"), dg = C("#8f7f45");
-    P.rect(0, 0, W, 94, wall);
-    for (let r = 0, y = 6; y < 92; y += 12, r++) for (let x = r % 2 ? 6 : 0; x < W + 6; x += 12) {
+    const { X0, Y0, X1 } = P.bounds();
+    P.rect(X0, Y0, X1 - X0, 94 - Y0, wall);
+    for (let y = first(6, 12, Y0 - 6); y < 92; y += 12) for (let r = Math.round((y - 6) / 12) & 1, x = first(r ? 6 : 0, 12, X0 - 6); x < X1 + 6; x += 12) {
       P.px(x, y - 2, dam); P.rect(x - 1, y - 1, 3, 1, dam); P.rect(x - 2, y, 5, 1, dam); P.rect(x - 1, y + 1, 3, 1, dam); P.px(x, y + 2, dam); P.px(x, y, dg);
     }
     const wain = C("#4a2a16"), wk = C("#34190b"), whi = C("#6a3e22");
-    P.rect(0, 92, W, 2, C("#8a5a30")); P.rect(0, 94, W, 1, wk); P.rect(0, 95, W, FY - 95, wain);
-    for (let x = 4; x < W; x += 34) { P.frame(x, 100, 28, 33, wk); P.rect(x + 1, 101, 26, 1, whi); P.rect(x + 1, 101, 1, 31, whi); }
+    P.rect(X0, 92, X1 - X0, 2, C("#8a5a30")); P.rect(X0, 94, X1 - X0, 1, wk); P.rect(X0, 95, X1 - X0, FY - 95, wain);
+    for (let x = first(4, 34, X0 - 34); x < X1; x += 34) { P.frame(x, 100, 28, 33, wk); P.rect(x + 1, 101, 26, 1, whi); P.rect(x + 1, 101, 1, 31, whi); }
     floor(P, C("#3a1e0e"), C("#5a3218"), C("#2a1409"), 3);
     // portrait
     P.ell(30, 38, 11, 14, C("#c29a44"), C("#6a4c14"));
@@ -134,10 +137,11 @@
   // ---------- 1935 · art deco, a cathedral radio ----------
   function deco(P, st) {
     const cream = C("#d8c59c"), pin = C("#c8b385"), gold = C("#a67c32"), goldL = C("#efe2c2");
-    P.rect(0, 0, W, FY, cream);
-    for (let x = 3; x < W; x += 8) P.rect(x, 16, 1, FY - 16, pin);
-    P.rect(0, 10, W, 1, gold); P.rect(0, 11, W, 3, goldL); P.rect(0, 14, W, 1, gold);
-    for (let x = 0; x < W; x += 6) { P.px(x, 12, gold); P.px(x + 1, 11, gold); P.px(x + 1, 13, gold); }
+    const { X0, Y0, X1 } = P.bounds();
+    P.rect(X0, Y0, X1 - X0, FY - Y0, cream);
+    for (let x = first(3, 8, X0); x < X1; x += 8) P.rect(x, 16, 1, FY - 16, pin);
+    P.rect(X0, 10, X1 - X0, 1, gold); P.rect(X0, 11, X1 - X0, 3, goldL); P.rect(X0, 14, X1 - X0, 1, gold);
+    for (let x = first(0, 6, X0 - 6); x < X1; x += 6) { P.px(x, 12, gold); P.px(x + 1, 11, gold); P.px(x + 1, 13, gold); }
     floor(P, C("#5a3a22"), C("#7a5234"), C("#43291a"), 11);
     // sunburst clock
     for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6, r1 = 10, r2 = k % 2 ? 13 : 16; P.line(30 + Math.cos(a) * r1, 42 + Math.sin(a) * r1, 30 + Math.cos(a) * r2, 42 + Math.sin(a) * r2, gold); }
@@ -174,8 +178,9 @@
 
   // ---------- 1958 · mint and atomic, a suitcase record player ----------
   function atomic(P, st) {
-    P.rect(0, 0, W, FY, C("#a9d8c6"));
-    for (let y = 4; y < FY; y += 18) for (let x = (y / 18 & 1) ? 10 : 0; x < W; x += 20) {
+    const { X0, Y0, X1 } = P.bounds();
+    P.rect(X0, Y0, X1 - X0, FY - Y0, C("#a9d8c6"));
+    for (let y = first(4, 18, Y0 - 18); y < FY; y += 18) for (let x = first(Math.round((y - 4) / 18) & 1 ? 10 : 0, 20, X0 - 20); x < X1; x += 20) {
       P.rect(x, y, 2, 2, C("#e2724a")); P.px(x + 10, y + 9, C("#f0b43c")); P.px(x + 11, y + 9, C("#f0b43c"));
       const q = C("#7fb3a3"); P.px(x + 15, y + 2, q); P.px(x + 14, y + 3, q); P.px(x + 16, y + 3, q); P.px(x + 15, y + 4, q);
     }
@@ -206,13 +211,14 @@
 
   // ---------- 1981 · panelling and stripes, a cassette player ----------
   function seventies(P, st) {
-    P.rect(0, 0, W, FY, C("#6b4527"));
-    for (let x = 6; x < W; x += 14) P.rect(x, 0, 1, FY, C("#553520"));
-    for (let i = 0; i < 90; i++) P.px(hash(i, 3) * W, hash(i, 4) * FY, C("#7a5230"));
-    P.rect(0, 44, W, 3, C("#d6453b")); P.rect(0, 47, W, 3, C("#e8742a")); P.rect(0, 50, W, 3, C("#f2b134")); P.rect(0, 53, W, 2, C("#f6d48a"));
+    const { X0, Y0, X1, Y1 } = P.bounds();
+    P.rect(X0, Y0, X1 - X0, FY - Y0, C("#6b4527"));
+    for (let x = first(6, 14, X0); x < X1; x += 14) P.rect(x, Y0, 1, FY - Y0, C("#553520"));
+    for (let i = 0, n = (X1 - X0) * (FY - Y0) / 300; i < n; i++) P.px(X0 + hash(i, 3) * (X1 - X0), Y0 + hash(i, 4) * (FY - Y0), C("#7a5230"));
+    P.rect(X0, 44, X1 - X0, 3, C("#d6453b")); P.rect(X0, 47, X1 - X0, 3, C("#e8742a")); P.rect(X0, 50, X1 - X0, 3, C("#f2b134")); P.rect(X0, 53, X1 - X0, 2, C("#f6d48a"));
     // shag
-    P.rect(0, FY, W, H - FY, C("#8a6a3f")); P.rect(0, FY, W, 1, C("#a4824f"));
-    for (let y = FY + 1; y < H; y++) for (let x = 0; x < W; x++) { const h = hash(x, y); if (h < .18) P.px(x, y, C("#735531")); else if (h > .9) P.px(x, y, C("#a0804e")); }
+    P.rect(X0, FY, X1 - X0, Y1 - FY, C("#8a6a3f")); P.rect(X0, FY, X1 - X0, 1, C("#a4824f"));
+    for (let y = FY + 1; y < Y1; y++) for (let x = X0; x < X1; x++) { const h = hash(x, y); if (h < .18) P.px(x, y, C("#735531")); else if (h > .9) P.px(x, y, C("#a0804e")); }
     // poster
     P.rect(158, 14, 26, 32, C("#f3e3c3")); P.rect(160, 16, 22, 20, C("#f6c453"));
     P.shape(160, 16, 181, 35, (x, y) => inEll(171, 34, 8, 8)(x, y) && y <= 35, C("#e8742a"));
@@ -252,12 +258,13 @@
 
   // ---------- 1995 · memphis confetti, a portable CD player ----------
   function nineties(P, st) {
-    P.rect(0, 0, W, FY, C("#2e5760"));
-    for (let y = 6; y < FY; y += 22) for (let x = (y / 22 & 1) ? 13 : 0; x < W; x += 26) {
+    const { X0, Y0, X1, Y1 } = P.bounds();
+    P.rect(X0, Y0, X1 - X0, FY - Y0, C("#2e5760"));
+    for (let y = first(6, 22, Y0 - 22); y < FY; y += 22) for (let x = first(Math.round((y - 6) / 22) & 1 ? 13 : 0, 26, X0 - 26); x < X1; x += 26) {
       P.rect(x, y, 2, 2, C("#f2c14e")); P.rect(x + 13, y + 11, 2, 2, C("#e45d8c"));
       const q = C("#6ec6ca"); P.px(x + 6, y + 16, q); P.px(x + 7, y + 15, q); P.px(x + 8, y + 16, q); P.px(x + 9, y + 15, q); P.px(x + 10, y + 16, q);
     }
-    P.rect(0, FY, W, H - FY, C("#1c262c")); P.rect(0, FY, W, 1, C("#2c3a42"));
+    P.rect(X0, FY, X1 - X0, Y1 - FY, C("#1c262c")); P.rect(X0, FY, X1 - X0, 1, C("#2c3a42"));
     // lava lamp, glowing
     for (let r = 16; r > 4; r -= 3) P.ellD(27, 112, r, r + 4, C("#5a4a50"), .12 + (16 - r) / 60);
     const blobT = anim.t;
@@ -297,8 +304,9 @@
 
   // ---------- 2005 · white, clean, an MP3 player ----------
   function noughties(P, st) {
-    P.vgrad(0, 0, W, FY, C("#ededea"), C("#dfdfdb"));
-    P.rect(0, FY, W, H - FY, C("#d4d4d0")); P.rect(0, FY, W, 1, C("#f2f2ef")); P.dith(0, FY + 1, W, 4, C("#e2e2de"), .5);
+    const { X0, Y0, X1, Y1 } = P.bounds();
+    P.vgrad(X0, Y0, X1 - X0, FY - Y0, C("#ededea"), C("#dfdfdb"));
+    P.rect(X0, FY, X1 - X0, Y1 - FY, C("#d4d4d0")); P.rect(X0, FY, X1 - X0, 1, C("#f2f2ef")); P.dith(X0, FY + 1, X1 - X0, 4, C("#e2e2de"), .5);
     // print
     P.rect(16, 22, 36, 28, C("#ffffff")); P.frame(16, 22, 36, 28, C("#cfcfcb"));
     P.rect(19, 25, 30, 22, C("#f3f1ec"));
@@ -326,11 +334,12 @@
 
   // ---------- 2026 · dark, an LED strip, a phone ----------
   function now(P, st) {
-    P.rect(0, 0, W, FY, C("#15171c"));
-    for (let y = 7; y < 44; y++) P.dith(0, y, W, 1, C("#231d3a"), Math.max(0, .55 - (y - 7) / 60));
-    P.rect(0, 6, W, 1, C("#a082ff")); for (let x = 2; x < W; x += 6) P.px(x, 6, C("#e0d8ff"));
-    for (let y = 90; y < FY; y++) P.dith(0, y, 70, 1, C("#12303a"), (y - 90) / 200);
-    P.rect(0, FY, W, H - FY, C("#0d0e12")); P.rect(0, FY, W, 1, C("#22242c"));
+    const { X0, Y0, X1, Y1 } = P.bounds();
+    P.rect(X0, Y0, X1 - X0, FY - Y0, C("#15171c"));
+    for (let y = 7; y < 44; y++) P.dith(X0, y, X1 - X0, 1, C("#231d3a"), Math.max(0, .55 - (y - 7) / 60));
+    P.rect(X0, 6, X1 - X0, 1, C("#a082ff")); for (let x = first(2, 6, X0); x < X1; x += 6) P.px(x, 6, C("#e0d8ff"));
+    for (let y = 90; y < FY; y++) P.dith(X0, y, 70 - X0, 1, C("#12303a"), (y - 90) / 200);
+    P.rect(X0, FY, X1 - X0, Y1 - FY, C("#0d0e12")); P.rect(X0, FY, X1 - X0, 1, C("#22242c"));
     // plant
     const l1 = C("#2f6b4a"), l2 = C("#3a7d57"), l3 = C("#24593c");
     P.poly([[26, 118], [10, 96], [8, 84], [20, 92]], l1); P.poly([[28, 118], [44, 92], [52, 86], [46, 100]], l2); P.poly([[27, 118], [24, 90], [30, 70], [33, 94]], l3);
@@ -359,36 +368,47 @@
     P.rect(109, 120, 1, 5, w); P.px(106, 120, w); P.rect(106, 121, 2, 1, w); P.rect(106, 122, 3, 1, w); P.rect(106, 123, 2, 1, w); P.px(106, 124, w);
     P.rect(94, 131, 12, 1, C("#d0d0d8"));
     // a glossy floor: a faint reflection
-    const b = P.b, bg = C("#15171c");
-    for (let y = FY + 1; y < H; y++) { const sy = 2 * FY - y; for (let x = 78; x < 122; x++) if ((x + y) & 1 && bay(x, y) < 8) { const c = b[sy * W + x]; if (c !== bg) b[y * W + x] = shade(c, .28); } }
+    const bg = C("#15171c");
+    for (let y = FY + 1; y < Math.min(Y1, FY + 40); y++) { const sy = 2 * FY - y; for (let x = 78; x < 122; x++) if ((x + y) & 1 && bay(x, y) < 8) { const c = P.get(x, sy); if (c !== bg) P.px(x, y, shade(c, .28)); } }
   }
 
   const SCENES = [parlour, deco, atomic, seventies, nineties, noughties, now];
 
-  // ---------- compositing ----------
+  // ---------- compositing: any buffer size, the 200x160 scene placed at (ox, oy), walls and floors run to the edges ----------
   function create(canvas) {
     const g = canvas.getContext("2d");
-    const img = g.createImageData(W, H), out = new Uint32Array(img.data.buffer);
-    const A = painter(), Bp = painter();
+    let BW, BH, OX, OY, img, out, A, Bp;
+    function resize(w, h, ox = 0, oy = 0) {
+      BW = w; BH = h; OX = ox; OY = oy; canvas.width = w; canvas.height = h;
+      img = g.createImageData(w, h); out = new Uint32Array(img.data.buffer);
+      A = window.Pixel.painter(w, h); Bp = window.Pixel.painter(w, h);
+      A.ox = Bp.ox = ox; A.oy = Bp.oy = oy;
+    }
+    resize(W, H);
     return {
-      loadCover,
+      loadCover, resize,
       skip() { anim.skip = .5; },
+      // a colour from the last frame, in buffer pixels: lets the page match the room
+      sample(x, y) { const c = out[Math.min(BH - 1, Math.max(0, y)) * BW + Math.min(BW - 1, Math.max(0, x))]; return split(c); },
       render(st) {
         step(st);
         SCENES[st.i](A, st);
         if (st.s > 0) {
           SCENES[st.i + 1](Bp, st);
           const th = st.s * 64;
-          for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const k = y * W + x; out[k] = B8[(y & 7) * 8 + (x & 7)] < th ? Bp.b[k] : A.b[k]; }
+          for (let y = 0; y < BH; y++) for (let x = 0; x < BW; x++) { const k = y * BW + x; out[k] = B8[((y - OY) & 7) * 8 + ((x - OX) & 7)] < th ? Bp.b[k] : A.b[k]; }
         } else out.set(A.b);
         // the CD skips: a few rows slip sideways
-        if (anim.skip > 0 && st.era === 4) for (let y = 64; y < 138; y++) if (hash(y, Math.floor(anim.t * 30)) < .35) { const sh = Math.round((hash(y, 9) - .5) * 8), row = out.slice(y * W, y * W + W); for (let x = 0; x < W; x++) out[y * W + x] = row[Math.min(W - 1, Math.max(0, x - sh))]; }
+        if (anim.skip > 0 && st.era === 4) for (let y = 64; y < 138; y++) if (hash(y, Math.floor(anim.t * 30)) < .35) {
+          const yy = y + OY; if (yy < 0 || yy >= BH) continue;
+          const sh = Math.round((hash(y, 9) - .5) * 8), row = out.slice(yy * BW, yy * BW + BW);
+          for (let x = 0; x < BW; x++) out[yy * BW + x] = row[Math.min(BW - 1, Math.max(0, x - sh))];
+        }
         // notes
         const nc = NOTE_C[st.era];
         for (const n of anim.notes) {
           const fade = Math.min(1, n.age / .3, (n.life - n.age) / .8), x = Math.round(n.x + Math.sin(n.age * 2 + n.ph) * 3), y = Math.round(n.y);
-          const rows = NOTES[n.k];
-          rows.forEach((r, j) => { for (let i = 0; i < r.length; i++) if (r[i] === "1" && bay(x + i, y + j) < fade * 16) { const xx = x + i, yy = y + j; if (xx >= 0 && yy >= 0 && xx < W && yy < H) out[yy * W + xx] = nc; } });
+          NOTES[n.k].forEach((r, j) => { for (let i = 0; i < r.length; i++) if (r[i] === "1" && bay(x + i, y + j) < fade * 16) { const xx = x + i + OX, yy = y + j + OY; if (xx >= 0 && yy >= 0 && xx < BW && yy < BH) out[yy * BW + xx] = nc; } });
         }
         g.putImageData(img, 0, 0);
       },

@@ -40,23 +40,29 @@
   };
   const NOTES = [["00110", "00101", "00100", "11100", "11100"], ["011111", "010001", "010001", "110011", "110011"]];
 
+  // ox / oy translate everything drawn: a scene laid out in its own 200x160 frame can sit anywhere on a bigger buffer.
+  // bounds() gives the buffer's edges in the scene's coordinates, for backgrounds that should run edge to edge.
   function painter(W, H) {
     const b = new Uint32Array(W * H);
     const P = {
-      b,
-      px(x, y, c) { x = Math.round(x); y = Math.round(y); if (x >= 0 && y >= 0 && x < W && y < H) b[y * W + x] = c; },
-      rect(x, y, w, h, c) { x = Math.round(x); y = Math.round(y); const x0 = Math.max(0, x), y0 = Math.max(0, y), x1 = Math.min(W, x + w), y1 = Math.min(H, y + h); for (let j = y0; j < y1; j++) b.fill(c, j * W + x0, j * W + x1); },
+      b, W, H, ox: 0, oy: 0,
+      bounds() { return { X0: -P.ox, Y0: -P.oy, X1: W - P.ox, Y1: H - P.oy }; },
+      px(x, y, c) { x = Math.round(x) + P.ox; y = Math.round(y) + P.oy; if (x >= 0 && y >= 0 && x < W && y < H) b[y * W + x] = c; },
+      get(x, y) { x = Math.round(x) + P.ox; y = Math.round(y) + P.oy; return x >= 0 && y >= 0 && x < W && y < H ? b[y * W + x] : 0; },
+      rect(x, y, w, h, c) { x = Math.round(x) + P.ox; y = Math.round(y) + P.oy; const x0 = Math.max(0, x), y0 = Math.max(0, y), x1 = Math.min(W, x + w), y1 = Math.min(H, y + h); for (let j = y0; j < y1; j++) b.fill(c, j * W + x0, j * W + x1); },
       frame(x, y, w, h, c) { P.rect(x, y, w, 1, c); P.rect(x, y + h - 1, w, 1, c); P.rect(x, y, 1, h, c); P.rect(x + w - 1, y, 1, h, c); },
       dith(x, y, w, h, c, level) { const t = level * 16; for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) if (bay(i, j) < t) P.px(i, j, c); },
       vgrad(x, y, w, h, c0, c1) { for (let j = 0; j < h; j++) { const t = (j + .5) / h * 16; for (let i = x; i < x + w; i++) P.px(i, y + j, bay(i, y + j) < t ? c1 : c0); } },
       // fill every pixel inside test(); fill may be a colour or fn(x,y) -> colour | null; edge pixels get the outline
       shape(x0, y0, x1, y1, test, fill, outline) {
-        x0 = Math.max(0, Math.floor(x0)); y0 = Math.max(0, Math.floor(y0)); x1 = Math.min(W - 1, Math.ceil(x1)); y1 = Math.min(H - 1, Math.ceil(y1));
+        const ox = P.ox, oy = P.oy;
+        x0 = Math.max(-ox, Math.floor(x0)); y0 = Math.max(-oy, Math.floor(y0)); x1 = Math.min(W - 1 - ox, Math.ceil(x1)); y1 = Math.min(H - 1 - oy, Math.ceil(y1));
         const fn = typeof fill === "function";
         for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
           if (!test(x, y)) continue;
-          if (outline != null && (!test(x - 1, y) || !test(x + 1, y) || !test(x, y - 1) || !test(x, y + 1))) { b[y * W + x] = outline; continue; }
-          const c = fn ? fill(x, y) : fill; if (c != null) b[y * W + x] = c;
+          const k = (y + oy) * W + x + ox;
+          if (outline != null && (!test(x - 1, y) || !test(x + 1, y) || !test(x, y - 1) || !test(x, y + 1))) { b[k] = outline; continue; }
+          const c = fn ? fill(x, y) : fill; if (c != null) b[k] = c;
         }
       },
       ell(cx, cy, rx, ry, fill, outline) { P.shape(cx - rx - 1, cy - ry - 1, cx + rx + 1, cy + ry + 1, inEll(cx, cy, rx, ry), fill, outline); },

@@ -13,7 +13,7 @@
   const els = {
     clock: $("#clock"), city: $("#city"), cond: $("#cond"), blurb: $("#blurb"), sun: $("#sun"), layers: $("#layers"), balance: $("#balance"), credit: $("#credit"),
     room: $("#room"), scene: $("#scene"), play: $("#play"), prev: $("#prev"), next: $("#next"), title: $("#title"), artist: $("#artist"),
-    chips: $("#chips"), search: $("#search"), q: $("#q"), theme: $("#theme"), toast: $("#toast"),
+    chips: $("#chips"), search: $("#search"), q: $("#q"), toast: $("#toast"),
   };
 
   // ---------- places ----------
@@ -302,14 +302,7 @@
 
   // ---------- the scene ----------
   const art = WArt.create(els.scene);
-  function fitScene() {
-    const dpr = window.devicePixelRatio || 1, w = els.room.clientWidth;
-    const k = Math.max(1, Math.floor(w * dpr / WArt.W));
-    let cssW = k * WArt.W / dpr;
-    if (cssW < w * .8) cssW = w;
-    els.scene.style.width = `${cssW}px`; els.scene.style.height = `${cssW * WArt.H / WArt.W}px`;
-    els.scene.style.setProperty("--pxu", `${k / dpr * 2}px`);
-  }
+  const imm = Immersive(els.scene, art);
   let last = performance.now(), lastSec = -1, lastMin = -1;
   function frame(now) {
     const dt = Math.min(.1, (now - last) / 1000); last = now;
@@ -324,6 +317,7 @@
         dt, lat: p.lat, sun: WArt.sunPos(ms, p.lat, p.lon), moon: WArt.moonPos(ms, p.lat, p.lon), wx: state.wx,
         hour: h, cat: h >= 22 || h < 6, playing, level: state.level, freq: state.freq,
       });
+      imm.tick();
       const d = localNow(), sec = d.getUTCSeconds();
       if (sec !== lastSec) {
         lastSec = sec; els.clock.textContent = `${pad(d.getUTCHours())}${sec % 2 ? " " : ":"}${pad(d.getUTCMinutes())}`;
@@ -334,14 +328,6 @@
   }
 
   // ---------- theme, keys, toast ----------
-  function toggleTheme() {
-    const light = document.documentElement.dataset.theme !== "light";
-    document.documentElement.dataset.theme = light ? "light" : "dark";
-    store.set("mv.theme", light ? "light" : "dark");
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", light ? "#FBF7F1" : "#202020");
-  }
-  els.theme.addEventListener("click", toggleTheme);
-  if (document.documentElement.dataset.theme === "light") document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#FBF7F1");
   let toastTimer;
   function toast(msg) {
     els.toast.textContent = msg; els.toast.hidden = false; els.toast.classList.remove("leaving");
@@ -353,12 +339,10 @@
     if (e.code === "Space") { e.preventDefault(); toggle(); }
     else if (e.code === "ArrowRight") nextRecord();
     else if (e.code === "ArrowLeft") prevRecord();
-    else if (e.key === "t" || e.key === "T") toggleTheme();
   });
 
   // ---------- go: the hash, the last window, or a guess from the time zone ----------
   async function start() {
-    fitScene(); addEventListener("resize", fitScene);
     document.body.classList.add("armed");
     requestAnimationFrame(frame);
     await loadCatalog();
