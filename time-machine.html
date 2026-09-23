@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Time Machine · Mystery Vinyl</title>
+  <meta name="description" content="One song, 126 years. Drag a timeline from 1900 to today and hear the same record on a gramophone, a tube radio, a record player, a cassette, a CD, an MP3 player and a phone." />
+  <meta name="theme-color" content="#202020" />
+  <link rel="canonical" href="https://fm.uiboy.com/time-machine.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Mystery Vinyl" />
+  <meta property="og:title" content="Time Machine · Mystery Vinyl" />
+  <meta property="og:description" content="One song, 126 years. Hear the same record on a gramophone, a tube radio, a cassette, a CD and a phone." />
+  <meta property="og:url" content="https://fm.uiboy.com/time-machine.html" />
+  <meta property="og:image" content="https://fm.uiboy.com/assets/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23E8D7C0'/%3E%3Ccircle cx='32' cy='32' r='22' fill='%23000'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%23E8D7C0'/%3E%3Ccircle cx='32' cy='32' r='1.6' fill='%23000'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="time-machine.css" />
+  <script>
+    try { var t = localStorage.getItem("mv.theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body class="tm">
+  <div class="sleeve">
+    <a class="logo" href="./" aria-label="Back to Mystery Vinyl">
+      <svg viewBox="63 38 288 245" aria-hidden="true">
+        <rect x="63" y="77" width="288" height="206" rx="18" fill="#E8D7C0"/>
+        <g class="sleeve-disc">
+          <circle cx="208" cy="155" r="117" fill="#000"/>
+          <circle cx="208" cy="155" r="96" fill="none" stroke="#1c1c1c" stroke-width="1.5"/>
+          <circle cx="208" cy="155" r="72" fill="none" stroke="#1c1c1c" stroke-width="1.5"/>
+          <path d="M136 92 A96 96 0 0 1 176 64" fill="none" stroke="#3a3a3a" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="208" cy="155" r="40" fill="#E8D7C0"/>
+          <circle cx="208" cy="152" r="5.5" fill="#000"/>
+        </g>
+        <path d="M63 155 H351 V265 a18 18 0 0 1 -18 18 H81 a18 18 0 0 1 -18 -18 Z" fill="#E8D7C0"/>
+        <text x="76" y="215" font-size="54" font-weight="900" textLength="263" lengthAdjust="spacingAndGlyphs" fill="#000">MYSTERY</text>
+        <text x="76" y="265" font-size="54" font-weight="900" textLength="165" lengthAdjust="spacingAndGlyphs" fill="#000">VINYL</text>
+      </svg>
+    </a>
+  </div>
+
+  <nav class="topnav" aria-label="Site">
+    <a class="nav-btn" href="./" data-tip="Back to the deck" aria-label="Back to the deck"><svg aria-hidden="true"><use href="assets/pixelarticons.svg#arrow-bar-left"></use></svg></a>
+    <button class="nav-btn" id="theme" data-tip="Light / dark · T" aria-label="Switch theme"><svg class="ic-sun" aria-hidden="true"><use href="assets/pixelarticons.svg#sun"></use></svg><svg class="ic-moon" aria-hidden="true"><use href="assets/pixelarticons.svg#moon"></use></svg></button>
+  </nav>
+
+  <main class="tm-stage">
+    <section class="tm-info" aria-live="polite">
+      <p class="tm-kicker">Time machine · one song, 126 years</p>
+      <div class="tm-year" id="year" aria-label="Year">1900</div>
+      <h1 class="tm-name" id="name">Gramophone</h1>
+      <p class="tm-medium" id="medium">Shellac disc · 78 rpm</p>
+      <p class="tm-blurb" id="blurb"></p>
+
+      <div class="tm-hear">
+        <div class="tm-hear-head"><span>What you hear</span><span id="band">—</span></div>
+        <canvas class="tm-spec" id="spec" width="840" height="120" aria-hidden="true"></canvas>
+        <div class="tm-hear-axis"><span>bass</span><span>voices</span><span>cymbals</span></div>
+        <dl class="tm-facts">
+          <dt>Channels</dt><dd id="channels">Mono</dd>
+          <dt>Noise</dt><dd id="noise">Surface crackle</dd>
+        </dl>
+      </div>
+
+      <p class="credit" id="credit"></p>
+    </section>
+
+    <section class="tm-room" id="room" aria-label="The room">
+      <canvas class="tm-scene" id="scene" width="200" height="160" aria-hidden="true"></canvas>
+    </section>
+  </main>
+
+  <!-- the dock: transport and the timeline, always in reach -->
+  <section class="tm-dock" aria-label="Player and timeline">
+    <div class="tm-player">
+      <div class="tm-transport">
+        <button class="btn px" id="prev" title="Previous record" aria-label="Previous record"><svg aria-hidden="true"><use href="assets/pixelarticons.svg#arrow-bar-left"></use></svg></button>
+        <button class="btn btn-main px" id="play" aria-label="Play"><svg class="ic-play" aria-hidden="true"><use href="assets/pixelarticons.svg#play"></use></svg><svg class="ic-pause" aria-hidden="true"><use href="assets/pixelarticons.svg#pause-solid"></use></svg></button>
+        <button class="btn px" id="next" title="Next record" aria-label="Next record"><svg aria-hidden="true"><use href="assets/pixelarticons.svg#arrow-bar-right"></use></svg></button>
+      </div>
+      <div class="tm-now"><span class="tm-now-title" id="title">Loading a record…</span><span class="tm-now-artist" id="artist">&nbsp;</span></div>
+    </div>
+    <div class="tm-timeline">
+      <div class="tm-track" id="track">
+        <input class="tm-range" id="range" type="range" min="1900" max="2026" step="0.1" value="1900" aria-label="Year" />
+        <div class="tm-ticks" id="ticks"></div>
+      </div>
+      <p class="tm-hint" id="hint">Press play, then drag through time →</p>
+    </div>
+  </section>
+
+  <p class="toast px" id="toast" hidden></p>
+  <audio id="audio" crossorigin="anonymous" preload="auto"></audio>
+  <script src="time-machine-art.js"></script>
+  <script src="time-machine.js"></script>
+</body>
+</html>

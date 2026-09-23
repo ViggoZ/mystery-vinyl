@@ -72,6 +72,10 @@ Click a source in the list to play it. Sources live in `localStorage` only.
   </tr>
 </table>
 
+## Time machine
+
+The hourglass in the top right opens [`time-machine.html`](https://fm.uiboy.com/time-machine.html): one record, 126 years. Drag the timeline from 1900 to 2026 and the same song plays on a gramophone, a tube radio, a suitcase record player, a portable cassette player, a portable CD player, an MP3 player and a phone, each drawn as pixel art in a room of its era: a 200×160 buffer painted from code every frame (no image files), shaded with ordered dithering, scaled up by whole device pixels, and dissolved into the next era with a Bayer dither. The album cover is reduced to pixels for the record label, the CD print and the screens. The sound is the real track reshaped live with Web Audio: the band narrows (380 Hz–2.8 kHz for the horn), mono folds down, valves and tape saturate, a modulated delay adds wow and flutter, and crackle, tape hiss and AM static are synthesized. Between eras everything crossfades, so dragging slowly sweeps the sound through time. The cassette reels turn at the speed real tape would, and the CD skips if you tap it.
+
 ## Keyboard
 
 | Key | Action |
@@ -122,6 +126,8 @@ Edit the `AUDIUS`, `YT` and `CATEGORIES` maps there to add or swap sources per m
 - `assets/pixelarticons.svg` — the icon sprite (Pixelarticons, MIT, plus a four-corner full-screen glyph drawn on the same grid)
 - `assets/fonts/` — Departure Mono (MIT)
 - `scripts/build-catalog.py` — builds `data/catalog.json`
+- `time-machine.html`, `time-machine.css`, `time-machine.js` — the time machine page: timeline, info, the Web Audio era chain
+- `time-machine-art.js` — the pixel-art painter and the seven rooms
 
 ## License
 
